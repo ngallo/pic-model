@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1764456381.74617 "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" "pic-model.pdf" "pic-model" 1764456382.22825 2
+["pdflatex"] 1764457396.01585 "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" "pic-model.pdf" "pic-model" 1764457396.49102 2
   "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" 1764456246.06906 5058 49313ba4f89173bfa56b564489c55061 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -35,6 +35,7 @@
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb" 1248133631 32734 69e00a6b65cedb993666e42eedb3d48f ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1248133631 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
+  "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1248133631 32716 08e384dc442464e7285e891af9f45947 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb" 1136849748 44729 811d6c62865936705a31c797a1d5dada ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb" 1136849748 44656 0cbca70e0534538582128f6b54593cca ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb" 1136849748 46026 6dab18b61c907687b520c72847215a68 ""
@@ -175,10 +176,10 @@
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1759087269 3628859 1441feffd97cccdc369188e738ca193c ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
   "ieeeconf.cls" 1759086837.67872 197436 33af3dd5069be3a823450cf46fa3facf ""
-  "pic-model.aux" 1764456382.18432 389 36da47a7488f858a3f44f1ec1da0f987 "pdflatex"
+  "pic-model.aux" 1764457396.44361 389 36da47a7488f858a3f44f1ec1da0f987 "pdflatex"
   "pic-model.tex" 1764456246.06906 5058 49313ba4f89173bfa56b564489c55061 ""
   "sections/abstract.tex" 1764456381.05486 572 d169d2c8c1b27c94360617524bdb8169 ""
-  "sections/introduction.tex" 1764456083.67749 747 0f037f268e3b176130792e79909a6b13 ""
+  "sections/introduction.tex" 1764457395.31513 2275 612d93b04ba09014b79c8b0254a42be0 ""
   "sections/terminology.tex" 1764426389.67777 239 e916e7506655f86020932d89720ae84d ""
   (generated)
   "pic-model.aux"

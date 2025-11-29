@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  29 NOV 2025 23:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  30 NOV 2025 00:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -662,7 +662,9 @@ misspelled it (e.g., `\hobx'), type `I' and the correct
 spelling (e.g., `I\hbox'). Otherwise just continue,
 and I'll forget about whatever was undefined.
 
-(./sections/abstract.tex) (./sections/introduction.tex) (./sections/terminology.tex)
+(./sections/abstract.tex) (./sections/introduction.tex)
+
+(./sections/terminology.tex)
 Underfull \hbox (badness 4291) in paragraph at lines 1--106
 []\T1/ptm/m/n/10 xxxxxxx xxxxxxx xxxxxxx xxxxxxx xxxxxxx xxxxxxx
  []
@@ -681,12 +683,9 @@ Before submitting the final camera ready copy, remember to:
 
 
 
-
-
 Overfull \vbox (336.63313pt too high) has occurred while \output is active []
 
  [1{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc}
-
 
 
 ] (./pic-model.aux)
@@ -700,18 +699,18 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
  ) 
 Here is how much of TeX's memory you used:
- 20838 strings out of 467748
- 444795 string characters out of 5426959
- 851697 words of memory out of 5000000
- 49154 multiletter control sequences out of 15000+600000
- 736044 words of font info for 156 fonts, out of 8000000 for 9000
+ 20845 strings out of 467748
+ 444913 string characters out of 5426959
+ 855694 words of memory out of 5000000
+ 49161 multiletter control sequences out of 15000+600000
+ 737098 words of font info for 161 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 98i,10n,101p,898b,335s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
-Output written on pic-model.pdf (1 page, 57157 bytes).
+ 98i,10n,101p,903b,335s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb>
+Output written on pic-model.pdf (1 page, 67173 bytes).
 PDF statistics:
- 37 PDF objects out of 1000 (max. 8388607)
- 23 compressed objects within 1 object stream
+ 42 PDF objects out of 1000 (max. 8388607)
+ 26 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
