@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1764457396.01585 "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" "pic-model.pdf" "pic-model" 1764457396.49102 2
-  "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" 1764456246.06906 5058 49313ba4f89173bfa56b564489c55061 ""
+["pdflatex"] 1764457535.81995 "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" "pic-model.pdf" "pic-model" 1764457536.29824 2
+  "/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/v1.0/pic-model/pic-model.tex" 1764457535.10537 5057 5a7b8bcc835b60d0653eb72d9993c4d5 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1136768653 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -176,8 +176,8 @@
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1759087269 3628859 1441feffd97cccdc369188e738ca193c ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
   "ieeeconf.cls" 1759086837.67872 197436 33af3dd5069be3a823450cf46fa3facf ""
-  "pic-model.aux" 1764457396.44361 389 36da47a7488f858a3f44f1ec1da0f987 "pdflatex"
-  "pic-model.tex" 1764456246.06906 5058 49313ba4f89173bfa56b564489c55061 ""
+  "pic-model.aux" 1764457536.25154 389 36da47a7488f858a3f44f1ec1da0f987 "pdflatex"
+  "pic-model.tex" 1764457535.10537 5057 5a7b8bcc835b60d0653eb72d9993c4d5 ""
   "sections/abstract.tex" 1764456381.05486 572 d169d2c8c1b27c94360617524bdb8169 ""
   "sections/introduction.tex" 1764457395.31513 2275 612d93b04ba09014b79c8b0254a42be0 ""
   "sections/terminology.tex" 1764426389.67777 239 e916e7506655f86020932d89720ae84d ""
