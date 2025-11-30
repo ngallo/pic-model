@@ -1,11 +1,11 @@
 # **PIC Model — Provenance Identity Continuity for Distributed Execution Systems**
 
-**Nicola Gallo — Software Architect**  
+**Version:** 0.1 (Draft)  
+**Author:** Nicola Gallo — Software Architect  
 _All opinions and contributions are my own._  
-GitHub: https://github.com/ngallo  
-**Licensed under CC BY 4.0**  
-https://creativecommons.org/licenses/by/4.0/
-
+**GitHub:** <https://github.com/ngallo>  
+**Source:** <https://github.com/ngallo/pic-model>  
+**License:** [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ---
 
