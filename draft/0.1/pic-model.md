@@ -313,9 +313,233 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
 
 ---
 
-## **6. Fundamental Axioms**
+## **6. Fundamental Axioms (Required Set of Invariants)**
 
-**WORK IN PROGRESS**
+These axioms define the **minimum structural guarantees** required to maintain  
+**Provenance Identity Continuity (PIC)** in distributed execution.
+
+They govern:
+
+- **causality**,  
+- **continuity**,  
+- **non-transferability**,  
+- **execution provenance**,  
+
+—not cryptographic curves, protocol formats, or implementation details.
+
+---
+
+### **Axiom F1 — Causal Identity Substrate**
+
+Identity in PIC is established by **Executor + Provenance**.
+
+An executor is legitimate only when it is **causally bound to a transaction**.
+
+Identity may take multiple forms:
+
+- explicit identity (e.g., key or certificate)
+- pseudonymous identity
+- privacy-preserving identity (ZK)
+- executor characteristics (contextual attributes)
+
+> **Identity is whatever the previous hop attested as the next valid executor.**
+
+---
+
+### **Axiom F2 — Possession ≠ Execution**
+
+Owning an artifact (token, signature, credential)  
+**does not prove who is executing the next hop**.
+
+Artifacts demonstrate **ownership**, not **continuity**.
+
+- **PoP = Proof of Possession** → shows control of material
+- **PoC = Proof of Control** → shows continuity of execution
+
+**Only PoC establishes continuity.**
+
+---
+
+### **Axiom F3 — Reminting ≠ Delegation**
+
+Reissuing or regenerating artifacts breaks continuity.
+
+Examples:
+- issuing a new token
+- re-minting a credential
+- DID or key rotation
+
+These actions produce a **new origin**, not a continuation.
+
+**Delegation MUST preserve causal binding — not recreate it.**
+
+---
+
+### **Axiom F4 — Immutability of the Causal Chain**
+
+Every hop MUST bind itself to its predecessor.
+
+A **PIC Causal Attestation (PCA)** MUST include:
+
+1. The executor of the hop  
+2. The previous attestation  
+3. The hop context
+
+No hop MAY:
+- skip an ancestor
+- rewrite chain history
+- splice a branch back in
+
+---
+
+### **Axiom F5 — Atomic Attestation**
+
+All proofs REQUIRED for a hop MUST be bound into **one attestation (PCA)**.
+
+These include:
+- continuity (PoC)
+- executor identity or characteristics
+- freshness challenge
+- context constraints
+
+No staged validation, no multi-message negotiation.
+
+> **Continuity is asserted atomically.**
+
+---
+
+### **Axiom F6 — Causal Authorization**
+
+Authorization MUST originate from the **causal chain**.
+
+It CANNOT be injected mid-transaction by:
+- external grants,
+- new tokens,
+- imported certificates.
+
+If different authority is needed, a **new transaction MUST begin at origin**.
+
+---
+
+### **Axiom F7 — Network Isolation ≠ Identity**
+
+Executor identity MUST NOT be inferred from:
+
+- network zone  
+- VPN location  
+- mTLS session  
+- perimeter routing
+
+Infrastructure **does not provide causal continuity.**
+
+---
+
+### **Axiom F8 — Attestation ≠ Continuity**
+
+Attestation proves **what or who** the executor is.  
+Continuity proves **that the executor is the one previously selected**.
+
+These must remain distinct:
+
+- Attestation = verification of properties
+- Continuity = verification of causality
+
+> **Identity ≠ causal binding.**
+
+---
+
+### **Axiom F9 — Forks Create New Transactions**
+
+Distributed execution MAY fan-out or branch.
+
+Each branch MUST form an **independent transaction**  
+with its own PCA chain.
+
+A PCA MUST NOT be:
+- forwarded
+- cloned
+- replayed
+- multiplexed across branches
+
+> **Forking creates new lineage, not parallel copies.**
+
+---
+
+### **Axiom F10 — Delegation Is Irreversible**
+
+Delegation MUST only **reduce capability**, never expand it.
+
+Permitted:
+- narrowing scope
+- removing identity
+- increasing anonymity
+- lowering permissions
+
+Forbidden:
+- minting new identities
+- expanding rights
+- importing external credentials
+
+Delegated power remains causally tied to the origin.
+
+---
+
+### **Axiom F11 — Identity Can Be Abstract**
+
+Identity in PIC MAY be **non-personal and non-cryptographic**.
+
+It may consist of contextual operational attributes:
+
+- role
+- function
+- workload category
+- capability constraints
+- privacy grade
+
+What matters is that **the prior hop attested them**.
+
+---
+
+### **Axiom F12 — Continuity Over Ownership**
+
+Only **Proof of Control (PoC)** establishes continuity.
+
+Ownership of keys, artifacts, or credentials:
+- MAY assist identity proofs
+- CANNOT substitute causality
+
+> **Execution continuity is causal, not material.**
+
+---
+
+### **Axiom F13 — Non-Transferability of Capabilities**
+
+Capabilities MUST NOT move between executors  
+unless causally linked through the PCA chain.
+
+Artifacts without PCA provenance are **inert**:
+
+- They MUST NOT imply identity,
+- MUST NOT imply authority,
+- MUST NOT imply continuity.
+
+---
+
+### **Axiom F14 — Termination Is a Safety Primitive**
+
+If continuity breaks:
+- the transaction MUST terminate.
+
+Forbidding:
+- replay,
+- refresh,
+- resurrection of credentials,
+- reattachment to earlier hops.
+
+Restarting creates a **new independent origin**,  
+not a continuation.
+
+> **Failure does not pause continuity — it ends it.**
 
 ---
 
