@@ -30,9 +30,17 @@ The model introduces the **Structural Impossibility Claim (NO-GO Result)**:
 
 Artifacts may encode identity, authorization, or claims,
 but they do **not** prove that the executor performing hop *n*
-is the same causal agent responsible for hop *n−1*.
+is the same causally-bound executor that the previous hop *n−1* recognized and attested as its next hop.
 
-This limitation is structural, not implementation-dependent, and cannot be resolved by stronger cryptography, token binding, session rotation, or enriched claims.
+Artifacts may demonstrate possession or key ownership,
+but they do **not** demonstrate that hop *n* is causally bound to hop *n−1*.
+
+A valid continuation requires that the executor at hop *n*
+be verifiably the same executor causally designated by hop *n−1* through attestation.
+
+This limitation is structural, not implementation-dependent,
+and cannot be resolved by stronger cryptography, token binding,
+session rotation, enclaves, or enriched claims.
 
 ---
 
@@ -101,8 +109,9 @@ adds attack surface and weakens continuity guarantees.
 Proof of Possession (PoP) demonstrates control over a cryptographic material or artifact at a specific point in time.  
 PoP is a claim of **possession**.
 
-Proof of Control (PoC) demonstrates that the executor performing hop *n* is causally the same agent responsible for hop *n−1*.  
-PoC is a claim of **execution continuity**.
+Proof of Control (PoC) demonstrates that the executor performing hop *n*
+is verifiably the same causally-bound executor that hop *n−1* attested as its next hop.  
+PoC is a claim of **execution continuity**, not artifact possession.
 
 The two are not equivalent.
 
@@ -204,17 +213,13 @@ Continuity is preserved when each hop is bound to:
 
 1. the initiating executor,  
 2. its causal predecessor,  
-3. the cryptographically verifiable provenance of the chain.
+3. the verifiable provenance of the chain (cryptographic, mathematical, physical, or other formally checkable mechanism).
 
 > **Causality is the invariant. Identity is optional metadata over it.**
 
 Identity **MAY** exist — but is not required.
 
-Anonymous or capability-based delegations are safer:
-
-- no identity leakage,
-- no credential impersonation,
-- reduced replay vectors.
+Anonymous or capability-based delegations enable privacy-preserving flows.
 
 Capabilities **MAY** traverse flows without exposing identity,  
 as long as they remain tied to the same transaction.
