@@ -538,23 +538,44 @@ Artifacts without PCA provenance are **inert**:
 
 ---
 
-### **Axiom F14 — Termination Is a Safety Primitive**
+### **Axiom F14 — Irreversible Pending (Structural End State)**
 
-If continuity breaks:
+A Distributed Transaction (τ) may reach a state where **no future executor can ever produce a valid PoC**, 
+because every possible hop is formally invalid under the attested constraints of τ.
 
-- the transaction MUST terminate.
+This state is **Irreversible Pending**.
 
-Forbidding:
+Irreversible Pending **is not a failure**:
+- it produces **no runtime error**,  
+- it consumes **no resources**,  
+- it blocks **no agents**,  
+- it incurs **no operational cost**,
+- it creates **no security risk**.
 
-- replay,
-- refresh,
-- resurrection of credentials,
-- reattachment to earlier hops.
+It is simply the point where **continuity is no longer possible** under the rules of τ.
 
-Restarting creates a **new independent origin**,  
-not a continuation.
+A τ in Irreversible Pending:
 
-> **Failure does not pause continuity — it ends it.**
+- remains **perfectly verifiable**,  
+- remains **immutable**,  
+- remains **audit-safe**,  
+- but **cannot progress**.
+
+This condition may arise from:
+
+- causal constraints (depth, quorum, attestation scope),
+- model constraints (capability reduction, disclosure monotonicity),
+- CTA policy (validated against τ’s own metadata),
+- external signals **only when attested as part of τ’s policy context**.
+
+**One executor’s inability to generate PoC is irrelevant.**  
+τ ends structurally only when **no admissible executor can ever generate a valid next PCA**.
+
+Restarting after Irreversible Pending always creates **a new τ₀**,
+with a fresh origin and **no inheritance of PCA state**.
+
+> **Termination in PIC means the structure forbids continuity,
+> not that an agent failed or a system crashed.**
 
 ---
 
