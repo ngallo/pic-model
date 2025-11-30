@@ -197,39 +197,111 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
 
 ---
 
-# **4. Architectural Invariants (Normative)**
+## **4. Architectural Invariants (Normative)**
 
-RFC 2119 terminology applies.
-
-### **4.1 Causal Origin Invariant**
-- A PIC transaction **MUST** originate from an executor.  
-- The origin **MUST** be cryptographically bound.  
-- No new identity or authority **MAY** be injected after origin.
-
-### **4.2 Monotonic Disclosure Invariant**
-- Attributes **MAY decrease**.  
-- Attributes **MUST NOT increase**.  
-- Importing credentials **MUST FAIL**.
-
-### **4.3 Delegation Invariant**
-- Delegation **MUST** be capability reduction.  
-- Delegation **MUST NOT** produce new identities.  
-- Authority **MUST** remain tied to origin.
-
-### **4.4 Continuity Invariant**
-- Each hop **MUST** validate provenance before execution.  
-- If continuity fails → **transaction terminates**.  
-- No refresh, replay, or rehydration.
-
-### **4.5 Non-Transferability Invariant**
-- Capabilities **MUST NOT** be reassigned.  
-- A PIC transaction **MUST NOT** be rebound to a new executor.
-
-Artifacts without provenance are inert.
+**RFC 2119** terminology applies.
 
 ---
 
-# **5. Intellectual Property and Generative Assistance**
+### **4.1 PIC Attestation Primitive**
+
+A **PIC Transaction** is a sequence of **PIC Attestations**.
+
+- The first attestation is the **Origin PIC Attestation**.  
+- Each subsequent hop creates a **New PIC Attestation** derived from the previous one.  
+- The ordered chain of attestations **IS** the transaction provenance.
+
+Each **PIC Attestation** **MUST** bind, atomically and verifiably:
+
+1. **The current executor**,  
+2. **The previous attestation** (if any),  
+3. **The capability / identity context of the hop**.
+
+A PIC Attestation **MUST** cryptographically or mathematically embed:
+
+- A **reference to the previous attestation**  
+  (hash, commitment, or equivalent link),
+- A **Proof of Identity (PoI)** of the executor,  
+  which MAY be:
+  - public-key binding,
+  - pseudonymous identity,
+  - zero-knowledge proof of control,
+  - threshold / MPC proof,
+- A **Proof of Possession (PoP)** authorizing the executor to advance the transaction,  
+  which MAY be:
+  - digital signature,
+  - MAC,
+  - ZK proof,
+  - threshold proof,
+- A **Bound Capability / Context View** for this hop  
+  (rights, scope, constraints, redacted identity),
+- A **freshness / anti-replay element**  
+  (nonce, challenge, counter, trust-plane primitive, etc.).
+
+> The cryptographic mechanism is **not constrained**:  
+> **The attestation MUST be verifiable, non-forgeable, and causally bound.**
+
+For each hop:
+
+- The executor **MUST** verify the previous attestation.  
+- If valid, it **MUST** issue a new attestation with any required capability reduction.  
+- If validation fails → **the transaction MUST terminate**.
+
+A **trust plane** MAY provide challenges, nonces, or policy constraints, but **MUST NOT**:
+
+- break the causal chain,
+- inject new identity or authority,
+- or bypass attestation rules.
+
+---
+
+### **4.2 Causal Origin Invariant**
+
+- A PIC Transaction **MUST** originate from an executor.  
+- The origin **MUST** be cryptographically bound to the first attestation.  
+- No new identity or authority **MAY** be injected after origin.
+
+---
+
+### **4.3 Monotonic Disclosure Invariant**
+
+- Attributes **MAY decrease** across hops.  
+- Attributes **MUST NOT increase**.  
+- Importing external credentials or identities into an ongoing transaction  
+  **MUST FAIL**.
+
+---
+
+### **4.4 Delegation Invariant**
+
+- Delegation **MUST** be a reduction of capability.  
+- Delegation **MUST NOT** produce new identities.  
+- Authority **MUST** remain tied to the origin executor.
+
+---
+
+### **4.5 Continuity Invariant**
+
+- Each hop **MUST** validate provenance before execution.  
+- If validation fails → **transaction terminates**.  
+- No refresh, replay, or rehydration is allowed.
+
+A failed transaction **MUST** be treated as **new origin**,  
+not as continuation.
+
+---
+
+### **4.6 Non-Transferability Invariant**
+
+- Capabilities **MUST NOT** be reassigned between independent executors.  
+- A PIC transaction **MUST NOT** be rebound to a new executor not causally linked to the origin.
+
+Artifacts without attested provenance are **inert**.  
+They **MUST NOT** represent identity, authority, or continuity.
+
+---
+
+## **5. Intellectual Property and Generative Assistance**
 
 The **Provenance Identity Continuity (PIC) Model**, the **Executor-First Paradigm**,  
 and the **Structural Impossibility Claim** are original conceptual contributions of the author.
@@ -245,7 +317,7 @@ It contributed **no conceptual, scientific, or theoretical material**.
 
 ---
 
-# **6. Attribution of Conceptual Framework**
+## **6. Attribution of Conceptual Framework**
 
 The PIC Model establishes:
 
