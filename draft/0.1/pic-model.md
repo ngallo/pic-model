@@ -256,7 +256,7 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
   it only determines **how** the characteristic is verified.
 
 - **Provenance (P)**  
-  The verifiable chain of causal steps leading to the current hop.
+  The ordered, verifiable chain of causal steps leading to the current hop.
 
 - **Distributed Transaction (τ)**  
   A causally verifiable execution chain spanning multiple hops.  
