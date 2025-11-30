@@ -656,9 +656,114 @@ they **MUST NOT** encode identity, authority, or continuity.
 
 ---
 
-## **8. Structural Impossibility Claim (Security Argument)**
+## 8 Structural Impossibility (NO-GO Result)
 
-**WORK IN PROGRESS**
+The PIC Model states a fundamental limit:
+
+> **Artifact-based delegation CANNOT provide Proof of Control (PoC) across multi-hop execution.**
+
+This is structural, not cryptographic.
+
+---
+
+### 8.1 Definitions
+
+```
+PoP = Proof of Possession (control of an artifact or key)
+PoI = Proof of Identity (who the executor claims to be)
+PoC = Proof of Control (continuity from previous attested executor)
+τ   = Distributed Transaction (causal execution chain)
+PCA = PIC Causal Attestation
+```
+
+- **PoP** = ownership.
+- **PoC** = causal succession.
+- **PoP ≠ PoC.**
+
+---
+
+### 8.2 Structural Impossibility
+
+Artifact models validate **what is held** (PoP),
+not **who continues τ** (PoC).
+
+Artifacts can be:
+- copied,
+- forwarded,
+- replayed,
+- proxied.
+
+All remain **cryptographically valid**, but causally ambiguous.
+
+> Transferability breaks continuity by definition.
+
+---
+
+### 8.3 Replay does not fix continuity
+
+Nonces, timestamps, TLS binding, enclaves, DID rotation
+only restrict **reuse** of artifacts.
+
+They do **not** prove:
+- that the executor at hop *i* is the one attested by hop *i−1*.
+
+Replay-hardening ≠ PoC.
+
+---
+
+### 8.4 Stronger cryptography does not help
+
+Better signatures, MPC, threshold keys, zk-proofs
+only strengthen **ownership proofs**.
+
+They cannot express:
+
+```
+"I am the next attested executor of τ."
+```
+
+Cryptography can validate artifacts,  
+**not lineage**.
+
+---
+
+### 8.5 Execution vs Artifact domain
+
+Artifacts describe **objects** (“who holds X”).  
+Continuity describes **execution** (“who continues τ”).
+
+They are different domains.  
+You cannot infer the latter from the former.
+
+---
+
+### 8.6 Consequence
+
+At **hop 2 and beyond**, artifact-based continuity collapses:
+
+```
+Hop0 → Hop1: PoP valid
+Hop1 → Hop2: artifact transferable
+           → executor unknown
+           → PoC broken
+           → τ terminated
+```
+
+Once PoC fails:
+- no replay,
+- no refresh,
+- no rebinding.
+
+A restart is **a new origin**, not a continuation.
+
+---
+
+### 8.7 Implication
+
+Continuity must be **proven hop-by-hop**.
+
+> **Only provenance + executor attestation (PCA + PoC) guarantees continuity.  
+> Artifact possession never does.**
 
 ---
 
