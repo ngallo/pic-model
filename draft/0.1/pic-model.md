@@ -13,37 +13,81 @@ _All opinions and contributions are my own._
 
 The **Executor-First Paradigm** asserts that identity is not an attribute embedded in static credentials or artifacts, but an **emergent property of the execution state** and its **verifiable causal origin**.
 
-The **Provenance Identity Continuity (PIC) Model** defines the invariants that identity **MUST** satisfy across the entire **causal chain of execution**, addressing structural limitations of artifact-centric security models.
+The **Provenance Identity Continuity (PIC) Model** defines the invariants that identity **MUST** satisfy across an entire **multi-hop causal execution**, replacing artifact possession with **execution provenance** as the continuity anchor.
 
-Because identity is emergent, identity continuity **MUST NOT** depend on artifact inheritance or static credential possession.  
-Each hop within a distributed execution **SHALL** be treated as part of a **verifiable distributed transaction**.  
-This transaction does not merely expose identity; it **binds the identity to the causal execution**, preventing detachment, impersonation, and artifact-based replay.
+Each hop **MUST** be treated as part of a **verifiable distributed transaction**.  
+This transaction binds the executor to its causal predecessor, preventing detachment, impersonation, replay, and token inheritance failures that plague artifact-centric approaches.
 
-Within this transactional continuity, **capabilities, scopes, and other authorization parameters MAY traverse the system without directly exposing identity**.  
-The model therefore supports both **identity-centric flows** and **anonymity-preserving flows**, provided that continuity **MUST** remain cryptographically tied to the actor that originated the execution and to the **causal chain they create**.
+Because continuity derives from provenance, the model supports both **identity-centric flows** and **anonymous capability-based flows**.  
+Anonymous capability flows are **inherently safer** in multi-hop environments: they eliminate identity leakage, prevent impersonation via transferable credentials, and reduce cross-domain replay vectors — while maintaining full causal verifiability.
 
-The model introduces the **Structural Impossibility Claim (NO-GO Result)**, asserting that artifact-based delegation **CANNOT** guarantee identity continuity in distributed systems.
+Capabilities, scopes, or rights **MAY** traverse the system **without exposing identity**, provided they remain cryptographically tied to the same causal chain and to the actor who originated it.
 
-This claim is **structural**, not mathematical. Formal treatment is deferred to future work.
+The model introduces the **Structural Impossibility Claim (NO-GO Result)**:  
+artifact-based delegation **CANNOT** guarantee identity continuity in distributed systems.  
+This claim is structural, not mathematical; formal treatment is deferred to future work.
+
+---
+
+## **0. Causal Continuity: The Transaction Is the Identity**
+
+Causality in PIC **is not a credential**.  
+It is not a token, signature, DID, or certificate.
+
+> **Causality is the distributed transaction itself.**
+
+A PIC transaction carries a verifiable fact:
+
+- **an identity**, or
+- **a capability**, or
+- **both**, or
+- **another contextual attribute**.
+
+What the transaction carries is determined at creation time.  
+It becomes the initial causal state.
+
+At each hop, the transaction MAY reduce disclosure scope  
+(e.g., drop identity while retaining capability),  
+but it **MUST NOT introduce external identity** or import new credentials.
+
+> **Information MAY decrease across hops.  
+> Information MUST NOT increase.**
+
+The state that is propagated is the only one that exists.  
+If causal continuity is not propagated:
+
+> **The transaction is dead.**
+
+There are no retries, refresh tokens, or secondary inheritance.
+
+Provenance continuity is therefore a structural invariant:
+
+- identity is optional,
+- capability is optional,
+- **the transaction is mandatory**.
+
+**The system trusts the causal chain, not its artifacts.**
 
 ---
 
 ## **1. Introduction**
 
 Distributed execution systems are inherently **multi-hop**.  
-Delegation patterns—whether implemented cryptographically or via physical artifacts—**always** involve at least two entities:
+Delegation patterns — whether implemented cryptographically or via physical artifacts — **always** involve at least two entities:
 
-- **Delegator** — the origin of authority (e.g., signer)
+- **Delegator** — the origin of authority (e.g., signer)  
 - **Delegate** — the executing agent who proves identity
 
-In the simplest paper-based delegation model, the artifact **ceases to be meaningful** once the delegate is removed.  
+In the simplest paper-based model, the artifact **ceases to be meaningful** once the delegate is removed.  
 Any party acquiring the artifact can impersonate the original delegate, nullifying its intrinsic security value.
 
 Therefore:
 
 > **Delegator and delegate identity MUST be validated as independent inputs.**
 
-Any mechanism that collapses identity into a single artifact (e.g., certificates, bearer tokens, static credentials) introduces additional complexity and attack surface, resulting in **weaker security guarantees**.
+Any mechanism that collapses identity into a single artifact  
+(e.g., certificates, bearer tokens, static credentials)  
+adds attack surface and reduces continuity guarantees.
 
 ---
 
@@ -51,35 +95,41 @@ Any mechanism that collapses identity into a single artifact (e.g., certificates
 
 Artifact-centric identity models are widely adopted and appear intuitive, yet they are structurally misaligned with distributed execution.
 
-Their limitations arise from **binding identity to the artifact holder**, rather than to the causal provenance of the execution itself.
+Their limitations arise from **binding identity to the artifact holder**, rather than to the **causal provenance of the execution**.
 
-This architectural mismatch is the primary reason why modern systems maintain two incompatible security regimes:
+This mismatch is the reason modern systems maintain two incompatible regimes:
 
-- **public-internet security**, where identity and trust must be explicit,
-- **private enterprise network security**, where identity is implicitly presumed through network boundaries.
+- **public-internet security**, where identity must be explicit,
+- **private network security**, where identity is implicitly inferred through isolation boundaries.
 
-This bifurcation is paradoxical: the public internet—objectively more hostile—benefits from stronger and explicit identity primitives, while private networks rely on implicit trust and isolation boundaries that degrade the moment multiple hops or autonomous actors are introduced.
+This bifurcation is paradoxical:
+
+> The public internet — more hostile — benefits from explicit identity primitives,  
+> while private networks rely on implicit trust that collapses the moment execution becomes multi-hop or autonomous.
 
 In practice, artifact-centric models only function under restrictive assumptions:
 
 1. **First-hop coupling**  
-   Identity MUST be bound to a trusted transport channel (e.g., mutual TLS).  
-   → This binds identity to the **channel**, not to the execution.
+   Identity **MUST** be tied to a trusted transport (e.g., mutual TLS).  
+   → identity attaches to the **channel**, not to the execution.
 
 2. **Token-based continuity**  
    Subsequent hops rely on delegation artifacts or token exchange.  
-   → Continuity is tied to **artifact possession**, not to causal execution.
+   → continuity attaches to **artifact possession**, not to causal execution.
 
 3. **Network isolation as pseudo-identity**  
-   Later hops are assumed implicitly secure via:
+   Later hops are assumed secure via:
    - VPNs  
    - firewalls  
    - private networks  
-   → **Identity continuity CANNOT be reliably preserved across isolation boundaries.**
+   → **identity continuity CANNOT be preserved across isolation boundaries.**
 
-The emergence of **AI agents and autonomous workloads** makes this failure fully visible: execution can traverse contexts, protocols, and trust domains faster than any artifact-based model can track.
+The emergence of **AI agents and autonomous workloads** makes this failure explicit:  
+execution crosses contexts faster than artifact-based models can track.
 
-The model collapses because **possession is not provenance**.
+The model collapses because:
+
+> **possession is not provenance.**
 
 ---
 
@@ -87,34 +137,83 @@ The model collapses because **possession is not provenance**.
 
 In systems such as **Apache Kafka**, reliance on static artifacts is immediately problematic:
 
-- Removing a signature transforms a security artifact (e.g., a bearer token) into **plain payload**.  
-- Encrypting the artifact **DOES NOT** guarantee validation prior to execution or misuse.  
+- Removing a signature turns a security artifact (e.g., a bearer token) into **plain payload**.  
+- Encrypting the artifact **DOES NOT** guarantee validation before execution or misuse.  
 - Handling edge cases requires ad-hoc mechanisms, increasing:
-  - architectural fragmentation  
-  - operational complexity  
-  - vulnerability surface area
+  - architectural fragmentation,  
+  - operational complexity,  
+  - vulnerability surface area.
 
-These approaches produce an ecosystem of **exceptions**, not a coherent security model.
+These approaches form an ecosystem of **exceptions**, not a coherent identity model.
 
 ---
 
-### **1.3. Required Reframing**
+## **2. Required Reframing**
+
+Artifact-centric models assume continuity is carried by a credential, certificate, or token held by a workload.  
+PIC rejects this assumption.
 
 > **Identity MUST be formalized around multi-hop execution provenance, not artifact possession.**
 
-The **executor** and its **causal origin** are the identity anchor — not the object it happens to hold.
+Continuity is not a property of a static object.  
+It is an emergent feature of:
+
+- **the executor**,  
+- **its causal origin**, and  
+- **the verifiable dependency chain across hops.**
+
+The artifact held by a workload (certificate, JWT, DID document, bearer token) is not the anchor.  
+The **causal execution path** is.
+
+Any system that collapses provenance into artifact possession will **inevitably lose continuity**, regardless of cryptography or transport guarantees.
 
 ---
 
-## **2. Author’s Note on Intellectual Property and Generative Assistance**
+## **3. Provenance as the Continuity Primitive**
 
-The **PIC Model**, its conceptual framework, axiomatic foundations, and the **Structural Impossibility Claim (NO-GO Result)** constitute the original intellectual property of the author.
+The PIC Model does not require identity to exist as a first-class primitive.
+
+Distributed execution **MUST** be modeled as a **verifiable causal transaction** spanning all hops.  
+Continuity is preserved when each hop is bound to:
+
+1. the executor that initiated computation,  
+2. its causal predecessor,  
+3. the cryptographically verifiable provenance of the chain.
+
+> **Causality is the invariant. Identity is optional metadata layered over it.**
+
+Identity **MAY** be present — as principal, workload, subject, or caller —  
+but it is **not required** for continuity.
+
+Anonymous or capability-based delegation flows are **inherently safer**:
+
+- they eliminate identity leakage,
+- prevent impersonation through transferable credentials,
+- and reduce cross-domain replay vectors.
+
+Capabilities, delegation rights, or anonymous permissions **MAY** traverse the execution flow **without exposing identity**,  
+as long as they remain provably tied to the same causal transaction.
+
+In other words:
+
+- **Identity is not the anchor of trust.**  
+- **Provenance is.**
+
+Where explicit identity is required, it **MUST** follow the causal model.  
+It **MUST NOT** rely on bearer semantics, static credentials, or transferable artifacts as continuity anchors.
+
+---
+
+## **4. Author’s Note on Intellectual Property and Generative Assistance**
+
+The **PIC Model**, its conceptual framework, axiomatic foundations, and the  
+**Structural Impossibility Claim (NO-GO Result)** constitute the original intellectual property of the author.
 
 Generative AI was used **exclusively** for:
 
-- editorial refinement  
-- structural organization  
-- formatting  
-- notational consistency
+- editorial refinement,  
+- structural organization,  
+- formatting,  
+- notational consistency.
 
 It contributed **NO conceptual, scientific, or theoretical material** to the model itself.
