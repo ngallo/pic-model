@@ -102,17 +102,16 @@ These approaches produce an ecosystem of **exceptions**, not a coherent security
 
 > **Identity MUST be formalized around multi-hop execution provenance, not artifact possession.**
 
-The **executor** and its **causal origin** are the identity anchor —  
-not the object it happens to hold.
+The **executor** and its **causal origin** are the identity anchor — not the object it happens to hold.
 
 ---
 
 ## **2. Author’s Note on Intellectual Property and Generative Assistance**
 
-The **PIC Model**, its conceptual framework, axiomatic foundations, and the  
-**Structural Impossibility Claim (NO-GO Result)** constitute the original intellectual property of the author.
+The **PIC Model**, its conceptual framework, axiomatic foundations, and the **Structural Impossibility Claim (NO-GO Result)** constitute the original intellectual property of the author.
 
 Generative AI was used **exclusively** for:
+
 - editorial refinement  
 - structural organization  
 - formatting  
