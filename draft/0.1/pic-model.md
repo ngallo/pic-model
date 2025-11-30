@@ -204,7 +204,7 @@ It **MUST NOT** rely on bearer semantics, static credentials, or transferable ar
 
 ---
 
-## **4. Author’s Note on Intellectual Property and Generative Assistance**
+## Author’s Note on Intellectual Property and Generative Assistance**
 
 The **PIC Model**, its conceptual framework, axiomatic foundations, and the  
 **Structural Impossibility Claim (NO-GO Result)** constitute the original intellectual property of the author.
@@ -217,3 +217,68 @@ Generative AI was used **exclusively** for:
 - notational consistency.
 
 It contributed **NO conceptual, scientific, or theoretical material** to the model itself.
+
+---
+
+## **Legal Notice & Attribution Requirements**
+
+The **Provenance Identity Continuity (PIC) Model** and the  
+**Executor-First Paradigm** are original conceptual contributions by the author.
+
+This work establishes:
+
+- identity as an emergent property of execution provenance,  
+- continuity as a feature of a multi-hop causal transaction,  
+- and a structural impossibility of artifact-based delegation to guarantee continuity.
+
+These elements are **architectural concepts**, not merely terminology.  
+Changing names, labels, or implementation details **does not alter the underlying idea**.
+
+You are **free to**:
+
+- extend the model,  
+- adapt it to specific domains,  
+- build implementations,  
+- compare or critique the paradigm,  
+- integrate it into other frameworks or standards.
+
+Research, experimentation, and derivative work are **explicitly encouraged**,  
+**as long as attribution is preserved.**
+
+When referencing or building upon the model, please cite:
+
+> **Provenance Identity Continuity (PIC) Model — Nicola Gallo**
+
+This ensures that the conceptual origin remains traceable,
+while preserving full freedom for evolution, refinement, and innovation within the community.
+
+---
+
+### **Why Attribution Matters**
+
+The PIC Model introduces a foundational reframing of distributed identity:
+
+- continuity is anchored to **causality**,  
+- not to **possession of artifacts**.
+
+This paradigm supports:
+
+- multi-hop distributed systems,  
+- agent–agent interactions,  
+- delegated execution,  
+- anonymous and capability-based workflows,  
+- large-scale autonomous workloads.
+
+Maintaining attribution does not restrict progress —  
+it preserves **conceptual integrity**,  
+so that future research and implementations evolve on a **shared, coherent basis**,  
+rather than fragmented or reinvented as isolated claims.
+
+---
+
+### **Summary**
+
+- The PIC Model is open for use, extension, and implementation.  
+- You may modify, improve, or generalize it.  
+- Attribution is required to acknowledge the origin of the paradigm.  
+- The goal is collaboration and progress, **not restriction**.
