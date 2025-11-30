@@ -25,9 +25,15 @@ they eliminate identity leakage, prevent impersonation through transferable cred
 
 Capabilities, scopes, or rights **MAY** traverse the system **without exposing identity**, provided they remain cryptographically tied to the same causal chain and to the executor who originated it.
 
-The model introduces the **Structural Impossibility Claim (NO-GO Result)**:  
-artifact-based delegation **CANNOT** guarantee identity continuity in distributed systems.  
-This claim is structural, not mathematical; formal treatment is deferred to future work.
+The model introduces the **Structural Impossibility Claim (NO-GO Result)**:
+
+> **Artifact-centric delegation models — including tokens, certificates, DID documents, or transferable proofs — CANNOT guarantee continuity of Proof of Control across multi-hop execution.**
+
+Artifacts may encode identity, authorization, or claims,
+but they do **not** prove that the executor performing hop *n*
+is the same causal agent responsible for hop *n−1*.
+
+This limitation is structural, not implementation-dependent, and cannot be resolved by stronger cryptography, token binding, session rotation, or enriched claims.
 
 ---
 
@@ -69,6 +75,33 @@ Provenance continuity is therefore a structural invariant:
 - **the transaction is mandatory**.
 
 **The system trusts the causal chain, not its artifacts.**
+
+---
+
+## **0.1 Proof of Possession vs Proof of Control**
+
+Proof of Possession (PoP) demonstrates control over a cryptographic material or artifact at a specific point in time.  
+PoP is a claim of **possession**.
+
+Proof of Control (PoC) demonstrates that the executor performing hop *n* is causally the same agent responsible for hop *n−1*.  
+PoC is a claim of **execution continuity**.
+
+The two are not equivalent.
+
+Artifact-centric models — including bearer tokens, certificates, DID-based credentials, or key-bound proofs — can establish PoP, but **cannot** establish PoC across multi-hop execution.
+
+PoP verifies **who holds an artifact**.  
+PoC verifies **who continues the transaction**.
+
+PoP-based delegation collapses at the moment an artifact changes hands, is relayed, replayed, or executed autonomously.  
+PoC **must** be tied to the causal origin of execution, not to the material artifact.
+
+> A model that verifies possession of artifacts validates holders.  
+> A model that verifies causal continuity validates executors.
+
+No artifact — regardless of cryptographic strength, token binding, DID rotation, enclave guarantees, or MPC — can ensure continuity of control once execution crosses hops or domains.
+
+This limitation is **structural**, not implementation-dependent.
 
 ---
 
@@ -288,6 +321,10 @@ A **trust plane** MAY provide challenges, nonces, or policy constraints, but **M
 
 A failed transaction **MUST** be treated as **new origin**,  
 not as continuation.
+
+Continuity in PIC refers exclusively to **Proof of Control**, not to ownership of artifacts or credential possession.
+
+Any continuity model based on artifacts is structurally non-verifiable across multi-hop execution.
 
 ---
 
