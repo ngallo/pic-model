@@ -647,13 +647,7 @@ they **MUST NOT** encode identity, authority, or continuity.
 
 ---
 
-## **9. Relationships and Considerations**
-
-**WORK IN PROGRESS**
-
----
-
-## **10. Intellectual Property and Generative Assistance**
+## **9. Intellectual Property and Generative Assistance**
 
 The **Provenance Identity Continuity (PIC) Model**, the **Executor-First Paradigm**,  
 and the **Structural Impossibility Claim** are original conceptual contributions of the author.
@@ -669,7 +663,7 @@ It contributed **no conceptual, scientific, or theoretical material**.
 
 ---
 
-## **11. Attribution of Conceptual Framework**
+## **10. Attribution of Conceptual Framework**
 
 The PIC Model establishes:
 
