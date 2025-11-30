@@ -20,10 +20,9 @@ Each hop **MUST** be treated as part of a **verifiable distributed transaction**
 This transaction binds the executor to its causal predecessor, preventing detachment, impersonation, replay, and artifact inheritance failures that plague token-based approaches.
 
 Because continuity derives from provenance, the model supports both **identity-centric flows** and **anonymous capability-based flows**.  
-Anonymous capability flows are **inherently safer** in multi-hop environments:  
-they eliminate identity leakage, prevent impersonation through transferable credentials, and reduce cross-domain replay vectors — while maintaining full causal verifiability.
+These flows eliminate identity leakage, prevent impersonation via transferable credentials, and reduce cross-domain replay vectors — while maintaining full causal verifiability.
 
-Capabilities, scopes, or rights **MAY** traverse the system **without exposing identity**, provided they remain cryptographically tied to the same causal chain and to the executor who originated it.
+Anonymous capability flows are **inherently privacy-preserving in multi-hop environments**, because they do not expose identity while preserving continuity through **Proof of Control**, not **Proof of Possession**.
 
 The model introduces the **Structural Impossibility Claim (NO-GO Result)**:
 
@@ -76,9 +75,28 @@ Provenance continuity is therefore a structural invariant:
 
 **The system trusts the causal chain, not its artifacts.**
 
+## **1. Introduction**
+
+Distributed execution systems are inherently **multi-hop**.  
+Delegation patterns — whether cryptographic or physical — **always** involve:
+
+- **Delegator** — origin of authority  
+- **Delegate** — executing agent
+
+In basic paper-based delegation, the artifact **ceases to be meaningful** once the delegate is removed.  
+Any party acquiring it can impersonate the delegate.
+
+Therefore:
+
+> **Delegator and delegate identity MUST be validated as independent inputs.**
+
+Any mechanism collapsing identity into a transferable artifact  
+(e.g., certificates, bearer tokens, DID credentials)  
+adds attack surface and weakens continuity guarantees.
+
 ---
 
-## **0.1 Proof of Possession vs Proof of Control**
+### **1.1 Proof of Possession vs Proof of Control**
 
 Proof of Possession (PoP) demonstrates control over a cryptographic material or artifact at a specific point in time.  
 PoP is a claim of **possession**.
@@ -105,28 +123,7 @@ This limitation is **structural**, not implementation-dependent.
 
 ---
 
-## **1. Introduction**
-
-Distributed execution systems are inherently **multi-hop**.  
-Delegation patterns — whether cryptographic or physical — **always** involve:
-
-- **Delegator** — origin of authority  
-- **Delegate** — executing agent
-
-In basic paper-based delegation, the artifact **ceases to be meaningful** once the delegate is removed.  
-Any party acquiring it can impersonate the delegate.
-
-Therefore:
-
-> **Delegator and delegate identity MUST be validated as independent inputs.**
-
-Any mechanism collapsing identity into a transferable artifact  
-(e.g., certificates, bearer tokens, DID credentials)  
-adds attack surface and weakens continuity guarantees.
-
----
-
-### **1.1. Limits of Artifact-Centric Identity**
+### **1.2. Limits of Artifact-Centric Identity**
 
 Artifact-centric identity appears intuitive but is structurally misaligned with distributed execution.
 
@@ -162,7 +159,7 @@ With **AI agents and autonomous workloads**, execution moves faster than artifac
 
 ---
 
-### **1.2. Practical Observation**
+### **1.3. Practical Observation**
 
 In systems such as **Apache Kafka**, static artifacts are fragile:
 
@@ -230,13 +227,31 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
 
 ---
 
-## **4. Architectural Invariants (Normative)**
+## **4. Terminology and Granularity**
+
+**WORK IN PROGRESS**
+
+---
+
+## **5. Model and Operational Semantics**
+
+**WORK IN PROGRESS**
+
+---
+
+## **6. Fundamental Axioms**
+
+**WORK IN PROGRESS**
+
+---
+
+## **7. Architectural Invariants (Normative)**
 
 **RFC 2119** terminology applies.
 
 ---
 
-### **4.1 PIC Attestation Primitive**
+### **7.1 PIC Attestation Primitive**
 
 A **PIC Transaction** is a sequence of **PIC Attestations**.
 
@@ -288,7 +303,7 @@ A **trust plane** MAY provide challenges, nonces, or policy constraints, but **M
 
 ---
 
-### **4.2 Causal Origin Invariant**
+### **7.2 Causal Origin Invariant**
 
 - A PIC Transaction **MUST** originate from an executor.  
 - The origin **MUST** be cryptographically bound to the first attestation.  
@@ -296,7 +311,7 @@ A **trust plane** MAY provide challenges, nonces, or policy constraints, but **M
 
 ---
 
-### **4.3 Monotonic Disclosure Invariant**
+### **7.3 Monotonic Disclosure Invariant**
 
 - Attributes **MAY decrease** across hops.  
 - Attributes **MUST NOT increase**.  
@@ -305,7 +320,7 @@ A **trust plane** MAY provide challenges, nonces, or policy constraints, but **M
 
 ---
 
-### **4.4 Delegation Invariant**
+### **7.4 Delegation Invariant**
 
 - Delegation **MUST** be a reduction of capability.  
 - Delegation **MUST NOT** produce new identities.  
@@ -313,7 +328,7 @@ A **trust plane** MAY provide challenges, nonces, or policy constraints, but **M
 
 ---
 
-### **4.5 Continuity Invariant**
+### **7.5 Continuity Invariant**
 
 - Each hop **MUST** validate provenance before execution.  
 - If validation fails → **transaction terminates**.  
@@ -328,7 +343,7 @@ Any continuity model based on artifacts is structurally non-verifiable across mu
 
 ---
 
-### **4.6 Non-Transferability Invariant**
+### **7.6 Non-Transferability Invariant**
 
 - Capabilities **MUST NOT** be reassigned between independent executors.  
 - A PIC transaction **MUST NOT** be rebound to a new executor not causally linked to the origin.
@@ -338,7 +353,19 @@ They **MUST NOT** represent identity, authority, or continuity.
 
 ---
 
-## **5. Intellectual Property and Generative Assistance**
+## **8. Structural Impossibility Claim (Security Argument)**
+
+**WORK IN PROGRESS**
+
+---
+
+## **9. Relationships and Considerations**
+
+**WORK IN PROGRESS**
+
+---
+
+## **10. Intellectual Property and Generative Assistance**
 
 The **Provenance Identity Continuity (PIC) Model**, the **Executor-First Paradigm**,  
 and the **Structural Impossibility Claim** are original conceptual contributions of the author.
@@ -354,7 +381,7 @@ It contributed **no conceptual, scientific, or theoretical material**.
 
 ---
 
-## **6. Attribution of Conceptual Framework**
+## **11. Attribution of Conceptual Framework**
 
 The PIC Model establishes:
 
@@ -364,7 +391,7 @@ The PIC Model establishes:
 - the impossibility of artifact possession to guarantee continuity.
 
 These are **architectural principles**, not terminology.  
-Renaming primitives or rephrasing components **does not change the model**.
+Renaming primitives or rephrasing components **does not cqhange the model**.
 
 Implementations, extensions, or derivative frameworks  
 that apply these principles **MUST preserve attribution**:
