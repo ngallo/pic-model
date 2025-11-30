@@ -51,7 +51,7 @@ It is not a token, signature, DID, or certificate.
 
 > **Causality is the distributed transaction itself.**
 
-A PIC transaction carries a verifiable fact:
+A PIC Distributed Transaction (τ) carries a verifiable fact:
 
 - **an identity**, or
 - **a capability**, or
@@ -81,7 +81,7 @@ Provenance continuity is therefore a structural invariant:
 - capability is optional,
 - **the transaction is mandatory**.
 
-**The system trusts the causal chain, not its artifacts.**
+**The system trusts the Distributed Transaction (τ) — its causal provenance — not its artifacts.**
 
 ## **1. Introduction**
 
@@ -259,12 +259,20 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
   The ordered, verifiable chain of causal steps leading to the current hop.
 
 - **Distributed Transaction (τ)**  
-  A causally verifiable execution chain spanning multiple hops.  
-  **τ = ⟨E₀, PCA₀, E₁, PCA₁, …, Eᵢ⟩**  
+  The primary abstraction of PIC: a causally verifiable execution chain spanning multiple hops.  
+  Formally: **τ = ⟨E₀, PCA₀, E₁, PCA₁, …, Eᵢ⟩**.
 
   The Distributed Transaction **is the continuity substrate**.  
   It does not depend on credentials, tokens, or artifacts —  
-  continuity emerges from the ordered causal attestations.
+  continuity emerges from the ordered PIC Causal Attestations (PCAᵢ).
+
+  In the PIC Model, the following terms are **views of the same object τ**:
+
+  - **Causal Chain** → emphasizes the ordered cause–effect relation between hops.  
+  - **Provenance Chain** → emphasizes the verifiable attestation history (PCA sequence).  
+  - **Run** → emphasizes a concrete execution instance of τ.
+
+  Unless explicitly distinguished, **“causal chain”, “provenance chain”, “run” all refer to the same Distributed Transaction (τ)** seen from different perspectives.
 
 - **Causal Transaction Authority (CTA)**  
   The component that validates continuity and emits the next attestation.  
@@ -375,9 +383,9 @@ These actions produce a **new origin**, not a continuation.
 
 ---
 
-### **Axiom F4 — Immutability of the Causal Chain**
+### **Axiom F4 — Immutability of the Distributed Transaction**
 
-Every hop MUST bind itself to its predecessor.
+Every hop in the Distributed Transaction (τ) MUST bind itself to its predecessor.
 
 A **PIC Causal Attestation (PCA)** MUST include:
 
@@ -386,9 +394,10 @@ A **PIC Causal Attestation (PCA)** MUST include:
 3. The hop context
 
 No hop MAY:
+
 - skip an ancestor
-- rewrite chain history
-- splice a branch back in
+- rewrite the history of τ
+- splice a branch back into τ once separated
 
 ---
 
@@ -452,16 +461,17 @@ These must remain distinct:
 
 Distributed execution MAY fan-out or branch.
 
-Each branch MUST form an **independent transaction**  
+Each branch MUST form an **independent Distributed Transaction (τ₁, τ₂, …)**  
 with its own PCA chain.
 
 A PCA MUST NOT be:
+
 - forwarded
 - cloned
 - replayed
 - multiplexed across branches
 
-> **Forking creates new lineage, not parallel copies.**
+> **Forking creates new lineage (new τ), not parallel copies of the same τ.**
 
 ---
 
@@ -470,12 +480,14 @@ A PCA MUST NOT be:
 Delegation MUST only **reduce capability**, never expand it.
 
 Permitted:
+
 - narrowing scope
 - removing identity
 - increasing anonymity
 - lowering permissions
 
 Forbidden:
+
 - minting new identities
 - expanding rights
 - importing external credentials
@@ -505,6 +517,7 @@ What matters is that **the prior hop attested them**.
 Only **Proof of Control (PoC)** establishes continuity.
 
 Ownership of keys, artifacts, or credentials:
+
 - MAY assist identity proofs
 - CANNOT substitute causality
 
@@ -528,9 +541,11 @@ Artifacts without PCA provenance are **inert**:
 ### **Axiom F14 — Termination Is a Safety Primitive**
 
 If continuity breaks:
+
 - the transaction MUST terminate.
 
 Forbidding:
+
 - replay,
 - refresh,
 - resurrection of credentials,
@@ -673,7 +688,7 @@ The PIC Model establishes:
 - the impossibility of artifact possession to guarantee continuity.
 
 These are **architectural principles**, not terminology.  
-Renaming primitives or rephrasing components **does not cqhange the model**.
+Renaming primitives or rephrasing components **does not change the model**.
 
 Implementations, extensions, or derivative frameworks  
 that apply these principles **MUST preserve attribution**:
