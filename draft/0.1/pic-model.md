@@ -331,30 +331,33 @@ Continuity MUST NEVER be inferred from identity reuse or key reuse alone.
 
 ### **5.1 Multi-Hop Execution**
 
-A Distributed Transaction (τ) MUST begin at origin hop 0 with executor **E₀**.
-Each subsequent hop *i* MUST be executed by executor **Eᵢ**, forming a strictly
+A Distributed Transaction (τ) MUST begin at origin hop 0 with executor **E₀**.  
+Each subsequent hop *i* MUST be executed by executor **Eᵢ**, forming a strictly  
 ordered causal lineage:
 
 ```text
 E₀ → E₁ → E₂ → … → Eᵢ
 ```
 
-Executors are **hop-local identities**. Even if the same underlying process,
-agent, or key performs multiple hops, each pair **(Eᵢ, i)** MUST be treated as a
-distinct execution instance in time. Identity reuse MUST NOT imply continuity
-reuse. Continuity MUST be established exclusively by a valid **Proof of
-Continuity (PoCᵢ)** and the resulting **PIC Causal Attestation (PCAᵢ)**.
+Executors are **hop-local execution principals**. A hop-local executor MAY be a  
+full identity, a pseudonymous identity, or a pure characteristic proof without  
+explicit identity disclosure. Even when the same underlying process, agent, or  
+key performs multiple hops, each pair **(Eᵢ, i)** MUST be treated as a distinct  
+execution instance in time. Identity reuse or key reuse MUST NOT imply  
+continuity reuse. Continuity MUST be established exclusively by a valid  
+**Proof of Continuity (PoCᵢ)** and the resulting **PIC Causal Attestation  
+(PCAᵢ)**.
 
-A Distributed Transaction MUST remain a single τ ONLY if each hop produces
-exactly one successor attested by **PCAᵢ₋₁**. No mechanism other than **PoCᵢ**
-MAY create or extend lineage. External continuity primitives such as
-consensus, locks, token refresh, shared sessions, or identity re-assertion
-MUST NOT substitute provenance, as they collapse continuity into artifact
+A Distributed Transaction MUST remain a single τ ONLY if each hop produces  
+exactly one successor attested by **PCAᵢ₋₁**. No mechanism other than **PoCᵢ**  
+MAY create or extend lineage. External continuity primitives such as  
+consensus, locks, token refresh, shared sessions, or identity re-assertion  
+MUST NOT substitute provenance, as they collapse continuity into artifact  
 semantics.
 
-When a hop emits multiple successors, each successor MUST produce its own
-**PCAᵢ**. This MUST be treated as a fork event. Forking creates multiple
-Distributed Transactions, each inheriting the degraded capability state and
+When a hop emits multiple successors, each successor MUST produce its own  
+**PCAᵢ**. This MUST be treated as a fork event. Forking creates multiple  
+Distributed Transactions, each inheriting the degraded capability state and  
 constraints already attested at fork time:
 
 ```text
@@ -362,16 +365,16 @@ E₀ → E₁a → E₂a → …
 E₀ → E₁b → E₂b → …
 ```
 
-A fork duplicates lineage, not authority. Forks MUST NOT reintroduce identity,
-expand capability, escalate privilege, import external credentials, or share
-attestations. A **PCA** MUST NOT be forwarded, cloned, replayed, multiplexed,
+A fork duplicates lineage, not authority. Forks MUST NOT reintroduce identity,  
+expand capability, escalate privilege, import external credentials, or share  
+attestations. A **PCA** MUST NOT be forwarded, cloned, replayed, multiplexed,  
 or reused across branches.
 
-Forking is logical divergence, not concurrency. Concurrency implies competing
-or simultaneous claims over the same τ and is forbidden; parallelism refers to
+Forking is logical divergence, not concurrency. Concurrency implies competing  
+or simultaneous claims over the same τ and is forbidden; parallelism refers to  
 independent τ instances and is permitted.
 
-In PIC, multi-hop execution IS the security primitive. Continuity MUST be
+In PIC, multi-hop execution IS the security primitive. Continuity MUST be  
 expressed by provenance, not artifact transfer, inheritance, or coordination.
 
 ---
