@@ -415,7 +415,7 @@ Continuity dies causally; the transaction does not degrade into exceptions.
 At hop *i*, the executor **Eᵢ** operates in the context of an already formed Distributed Transaction **τᵢ** and receives the previous attestation **PCAᵢ₋₁**.  
 Conceptually, **PCAᵢ₋₁** MUST encode at minimum:
 
-```
+```text
 FROM           → executor of hop i−1 (Eᵢ₋₁)
 TO             → designated causal executor for hop i (identity or characteristic profile)
 CAUSAL SUBJECT → invariant characteristic substrate of the transaction (identity, capability, or proof type)
@@ -490,7 +490,7 @@ If verification succeeds, the CTA MUST generate a **PIC Causal Attestation (PCA�
 
 By definition of the causal transition function:
 
-```
+```text
 τᵢ + PCAᵢ → τᵢ₊₁
 ```
 
