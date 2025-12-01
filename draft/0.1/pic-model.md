@@ -331,63 +331,79 @@ Continuity MUST NEVER be inferred from identity reuse or key reuse alone.
 
 ### **5.1 Multi-Hop Execution**
 
-A Distributed Transaction (τ) begins at origin hop *0* with executor **E₀**.
-Each subsequent hop *i* is executed by a distinct executor **Eᵢ**, forming a
-single continuous causal lineage:
+A Distributed Transaction (τ) MUST begin at origin hop 0 with executor **E₀**.
+Each subsequent hop *i* MUST be executed by executor **Eᵢ**, forming a strictly
+ordered causal lineage:
 
 ```text
 E₀ → E₁ → E₂ → … → Eᵢ
 ```
 
-The transaction remains **one τ** as long as each hop produces **exactly one
-successor attested by the previous PCA**.  
-Continuity is conveyed by the **Proof of Continuity (PoCᵢ)** and sealed in
-**PCAᵢ**.  
-No other mechanism MAY create or extend lineage.
+Executors are **hop-local identities**. Even if the same underlying process,
+agent, or key performs multiple hops, each pair *(Eᵢ, i)* MUST be treated as a
+distinct execution instance in time. Identity reuse MUST NOT imply continuity
+reuse. Continuity MUST be established exclusively by a valid **Proof of
+Continuity (PoCᵢ)** and the resulting **PIC Causal Attestation (PCAᵢ)**.
 
-A fork occurs when a hop emits **multiple successors**, each with its own
-PCAᵢ.  
-Forking does **not** create parallel executors of the same τ.  
-It creates **multiple transactions**, each preserving the attested constraints
-of the origin and inheriting the capability surface accumulated up to that
-point:
+A Distributed Transaction MUST remain a single τ ONLY if each hop produces
+exactly one successor attested by **PCAᵢ₋₁**. No mechanism other than **PoCᵢ**
+MAY create or extend lineage. External continuity primitives such as
+consensus, locks, token refresh, shared sessions, or identity re-assertion
+MUST NOT substitute provenance, as they collapse continuity into artifact
+semantics.
+
+When a hop emits multiple successors, each successor MUST produce its own
+**PCAᵢ**. This MUST be treated as a fork event. Forking creates multiple
+Distributed Transactions, each inheriting the degraded capability state and
+constraints already attested at fork time:
 
 ```text
 E₀ → E₁a → E₂a → …
 E₀ → E₁b → E₂b → …
 ```
 
-> A fork duplicates continuity, not authority. Forks inherit only the capability state already degraded at the origin. No branch MAY expand, escalate, or reintroduce capabilities beyond those attested at fork time.
-> Each branch becomes a new τ with independent provenance, but none may
-> escalate capability, import external credentials, or override constraints
-> imposed by the origin.
+A fork duplicates lineage, not authority. Forks MUST NOT reintroduce identity,
+expand capability, escalate privilege, import external credentials, or share
+attestations. A **PCA** MUST NOT be forwarded, cloned, replayed, multiplexed,
+or reused across branches.
 
-A distributed system therefore **implements distributed transactions**.
-Attempts to maintain continuity through external coordination
-(locks, consensus, token refresh, shared state, session inheritance)
-introduce artificial coupling between hops and expand attack surface.
+Forking is logical divergence, not concurrency. Concurrency implies competing
+or simultaneous claims over the same τ and is forbidden. Parallelism refers to
+independent τ instances and is permitted.
 
-> **In PIC, multi-hop execution is a structural primitive of the model.  
-> Continuity MUST be expressed by provenance, not by coordination
-> or artifact transfer.**
+In PIC, multi-hop execution IS the security primitive. Continuity MUST be
+expressed by provenance, not artifact transfer, inheritance, or coordination.
 
 ---
 
-### 5.2 Causal Transition Function
+### **5.2 Causal Transition Function**
 
-A distributed execution advances according to:
+A distributed execution MUST advance hop-by-hop. The transition from hop *i*
+to hop *i+1* MUST be defined exclusively by the attested continuity of the
+Distributed Transaction (τ).
 
+```text
 τᵢ + PCAᵢ → τᵢ₊₁
+```
 
-where τᵢ contains all previous attestations
-and PCAᵢ binds:
+τᵢ MUST include the complete ordered provenance of all previous hops.
+**PCAᵢ MUST bind, atomically and verifiably:**
 
-- executor Eᵢ,
-- hop context C(Eᵢ),
-- previous PCAᵢ₋₁.
+1. the current executor **Eᵢ**,  
+2. the previous attestation **PCAᵢ₋₁**,  
+3. the hop context **C(Eᵢ)** (identity or capability scope).
 
-The function is defined only if PoCᵢ holds.
-If PoCᵢ fails, τᵢ has no successor.
+**The transition τᵢ → τᵢ₊₁ MUST be valid only if PoCᵢ holds.**  
+PoCᵢ MUST attest that **Eᵢ is the exact successor designated by hop i−1**.
+No external signal, token, certificate, credential, or enclave MAY substitute PoCᵢ.
+
+If PoCᵢ fails, τᵢ MUST have no successor.  
+No replay, refresh, reminting, token regeneration, session inheritance,
+or late authorization MAY reattach continuity to τᵢ.
+
+A failed transition MUST NOT produce τᵢ₊₁, MUST NOT emit a PCAᵢ₊₁, and MUST NOT
+propagate capability or identity beyond hop i.  
+Continuity dies causally; the transaction does not degrade into exceptions.
 
 ---
 
