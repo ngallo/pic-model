@@ -410,6 +410,26 @@ Continuity dies causally; the transaction does not degrade into exceptions.
 
 ---
 
+### **5.3 Causal Machienery**
+
+Una volta che un hop i riceve una PCA nel contesto τ,  avrò una PCA che è qualcosa del tipo
+
+FROM
+TO
+CAUAL SUBJECT
+CAPABILTY
+ALTRO
+
+han in mano una PoP, una PoI, ora deve chiare a CTA una cauassal challenge PCC.
+
+Quindi genearete una nuova Proof of Continutity che include conenuto ed hash della precdente PCA, PoP, Poi,  PCC e firma tutto con PoP, il cotnesto del prossimo hop.
+
+
+A questo punto CTA verifica la PoC, se OK genera una nuova PCA che include Eᵢ, PCAᵢ₋₁ or una sua firma e nuovo PCA compliante con prossimo hop.
+
+
+---
+
 ## **6. Fundamental Axioms (Required Set of Invariants)**
 
 These axioms define the **minimum structural guarantees** required to maintain  
