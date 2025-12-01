@@ -318,7 +318,47 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
 
 ## **5. Model and Operational Semantics**
 
-**WORK IN PROGRESS**
+### **5.1 Multi-Hop Execution**
+
+A Distributed Transaction (τ) begins at origin hop *0* with executor **E₀**.
+Each subsequent hop *i* is executed by a distinct executor **Eᵢ**, forming a
+single continuous causal lineage:
+
+```
+E₀ → E₁ → E₂ → … → Eᵢ
+```
+
+The transaction remains **one τ** as long as each hop produces **exactly one
+successor attested by the previous PCA**.  
+Continuity is conveyed by the **Proof of Continuity (PoCᵢ)** and sealed in
+**PCAᵢ**.  
+No other mechanism MAY create or extend lineage.
+
+A fork occurs when a hop emits **multiple successors**, each with its own
+PCAᵢ.  
+Forking does **not** create parallel executors of the same τ.  
+It creates **multiple transactions**, each preserving the attested constraints
+of the origin and inheriting the capability surface accumulated up to that
+point:
+
+```
+E₀ → E₁a → E₂a → …
+E₀ → E₁b → E₂b → …
+```
+
+> **A fork duplicates continuity, not authority.**  
+> Each branch becomes a new τ with independent provenance, but none may
+> escalate capability, import external credentials, or override constraints
+> imposed by the origin.
+
+A distributed system therefore **implements distributed transactions**.
+Attempts to maintain continuity through external coordination
+(locks, consensus, token refresh, shared state, session inheritance)
+introduce artificial coupling between hops and expand attack surface.
+
+> **In PIC, multi-hop execution is a structural primitive of the model.  
+> Continuity MUST be expressed by provenance, not by coordination
+> or artifact transfer.**
 
 ---
 
@@ -472,7 +512,12 @@ A PCA MUST NOT be:
 - replayed
 - multiplexed across branches
 
-> **Forking creates new lineage (new τ), not parallel copies of the same τ.**
+> **Forking creates new lineage (new τ), not parallel executors of the same τ.**  
+> **Forking is logical, not concurrent: it represents divergent causal succession, not simultaneous execution of the same successor.**
+
+**Parallelism refers to independent transactions.  
+Concurrency refers to simultaneous claims over the same transaction.  
+PIC allows the former and forbids the latter.**
 
 ---
 
