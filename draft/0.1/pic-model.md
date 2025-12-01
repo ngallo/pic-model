@@ -468,6 +468,8 @@ A model that treats possession as continuity collapses once an artifact changes 
 is replayed, proxied, or reissued.  
 **Continuity MUST emerge from causality, not from transferable artifacts.**
 
+A rigorous mathematical proof of this lemma is out of scope for this document and is treated separately.
+
 ---
 
 ### **Axiom F3 — Reminting ≠ Delegation**
