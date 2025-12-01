@@ -368,7 +368,7 @@ attestations. A **PCA** MUST NOT be forwarded, cloned, replayed, multiplexed,
 or reused across branches.
 
 Forking is logical divergence, not concurrency. Concurrency implies competing
-or simultaneous claims over the same τ and is forbidden. Parallelism refers to
+or simultaneous claims over the same τ and is forbidden; parallelism refers to
 independent τ instances and is permitted.
 
 In PIC, multi-hop execution IS the security primitive. Continuity MUST be
@@ -676,8 +676,8 @@ This condition may arise from:
 - causal constraints (depth, quorum, attestation scope),
 - model constraints (capability reduction, disclosure monotonicity),
 - CTA policy (validated against τ’s own metadata),
-- external signals MAY **influence execution ONLY when attested as constraints of τ**.
-- external signals MUST NOT **introduce new authority, identity, or capability**.
+- external signals MAY influence execution ONLY when attested as constraints of τ,
+  and MUST NOT introduce new authority, identity, or capability.
 - time-based or contextual constraints explicitly attested in any PCA (expiry, deadline, epoch) that permanently invalidate all future successors.
 
 **One executor’s inability to generate PoC is irrelevant.**  
@@ -832,7 +832,7 @@ All remain **cryptographically valid**, but causally ambiguous.
 
 ---
 
-### 8.2.1 Informal Reduction
+### 8.2.1 Informal Reduction (Non-Normative)
 
 If an artifact A were sufficient to guarantee PoC across hops,
 then A must encode:
