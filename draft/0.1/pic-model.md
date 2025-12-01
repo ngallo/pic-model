@@ -340,7 +340,7 @@ E₀ → E₁ → E₂ → … → Eᵢ
 ```
 
 Executors are **hop-local identities**. Even if the same underlying process,
-agent, or key performs multiple hops, each pair *(Eᵢ, i)* MUST be treated as a
+agent, or key performs multiple hops, each pair **(Eᵢ, i)** MUST be treated as a
 distinct execution instance in time. Identity reuse MUST NOT imply continuity
 reuse. Continuity MUST be established exclusively by a valid **Proof of
 Continuity (PoCᵢ)** and the resulting **PIC Causal Attestation (PCAᵢ)**.
