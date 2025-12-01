@@ -131,6 +131,14 @@ No artifact — regardless of cryptographic strength, token binding, DID rotatio
 
 This limitation is **structural**, not implementation-dependent.
 
+Formally:
+
+- **Proof of Possession (PoP)** belongs to the artifact domain (who holds X).
+- **Proof of Continuity (PoC)** belongs to the execution domain (who continues τ).
+
+> **Possession ≠ Provenance.  
+> PoP can never substitute PoC in multi-hop execution.**
+
 ---
 
 ### **1.2. Limits of Artifact-Centric Identity**
@@ -314,6 +322,9 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
   Verifies that *Eᵢ* is the executor explicitly attested by hop *i−1* as the next hop.  
   PoC validates **continuity**, not ownership.
 
+Identity repetition across hops is permitted, but each hop MUST still produce a valid PoCᵢ and a new PCAᵢ.  
+Continuity MUST NEVER be inferred from identity reuse or key reuse alone.
+
 ---
 
 ## **5. Model and Operational Semantics**
@@ -324,7 +335,7 @@ A Distributed Transaction (τ) begins at origin hop *0* with executor **E₀**.
 Each subsequent hop *i* is executed by a distinct executor **Eᵢ**, forming a
 single continuous causal lineage:
 
-```
+```text
 E₀ → E₁ → E₂ → … → Eᵢ
 ```
 
@@ -341,12 +352,12 @@ It creates **multiple transactions**, each preserving the attested constraints
 of the origin and inheriting the capability surface accumulated up to that
 point:
 
-```
+```text
 E₀ → E₁a → E₂a → …
 E₀ → E₁b → E₂b → …
 ```
 
-> **A fork duplicates continuity, not authority.**  
+> A fork duplicates continuity, not authority. Forks inherit only the capability state already degraded at the origin. No branch MAY expand, escalate, or reintroduce capabilities beyond those attested at fork time.
 > Each branch becomes a new τ with independent provenance, but none may
 > escalate capability, import external credentials, or override constraints
 > imposed by the origin.
@@ -359,6 +370,24 @@ introduce artificial coupling between hops and expand attack surface.
 > **In PIC, multi-hop execution is a structural primitive of the model.  
 > Continuity MUST be expressed by provenance, not by coordination
 > or artifact transfer.**
+
+---
+
+### 5.2 Causal Transition Function
+
+A distributed execution advances according to:
+
+τᵢ + PCAᵢ → τᵢ₊₁
+
+where τᵢ contains all previous attestations
+and PCAᵢ binds:
+
+- executor Eᵢ,
+- hop context C(Eᵢ),
+- previous PCAᵢ₋₁.
+
+The function is defined only if PoCᵢ holds.
+If PoCᵢ fails, τᵢ has no successor.
 
 ---
 
@@ -397,15 +426,31 @@ Identity may take multiple forms:
 
 ### **Axiom F2 — Possession ≠ Execution**
 
-Owning an artifact (token, signature, credential)  
+Owning an artifact (token, signature, credential)
 **does not prove who is executing the next hop**.
 
 Artifacts demonstrate **ownership**, not **continuity**.
 
-- **PoP = Proof of Possession** → shows control of material
+- **PoP = Proof of Possession** → shows control of material  
 - **PoC = Proof of Continuity** → shows continuity of execution
 
 **Only PoC establishes continuity.**
+
+#### **Formal Lemma — Possession is not Provenance**
+
+Let:
+- **PoP** denote any artifact-bound claim of ownership,
+- **PoC** denote a causality-bound claim of continuity.
+
+Then:
+
+**Possession ≠ Provenance**  
+**PoP ∉ {Continuity Invariants}**  
+**PoC ∈ {Continuity Invariants}**
+
+A model that treats possession as continuity collapses once an artifact changes holder,  
+is replayed, proxied, or reissued.  
+**Continuity MUST emerge from causality, not from transferable artifacts.**
 
 ---
 
@@ -515,9 +560,12 @@ A PCA MUST NOT be:
 > **Forking creates new lineage (new τ), not parallel executors of the same τ.**  
 > **Forking is logical, not concurrent: it represents divergent causal succession, not simultaneous execution of the same successor.**
 
-**Parallelism refers to independent transactions.  
-Concurrency refers to simultaneous claims over the same transaction.  
-PIC allows the former and forbids the latter.**
+**Parallelism ≠ Concurrency**
+
+> Parallelism refers to independent Distributed Transactions (τ₁, τ₂, …),
+> each with its own PCA lineage.
+> Concurrency refers to simultaneous claims over the same τ.
+> PIC allows parallelism and forbids concurrency.
 
 ---
 
@@ -612,7 +660,8 @@ This condition may arise from:
 - causal constraints (depth, quorum, attestation scope),
 - model constraints (capability reduction, disclosure monotonicity),
 - CTA policy (validated against τ’s own metadata),
-- external signals **only when attested as part of τ’s policy context**,
+- external signals MAY **influence execution ONLY when attested as constraints of τ**.
+- external signals MUST NOT **introduce new authority, identity, or capability**.
 - time-based or contextual constraints explicitly attested in any PCA (expiry, deadline, epoch) that permanently invalidate all future successors.
 
 **One executor’s inability to generate PoC is irrelevant.**  
@@ -639,7 +688,7 @@ They do not prescribe algorithms, cryptographic curves, or protocol formats — 
 A **Distributed Transaction (τ)** evolves hop-by-hop through a sequence of **PIC Causal Attestations (PCAᵢ)**.
 
 - The first attestation is the **Origin PCA**.
-- Each subsequent hop *i* produces a **new PCAᵢ** derived from **PCAᵢ₋₁**.
+- Each subsequent hop *i* is executed by an executor **Eᵢ**. Eᵢ MAY be identical to a previous executor, but continuity MUST be re-attested at each hop.
 - The ordered chain of attestations **IS** the transaction provenance.
 
 Each **PCAᵢ** **MUST** bind, atomically and verifiably:
@@ -767,6 +816,25 @@ All remain **cryptographically valid**, but causally ambiguous.
 
 ---
 
+### 8.2.1 Informal Reduction
+
+If an artifact A were sufficient to guarantee PoC across hops,
+then A must encode:
+
+1. executor identity of hop i,
+2. causal binding to hop i−1,
+3. non-transferability.
+
+1 and 2 imply A must embed lineage.
+3 implies A cannot be transferable.
+
+Therefore A is no longer an artifact but a PCA instance,
+which is bound by continuity, not possession.
+
+Hence, any transferable artifact cannot guarantee PoC by construction.
+
+---
+
 ### 8.3 Replay does not fix continuity
 
 Nonces, timestamps, TLS binding, enclaves, DID rotation
@@ -883,3 +951,4 @@ while enabling open research, critique, and evolution.
 ---
 
 > **Provenance Identity Continuity (PIC) Model — Nicola Gallo**
+> 
