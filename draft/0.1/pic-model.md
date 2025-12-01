@@ -416,77 +416,86 @@ At hop *i*, the executor **Eᵢ** operates in the context of an already formed D
 Conceptually, **PCAᵢ₋₁** MUST encode at minimum:
 
 ```
-FROM           → attested predecessor executor (Eᵢ₋₁)
-TO             → designated causal subject for hop i
-CAUSAL SUBJECT → the identity or characteristic profile that the next executor MUST satisfy
-CAPABILITY     → degraded capability and constraints inherited by Eᵢ
+FROM           → executor of hop i−1 (Eᵢ₋₁)
+TO             → designated causal executor for hop i (identity or characteristic profile)
+CAUSAL SUBJECT → invariant characteristic substrate of the transaction (identity, capability, or proof type)
+CAPABILITY     → degraded capability constraints inherited by Eᵢ
 OTHER          → metadata explicitly attested (policy, expiry, depth, audit tags, etc.)
 ```
 
-Before producing any successor, **Eᵢ MUST validate PCAᵢ₋₁** and verify that it is the intended causal subject.  
+The **TO** field identifies **the exact executor that MUST perform hop i**,  
+not a “next subject”.  
+The subject of execution is a **causal invariant**, not a runtime claim.  
+The model does not assume identity is always explicit —  
+the executor MAY be a zero-knowledge identity,  
+a pseudonymous agent,  
+or a characteristic-based profile —  
+but it MUST be the one attested by the predecessor.
+
+Before producing any successor, **Eᵢ MUST validate PCAᵢ₋₁** and verify that it is the intended causal executor.  
 This MAY be satisfied by:
 
-- **Proof of Identity (PoIᵢ)** — explicit identity claim, pseudonymous identity, or ZK identity proof  
-- **Proof of Possession (PoPᵢ)** — cryptographic control of the material bound to PoIᵢ  
-- **Characteristic proof** — operational attributes satisfying the attested CAUSAL SUBJECT without revealing identity
+- **Proof of Identity (PoIᵢ)** — explicit identity, pseudonym, or ZK identity proof  
+- **Proof of Possession (PoPᵢ)** — cryptographic control over the material bound to PoIᵢ  
+- **Characteristic proof** — attestation of operational attributes satisfying the CAUSAL SUBJECT without exposing identity
 
 If this binding fails, execution MUST NOT proceed and **τᵢ MUST have no successor**.
 
 Once local validation succeeds, **Eᵢ MUST generate a PIC Causal Challenge (PCCᵢ)**.  
-PCCᵢ MUST provide **freshness and replay resistance** (nonce, epoch, enclave attestation, channel-binding, or other live challenge).
+PCCᵢ MUST provide **freshness and replay resistance** (nonce, epoch, enclave seal, channel-binding, etc.).
 
 Eᵢ MUST then construct a **Proof of Continuity (PoCᵢ)**.  
 PoCᵢ MUST be an authenticated statement that binds:
 
 1. a cryptographic commitment to **PCAᵢ₋₁** (e.g., hash(PCAᵢ₋₁)),  
-2. the executing subject **Eᵢ** (via PoIᵢ or characteristic proof),  
+2. the executing causal entity **Eᵢ** (via PoIᵢ or characteristic proof),  
 3. the freshness primitive **PCCᵢ**,  
 4. the current hop context **C(Eᵢ)** (identity or capability scope),  
-5. the announced constraints for the next hop (capability degradation only).
+5. the announced constraints of the next hop (capability degradation only).
 
-PoCᵢ MUST be authenticated under the control domain of **Eᵢ** (typically via PoPᵢ), so that any verifier can establish that:
+PoCᵢ MUST be authenticated under the execution control of **Eᵢ** (typically via PoPᵢ), so that any verifier can establish that:
 
 - the entity that controls the execution key of **Eᵢ** created PoCᵢ,  
 - PoCᵢ is causally bound to **PCAᵢ₋₁**,  
-- PoCᵢ is consistent with the attested CAUSAL SUBJECT and capability surface.
+- PoCᵢ satisfies the attested CAUSAL SUBJECT and inherited capability surface.
 
-Eᵢ MUST submit **PoCᵢ** (plus PCAᵢ₋₁ and auxiliary material) to the **Causal Transaction Authority (CTA)**.
+**Eᵢ MUST submit PoCᵢ to the Causal Transaction Authority (CTA)** together with **PCAᵢ₋₁** and auxiliary material.
 
 ---
 
-#### **CTA Responsibilities**
+#### **CTA Verification**
 
 The **CTA** MUST verify that:
 
-- the commitment to **PCAᵢ₋₁** inside PoCᵢ is correct,  
-- the identity/characteristic proof matches the attested CAUSAL SUBJECT in PCAᵢ₋₁,  
+- the cryptographic commitment to **PCAᵢ₋₁** is valid,  
+- the identity or characteristic proof corresponds to the **exact executor attested in TO**,  
 - the freshness primitive **PCCᵢ** is valid and non-replayed,  
-- the hop context **C(Eᵢ)** and next-hop constraints are consistent with inherited capability,  
-- no new authority, identity, or capability is being imported.
+- the hop context **C(Eᵢ)** and declared next-hop constraints do not expand capabilities,  
+- no new identity, privilege, or external credentials are being introduced.
 
 If any check fails, the CTA MUST NOT generate **PCAᵢ**.  
-In this case **τᵢ has no valid successor** and the Distributed Transaction MUST be **causally terminated** at hop *i*.  
-No retry, refresh, regeneration, or rebinding MAY reattach continuity.
+In such case, **τᵢ MUST terminate causally**.  
+No refresh, regeneration, or rebinding MAY reattach continuity.
 
 ---
 
 #### **Successful Continuity**
 
-If validation succeeds, the CTA MUST generate a **PIC Causal Attestation (PCAᵢ)** that:
+If verification succeeds, the CTA MUST generate a **PIC Causal Attestation (PCAᵢ)** that:
 
 1. binds **Eᵢ** as the executor of hop *i*,  
 2. links immutably to **PCAᵢ₋₁**,  
-3. records the effective hop context **C(Eᵢ)** and degraded capability for potential successor,  
+3. records the hop context **C(Eᵢ)** and degraded capability for the potential successor,  
 4. is authenticated under the CTA’s attestation authority.
 
-The issuance of **PCAᵢ** conclusively completes hop *i*.  
 By definition of the causal transition function:
 
 ```
 τᵢ + PCAᵢ → τᵢ₊₁
 ```
 
-The Distributed Transaction becomes **τᵢ₊₁**, and only an executor matching the attested constraints of **PCAᵢ** MAY attempt to generate **PoCᵢ₊₁**.
+The Distributed Transaction becomes **τᵢ₊₁**,  
+and **only** the executor whose characteristics match the attested **TO** of **PCAᵢ** MAY attempt **PoCᵢ₊₁**.
 
 ---
 
