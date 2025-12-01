@@ -22,11 +22,11 @@ This transaction binds the executor to its causal predecessor, preventing detach
 Because continuity derives from provenance, the model supports both **identity-centric flows** and **anonymous capability-based flows**.  
 These flows eliminate identity leakage, prevent impersonation via transferable credentials, and reduce cross-domain replay vectors — while maintaining full causal verifiability.
 
-Anonymous capability flows are **inherently privacy-preserving in multi-hop environments**, because they do not expose identity while preserving continuity through **Proof of Control**, not **Proof of Possession**.
+Anonymous capability flows are **inherently privacy-preserving in multi-hop environments**, because they do not expose identity while preserving continuity through **Proof of Continuity**, not **Proof of Possession**.
 
 The model introduces the **Structural Impossibility Claim (NO-GO Result)**:
 
-> **Artifact-centric delegation models — including tokens, certificates, DID documents, or transferable proofs — CANNOT guarantee continuity of Proof of Control across multi-hop execution.**
+> **Artifact-centric delegation models — including tokens, certificates, DID documents, or transferable proofs — CANNOT guarantee continuity of Proof of Continuity across multi-hop execution.**
 
 Artifacts may encode identity, authorization, or claims,
 but they do **not** prove that the executor performing hop *n*
@@ -96,7 +96,8 @@ Any party acquiring it can impersonate the delegate.
 
 Therefore:
 
-> **Delegator and delegate identity MUST be validated as independent inputs.**
+> **Delegation MUST be expressed as a single causal hop.  
+> Delegator and delegate MUST be attested atomically as part of the same continuity step.**
 
 Any mechanism collapsing identity into a transferable artifact  
 (e.g., certificates, bearer tokens, DID credentials)  
@@ -104,12 +105,12 @@ adds attack surface and weakens continuity guarantees.
 
 ---
 
-### **1.1 Proof of Possession vs Proof of Control**
+### **1.1 Proof of Possession vs Proof of Continuity**
 
 Proof of Possession (PoP) demonstrates control over a cryptographic material or artifact at a specific point in time.  
 PoP is a claim of **possession**.
 
-Proof of Control (PoC) demonstrates that the executor performing hop *n*
+Proof of Continuity (PoC) demonstrates that the executor performing hop *n*
 is verifiably the same causally-bound executor that hop *n−1* attested as its next hop.  
 PoC is a claim of **execution continuity**, not artifact possession.
 
@@ -276,7 +277,7 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
 
 - **Causal Transaction Authority (CTA)**  
   The component that validates continuity and emits the next attestation.  
-  The CTA verifies **Proof of Control**, not identity ownership.
+  The CTA verifies **Proof of Continuity**, not identity ownership.
 
   The CTA:
   1. receives the **PoCᵢ** from executor *Eᵢ*,  
@@ -309,7 +310,7 @@ and **MUST NOT** rely on bearer semantics or transferable artifacts.
   Verifies that *Eᵢ* controls the cryptographic material associated with its identity.  
   PoP validates **ownership**, not continuity.
 
-- **Proof of Control (PoCᵢ)**  
+- **Proof of Continuity (PoCᵢ)**  
   Verifies that *Eᵢ* is the executor explicitly attested by hop *i−1* as the next hop.  
   PoC validates **continuity**, not ownership.
 
@@ -362,7 +363,7 @@ Owning an artifact (token, signature, credential)
 Artifacts demonstrate **ownership**, not **continuity**.
 
 - **PoP = Proof of Possession** → shows control of material
-- **PoC = Proof of Control** → shows continuity of execution
+- **PoC = Proof of Continuity** → shows continuity of execution
 
 **Only PoC establishes continuity.**
 
@@ -514,7 +515,7 @@ What matters is that **the prior hop attested them**.
 
 ### **Axiom F12 — Continuity Over Ownership**
 
-Only **Proof of Control (PoC)** establishes continuity.
+Only **Proof of Continuity (PoC)** establishes continuity.
 
 Ownership of keys, artifacts, or credentials:
 
@@ -566,7 +567,8 @@ This condition may arise from:
 - causal constraints (depth, quorum, attestation scope),
 - model constraints (capability reduction, disclosure monotonicity),
 - CTA policy (validated against τ’s own metadata),
-- external signals **only when attested as part of τ’s policy context**.
+- external signals **only when attested as part of τ’s policy context**,
+- time-based or contextual constraints explicitly attested in any PCA (expiry, deadline, epoch) that permanently invalidate all future successors.
 
 **One executor’s inability to generate PoC is irrelevant.**  
 τ ends structurally only when **no admissible executor can ever generate a valid next PCA**.
@@ -606,7 +608,7 @@ A PIC Causal Attestation **MUST** embed:
 - A **link to PCAᵢ₋₁** (hash, commitment, accumulator, Merkle, etc.),  
 - A **Proof of Identity (PoIᵢ)** *or* **Executor Characteristic proof**,  
 - A **Proof of Possession (PoPᵢ)** *only if identity is disclosed*,  
-- A **Proof of Control (PoCᵢ)** proving Eᵢ is the designated successor of hop *i−1*,  
+- A **Proof of Continuity (PoCᵢ)** proving Eᵢ is the designated successor of hop *i−1*,  
 - A **freshness primitive (PCCᵢ)** preventing replay at hop *i*.
 
 > **The PCA is the continuity substrate.  
@@ -659,7 +661,7 @@ Once a transaction τ has begun, its **available disclosure surface must shrink*
 - If causality breaks → **the transaction MUST terminate**.
 - No refresh, replay, or rehydration **MAY** re-attach continuity.
 
-**Proof of Control ≠ Proof of Possession**  
+**Proof of Continuity ≠ Proof of Possession**  
 Continuity refers exclusively to **the executor causally selected by the prior hop**,  
 not to key ownership or credential possession.
 
@@ -681,7 +683,7 @@ they **MUST NOT** encode identity, authority, or continuity.
 
 The PIC Model states a fundamental limit:
 
-> **Artifact-based delegation CANNOT provide Proof of Control (PoC) across multi-hop execution.**
+> **Artifact-based delegation CANNOT provide Proof of Continuity (PoC) across multi-hop execution.**
 
 This is structural, not cryptographic.
 
@@ -692,7 +694,7 @@ This is structural, not cryptographic.
 ```
 PoP = Proof of Possession (control of an artifact or key)
 PoI = Proof of Identity (who the executor claims to be)
-PoC = Proof of Control (continuity from previous attested executor)
+PoC = Proof of Continuity (continuity from previous attested executor)
 τ   = Distributed Transaction (causal execution chain)
 PCA = PIC Causal Attestation
 ```
