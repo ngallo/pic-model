@@ -410,23 +410,83 @@ Continuity dies causally; the transaction does not degrade into exceptions.
 
 ---
 
-### **5.3 Causal Machienery**
+### **5.3 Causal Machinery**
 
-Una volta che un hop i riceve una PCA nel contesto τ,  avrò una PCA che è qualcosa del tipo
+At hop *i*, the executor **Eᵢ** operates in the context of an already formed Distributed Transaction **τᵢ** and receives the previous attestation **PCAᵢ₋₁**.  
+Conceptually, **PCAᵢ₋₁** MUST encode at minimum:
 
-FROM
-TO
-CAUAL SUBJECT
-CAPABILTY
-ALTRO
+```
+FROM           → attested predecessor executor (Eᵢ₋₁)
+TO             → designated causal subject for hop i
+CAUSAL SUBJECT → the identity or characteristic profile that the next executor MUST satisfy
+CAPABILITY     → degraded capability and constraints inherited by Eᵢ
+OTHER          → metadata explicitly attested (policy, expiry, depth, audit tags, etc.)
+```
 
-han in mano una PoP, una PoI, ora deve chiare a CTA una cauassal challenge PCC.
+Before producing any successor, **Eᵢ MUST validate PCAᵢ₋₁** and verify that it is the intended causal subject.  
+This MAY be satisfied by:
 
-Quindi genearete una nuova Proof of Continutity che include conenuto ed hash della precdente PCA, PoP, Poi,  PCC e firma tutto con PoP, il cotnesto del prossimo hop.
+- **Proof of Identity (PoIᵢ)** — explicit identity claim, pseudonymous identity, or ZK identity proof  
+- **Proof of Possession (PoPᵢ)** — cryptographic control of the material bound to PoIᵢ  
+- **Characteristic proof** — operational attributes satisfying the attested CAUSAL SUBJECT without revealing identity
 
+If this binding fails, execution MUST NOT proceed and **τᵢ MUST have no successor**.
 
-A questo punto CTA verifica la PoC, se OK genera una nuova PCA che include Eᵢ, PCAᵢ₋₁ or una sua firma e nuovo PCA compliante con prossimo hop.
+Once local validation succeeds, **Eᵢ MUST generate a PIC Causal Challenge (PCCᵢ)**.  
+PCCᵢ MUST provide **freshness and replay resistance** (nonce, epoch, enclave attestation, channel-binding, or other live challenge).
 
+Eᵢ MUST then construct a **Proof of Continuity (PoCᵢ)**.  
+PoCᵢ MUST be an authenticated statement that binds:
+
+1. a cryptographic commitment to **PCAᵢ₋₁** (e.g., hash(PCAᵢ₋₁)),  
+2. the executing subject **Eᵢ** (via PoIᵢ or characteristic proof),  
+3. the freshness primitive **PCCᵢ**,  
+4. the current hop context **C(Eᵢ)** (identity or capability scope),  
+5. the announced constraints for the next hop (capability degradation only).
+
+PoCᵢ MUST be authenticated under the control domain of **Eᵢ** (typically via PoPᵢ), so that any verifier can establish that:
+
+- the entity that controls the execution key of **Eᵢ** created PoCᵢ,  
+- PoCᵢ is causally bound to **PCAᵢ₋₁**,  
+- PoCᵢ is consistent with the attested CAUSAL SUBJECT and capability surface.
+
+Eᵢ MUST submit **PoCᵢ** (plus PCAᵢ₋₁ and auxiliary material) to the **Causal Transaction Authority (CTA)**.
+
+---
+
+#### **CTA Responsibilities**
+
+The **CTA** MUST verify that:
+
+- the commitment to **PCAᵢ₋₁** inside PoCᵢ is correct,  
+- the identity/characteristic proof matches the attested CAUSAL SUBJECT in PCAᵢ₋₁,  
+- the freshness primitive **PCCᵢ** is valid and non-replayed,  
+- the hop context **C(Eᵢ)** and next-hop constraints are consistent with inherited capability,  
+- no new authority, identity, or capability is being imported.
+
+If any check fails, the CTA MUST NOT generate **PCAᵢ**.  
+In this case **τᵢ has no valid successor** and the Distributed Transaction MUST be **causally terminated** at hop *i*.  
+No retry, refresh, regeneration, or rebinding MAY reattach continuity.
+
+---
+
+#### **Successful Continuity**
+
+If validation succeeds, the CTA MUST generate a **PIC Causal Attestation (PCAᵢ)** that:
+
+1. binds **Eᵢ** as the executor of hop *i*,  
+2. links immutably to **PCAᵢ₋₁**,  
+3. records the effective hop context **C(Eᵢ)** and degraded capability for potential successor,  
+4. is authenticated under the CTA’s attestation authority.
+
+The issuance of **PCAᵢ** conclusively completes hop *i*.  
+By definition of the causal transition function:
+
+```
+τᵢ + PCAᵢ → τᵢ₊₁
+```
+
+The Distributed Transaction becomes **τᵢ₊₁**, and only an executor matching the attested constraints of **PCAᵢ** MAY attempt to generate **PoCᵢ₊₁**.
 
 ---
 
