@@ -1,0 +1,157 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+
+\title{Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem}
+\author{Nicola Gallo}
+\date{1 December 2025}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+
+\begin{document}
+\maketitle
+
+\section{Model}
+
+Let $P$ be a set of principals (e.g., $U$, $PDF$, $Storage$).
+Let $O$ be a set of operations (e.g., convert, delete),
+and $R$ a set of resources.
+
+A privilege is a pair $(o,r) \in O \times R$.
+Each principal $p$ has a privilege set:
+\[
+Priv(p) \subseteq O \times R.
+\]
+
+A request is a message $req$ sent between principals and may contain a payload.
+
+\section{Confused Deputy}
+
+\begin{definition}[Confused Deputy]
+A confused deputy occurs when there exist principals $U$ (user) and $D$ (deputy) such that:
+\begin{enumerate}
+    \item $(o,r) \notin Priv(U)$,
+    \item $(o,r) \in Priv(D)$,
+    \item $U$ sends a request $req$ to $D$,
+    \item as a consequence of $req$, $D$ executes $(o,r)$.
+\end{enumerate}
+\end{definition}
+
+This definition does not depend on implementation details,
+only on the mismatch of authority and causality.
+
+\section{Proof-of-Possession (PoP)}
+
+A token $t$ grants a set of privileges:
+\[
+Auth(t) \subseteq O \times R.
+\]
+
+\paragraph{PoP Semantics:}
+Possession implies usability:
+if a principal holds $t$, it may exercise all $(o,r)\in Auth(t)$.
+
+PoP systems do not constrain authority by causality or provenance.
+
+\subsection{Vulnerability Condition}
+
+Assume:
+\begin{align}
+&(\text{delete},r) \notin Priv(U) \tag{H1}\\
+&(\text{delete},r) \in Priv(PDF) \tag{H2}
+\end{align}
+
+Further assume:
+
+\begin{quote}
+The payload of a request may influence control flow in $PDF$,
+including code paths that call internal privileges such as delete.
+\end{quote}
+
+\begin{theorem}[PoP admits confused deputy]
+Under assumptions (H1)--(H2), there exists a request $req^\*$ such that $PDF$
+executes $(\text{delete},r)$ as a result of processing $req^\*$.
+\end{theorem}
+
+\begin{proof}
+Since $(\text{delete},r)\in Priv(PDF)$ (H2), some code path in $PDF$ invokes
+$\text{Storage.delete}(r)$.
+Because processing is influenced by payload, there exists an adversarial payload
+that triggers that path.
+Since $U$ lacks $(\text{delete},r)$ (H1), and $PDF$ acts on behalf of $U$,
+conditions for a confused deputy are satisfied.
+\end{proof}
+
+This applies to OAuth tokens and sealed capabilities:
+sealing protects transport, not authority semantics.
+
+\section{Proof-of-Continuity (PoC / PIC)}
+
+Execution is modeled as a causal chain of hops:
+\[
+p_0 \rightarrow p_1 \rightarrow \dots \rightarrow p_n,
+\]
+with $p_0 = U$.
+
+Each hop transfers a privilege subset:
+\[
+ops_i \subseteq O \times R
+\]
+and must satisfy:
+
+\begin{equation}
+ops_{i+1} \subseteq ops_i. \tag{C1}
+\end{equation}
+
+Let $\pi$ be a verifiable sequence:
+\[
+\pi = \langle (p_0,ops_0), (p_1,ops_1),\dots,(p_n,ops_n) \rangle.
+\]
+
+\subsection{Authorization Rule}
+The final service authorizes $(o,r)$ if and only if:
+\[
+(o,r) \in \bigcap_{i=0}^{n} ops_i
+\]
+and $\pi$ is valid.
+
+Since the chain is monotonic decreasing,
+\[
+\bigcap_{i=0}^{n} ops_i = ops_n.
+\]
+
+Thus no hop may acquire new authority not present at the origin.
+
+\section{Safety Property}
+
+\begin{definition}[Origin-bounded authority]
+A model enforces origin-bounded authority if every executable privilege
+at hop $n$ is a privilege originally granted by hop $0$.
+\end{definition}
+
+\begin{theorem}[PoC prevents confused deputy]
+If $ops_0 = \{(\text{convert},r)\}$ and (C1) holds for every hop,
+then $(\text{delete},r)$ can never be authorized at hop $n$.
+\end{theorem}
+
+\begin{proof}
+Authorization requires:
+\[
+(\text{delete},r) \in \bigcap_{i=0}^{n} ops_i .
+\]
+But $(\text{delete},r)\notin ops_0$ and each $ops_{i+1}\subseteq ops_i$.
+Therefore $(\text{delete},r)\notin ops_i$ for all $i$,
+hence not in the intersection.
+The request is rejected.
+\end{proof}
+
+\section{Discussion}
+
+PoP systems conflate authority and possession, enabling confused deputy attacks
+whenever privileged internal code paths exist.
+PIC/PoC systems propagate only non-expansive subsets of authority,
+ensuring that downstream services cannot perform operations not explicitly
+authorized at the origin.
+
+\end{document}
