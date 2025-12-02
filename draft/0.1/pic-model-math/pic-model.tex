@@ -15,8 +15,35 @@
 
 \section{Model}
 
+We formalize the PIC (Provenance Identity Continuity) Model as follows.
+
+Let $P$ be a finite set of principals, $O$ a set of operations, and $R$ a set of resources.
+Define a privilege as $(o, r) \in O \times R$.
+
+ ops_0), (p_1, ops_1), \dots, (p_n, ops_n) \rangle
 Let $P$ be a set of principals (e.g., $U$, $PDF$, $Storage$).
 Let $O$ be a set of operations (e.g., convert, delete),
+\]
+where $p_0$ is the originator and each $ops_{i+1} \subseteq ops_i$ (monotonicity).
+
+\begin{definition}[PIC Model]
+A system enforces Provenance Identity Continuity if, for every execution chain $\pi$,
+the set of privileges at the final hop is bounded by the privileges at the origin:
+\[
+ops_n \subseteq ops_0
+\]
+and every privilege exercised at hop $n$ is causally linked to the origin via a verifiable chain.
+\end{definition}
+
+\begin{theorem}[PIC Safety]
+If the PIC Model holds, no principal can exercise a privilege not present at the origin.
+\end{theorem}
+
+\begin{proof}
+By construction, $ops_{i+1} \subseteq ops_i$ for all $i$, so $ops_n \subseteq ops_0$.
+Thus, any $(o, r) \in ops_n$ must also be in $ops_0$.
+Therefore, no privilege can be gained beyond the origin.
+\end{proof}
 and $R$ a set of resources.
 
 A privilege is a pair $(o,r) \in O \times R$.
@@ -179,6 +206,11 @@ responsibility of the author.
 \section*{References}
 
 \begin{enumerate}
+\item N. Gallo.
+   ``PIC Model — Provenance Identity Continuity for Distributed Execution Systems.''
+   Zenodo (2025). \url{https://zenodo.org/records/17777421}.
+   \label{gallo2025pic}
+
 \item N. Hardy. ``The Confused Deputy (or why capabilities might have been
    better than addresses).'' \textit{Operating Systems Review}, 22(4), 1988.
 
