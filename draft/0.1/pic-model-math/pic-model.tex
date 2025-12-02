@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
 
 \title{Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem}
 \author{Nicola Gallo}
@@ -154,10 +155,63 @@ PIC/PoC systems propagate only non-expansive subsets of authority,
 ensuring that downstream services cannot perform operations not explicitly
 authorized at the origin.
 
+\section*{Related Work}
+
+The confused deputy was originally formalized by Hardy (1988),
+showing how ambient authority enables unintended privilege escalation.
+Earlier foundations of capability systems date back to Dennis and Van Horn (1966),
+while confinement and controlled execution were explored by Lampson (1973).
+Modern capability systems such as EROS (Shapiro et al., 1999)
+and seL4 (Klein et al., 2009) provide strong isolation properties and monotonic
+privilege enforcement.
+The formal theory of distributed authorization and delegation traces back to
+Abadi et al. (1993--2000) and the SPKI certificate model (RFC 2693).
+Recent identity systems such as BeyondCorp and SPIFFE apply similar causal
+principles to zero-trust environments.
+
 \section*{Acknowledgments}
 
 The author used automated language assistance tools, including large language models,
-to help with grammar, wording, and formal phrasing. All ideas, models, proofs,
-and conclusions in this document are solely the responsibility of the author.
+to help with grammar, wording, and formal phrasing.
+All ideas, models, proofs, and conclusions in this document are solely the 
+responsibility of the author.
+
+\section*{References}
+
+\begin{enumerate}
+\item N. Hardy. ``The Confused Deputy (or why capabilities might have been
+   better than addresses).'' \textit{Operating Systems Review}, 22(4), 1988.
+
+\item J. B. Dennis and E. C. Van Horn.
+   ``Programming Semantics for Multiprogrammed Computations.''
+   \textit{Communications of the ACM}, 9(3), 1966.
+
+\item B. W. Lampson.
+   ``A Note on the Confinement Problem.''
+   \textit{Communications of the ACM}, 16(10), 1973.
+
+\item J. S. Shapiro, J. M. Smith, and D. J. Farber.
+   ``EROS: A Fast Capability System.''
+   \textit{Proceedings of the 17th ACM Symposium on Operating Systems Principles (SOSP)}, 1999.
+
+\item G. Klein et al.
+   ``seL4: Formal Verification of an OS Kernel.''
+   \textit{Proceedings of the 22nd ACM Symposium on Operating Systems Principles (SOSP)}, 2009.
+
+\item M. Abadi, M. Burrows, B. Lampson, and G. Plotkin.
+   ``A Calculus for Access Control in Distributed Systems.''
+   \textit{ACM Transactions on Programming Languages and Systems}, 1993--2000.
+
+\item C. Ellison et al.
+   ``SPKI Certificate Theory.'' RFC 2693, IETF, 1999.
+
+\item Google.
+   ``BeyondCorp: A New Approach to Enterprise Security.''
+   Google Whitepaper, 2014.
+
+\item SPIFFE Working Group.
+   ``Secure Production Identity Framework for Everyone (SPIFFE).''
+
+\end{enumerate}
 
 \end{document}
