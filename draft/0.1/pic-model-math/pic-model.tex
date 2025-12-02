@@ -2,6 +2,9 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{hyperref}
 
+% Remove end-of-proof square
+\renewcommand{\qedsymbol}{}
+
 \title{Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem}
 \author{Nicola Gallo}
 \date{1 December 2025}
@@ -20,9 +23,9 @@ We formalize the PIC (Provenance Identity Continuity) Model as follows.
 Let $P$ be a finite set of principals, $O$ a set of operations, and $R$ a set of resources.
 Define a privilege as $(o, r) \in O \times R$.
 
- ops_0), (p_1, ops_1), \dots, (p_n, ops_n) \rangle
-Let $P$ be a set of principals (e.g., $U$, $PDF$, $Storage$).
-Let $O$ be a set of operations (e.g., convert, delete),
+Execution is modeled as a causal chain of hops:
+\[
+\pi = \langle (p_0, ops_0), (p_1, ops_1), \dots, (p_n, ops_n) \rangle
 \]
 where $p_0$ is the originator and each $ops_{i+1} \subseteq ops_i$ (monotonicity).
 
@@ -44,10 +47,8 @@ By construction, $ops_{i+1} \subseteq ops_i$ for all $i$, so $ops_n \subseteq op
 Thus, any $(o, r) \in ops_n$ must also be in $ops_0$.
 Therefore, no privilege can be gained beyond the origin.
 \end{proof}
-and $R$ a set of resources.
 
-A privilege is a pair $(o,r) \in O \times R$.
-Each principal $p$ has a privilege set:
+Each principal $p$ has an associated privilege set:
 \[
 Priv(p) \subseteq O \times R.
 \]
@@ -243,7 +244,6 @@ responsibility of the author.
 
 \item SPIFFE Working Group.
    ``Secure Production Identity Framework for Everyone (SPIFFE).''
-
 \end{enumerate}
 
 \end{document}
