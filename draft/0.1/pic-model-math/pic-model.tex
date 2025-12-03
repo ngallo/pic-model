@@ -129,8 +129,9 @@ to the deputy $COMP$, $U$ causes $COMP$ to exercise this privilege on $U$'s beha
 All conditions of the Confused Deputy definition are therefore satisfied.
 \end{proof}
 
-This applies to OAuth bearer tokens and sealed capabilities:
-sealing protects transport, not authority semantics.
+This applies to all artifact-based delegation models:
+sealing or encryption protects transport, not authority semantics
+(e.g., JWT bearer tokens, sealed capabilities, cryptographic credential sets).
 
 \section{Proof-of-Continuity (PoC / PIC)}
 

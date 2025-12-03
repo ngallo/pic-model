@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  3 DEC 2025 18:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  3 DEC 2025 20:00
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -348,12 +348,12 @@ my insertion and my current dilemma will both disappear.
 
 
 [3]
-Overfull \hbox (8.26245pt too wide) in paragraph at lines 172--176
+Overfull \hbox (8.26245pt too wide) in paragraph at lines 173--177
 []\OT1/cmr/bx/n/10.95 Lemma 1 \OT1/cmr/m/n/10.95 (Early re-jec-tion)\OT1/cmr/bx/n/10.95 . \OT1/cmr/m/it/10.95 Let $\OML/cmm/m/it/10.95 ^^Y \OT1/cmr/m/n/10.95 = \OMS/cmsy/m/n/10.95 h\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p[]; ops[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ; [] ; \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p[]; ops[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ; [] ; \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p[]; ops[]\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 i$
  []
 
 
-Overfull \hbox (0.60158pt too wide) in paragraph at lines 191--193
+Overfull \hbox (0.60158pt too wide) in paragraph at lines 192--194
 \OT1/cmr/m/it/10.95 au-thor-ity if ev-ery ex-e-cutable priv-i-lege at hop $\OML/cmm/m/it/10.95 n$ \OT1/cmr/m/it/10.95 is a priv-i-lege orig-i-nally granted
  []
 
@@ -387,7 +387,7 @@ Here is how much of TeX's memory you used:
  1141 hyphenation exceptions out of 8191
  75i,14n,79p,634b,532s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (6 pages, 174236 bytes).
+Output written on pic-model.pdf (6 pages, 174304 bytes).
 PDF statistics:
  147 PDF objects out of 1000 (max. 8388607)
  113 compressed objects within 2 object streams
