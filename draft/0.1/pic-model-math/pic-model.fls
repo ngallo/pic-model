@@ -82,6 +82,9 @@ INPUT /usr/local/texlive/2025/texmf-dist/tex/generic/uniquecounter/uniquecounter
 INPUT /usr/local/texlive/2025/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+INPUT ./pic-model.aux
+INPUT ./pic-model.aux
+INPUT pic-model.aux
 OUTPUT pic-model.aux
 OUTPUT pic-model.out
 OUTPUT pic-model.pdf

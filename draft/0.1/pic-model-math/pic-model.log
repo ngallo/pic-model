@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  3 DEC 2025 17:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  3 DEC 2025 18:24
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -217,8 +217,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
  (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-06-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count310
-)
-No file pic-model.aux.
+) (./pic-model.aux)
 \openout1 = `pic-model.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
@@ -244,7 +243,7 @@ Package hyperref Info: Link coloring OFF on input line 16.
 \openout3 = `pic-model.out'.
 
 LaTeX Font Info:    Trying to load font information for U+msa on input line 18.
-(/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 18.
@@ -349,7 +348,12 @@ my insertion and my current dilemma will both disappear.
 
 
 [3]
-Overfull \hbox (0.60158pt too wide) in paragraph at lines 174--176
+Overfull \hbox (8.26245pt too wide) in paragraph at lines 172--176
+[]\OT1/cmr/bx/n/10.95 Lemma 1 \OT1/cmr/m/n/10.95 (Early re-jec-tion)\OT1/cmr/bx/n/10.95 . \OT1/cmr/m/it/10.95 Let $\OML/cmm/m/it/10.95 ^^Y \OT1/cmr/m/n/10.95 = \OMS/cmsy/m/n/10.95 h\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p[]; ops[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ; [] ; \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p[]; ops[]\OT1/cmr/m/n/10.95 )\OML/cmm/m/it/10.95 ; [] ; \OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 p[]; ops[]\OT1/cmr/m/n/10.95 )\OMS/cmsy/m/n/10.95 i$
+ []
+
+
+Overfull \hbox (0.60158pt too wide) in paragraph at lines 191--193
 \OT1/cmr/m/it/10.95 au-thor-ity if ev-ery ex-e-cutable priv-i-lege at hop $\OML/cmm/m/it/10.95 n$ \OT1/cmr/m/it/10.95 is a priv-i-lege orig-i-nally granted
  []
 
@@ -375,18 +379,18 @@ Package rerunfilecheck Info: Checksums for `pic-model.out':
 (rerunfilecheck)             After:  4B9B5BFA56D2CDC723F2FE875BE3A921;1118.
  ) 
 Here is how much of TeX's memory you used:
- 8952 strings out of 467748
- 135214 string characters out of 5426959
- 543709 words of memory out of 5000000
- 37533 multiletter control sequences out of 15000+600000
+ 8959 strings out of 467748
+ 135340 string characters out of 5426959
+ 543700 words of memory out of 5000000
+ 37536 multiletter control sequences out of 15000+600000
  636648 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,634b,538s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,14n,79p,634b,532s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (6 pages, 171698 bytes).
+Output written on pic-model.pdf (6 pages, 174236 bytes).
 PDF statistics:
- 143 PDF objects out of 1000 (max. 8388607)
- 109 compressed objects within 2 object streams
- 44 named destinations out of 1000 (max. 500000)
+ 147 PDF objects out of 1000 (max. 8388607)
+ 113 compressed objects within 2 object streams
+ 46 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -168,6 +168,23 @@ Since the chain is monotonic decreasing,
 
 Thus no hop may acquire new authority not present at the origin.
 
+\begin{lemma}[Early rejection]
+Let $\pi = \langle (p_0,ops_0),\dots,(p_j,ops_j),\dots,(p_n,ops_n)\rangle$
+be a monotonic chain, i.e.\ $ops_{i+1}\subseteq ops_i$ for all $i$.
+If $(o,r)\notin ops_j$ for some $0\le j\le n$, then 
+$(o,r)\notin ops_k$ for all $k \ge j$.
+\end{lemma}
+
+\begin{proof}
+By monotonicity, $ops_k \subseteq ops_j$ for all $k\ge j$.
+Since $(o,r)\notin ops_j$, it cannot belong to any of its subsets.
+\end{proof}
+
+\paragraph{Interpretation.}
+Loss of authority is irreversible: if a privilege is absent at hop $j$,
+no subsequent hop can recover it. Therefore a compliant system may reject
+at hop $j$ without waiting for the final authorization stage.
+
 \section{Safety Property}
 
 \begin{definition}[Origin-bounded authority]
