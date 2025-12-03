@@ -28,6 +28,8 @@ Execution is modeled as a causal chain of hops:
 \pi = \langle (p_0, ops_0), (p_1, ops_1), \dots, (p_n, ops_n) \rangle
 \]
 where $p_0$ is the originator and each $ops_{i+1} \subseteq ops_i$ (monotonicity).
+Here $ops_i \subseteq O \times R$ denotes the set of privileges that principal $p_i$
+may exercise at hop $i$.
 
 \begin{definition}[PIC Model]
 A system enforces Provenance Identity Continuity if, for every execution chain $\pi$,
@@ -44,7 +46,7 @@ If the PIC Model holds, no principal can exercise a privilege not present at the
 
 \begin{proof}
 By construction, $ops_{i+1} \subseteq ops_i$ for all $i$, so $ops_n \subseteq ops_0$.
-Thus, any $(o, r) \in ops_n$ must also be in $ops_0$.
+Thus, any $(o,r) \in ops_n$ must also be in $ops_0$.
 Therefore, no privilege can be gained beyond the origin.
 \end{proof}
 
@@ -70,6 +72,15 @@ A confused deputy occurs when there exist principals $U$ (user) and $D$ (deputy)
 This definition does not depend on implementation details,
 only on the mismatch of authority and causality.
 
+\paragraph{Classical example (Hardy, 1988).}
+A FORTRAN compiler \texttt{FORT}, installed in the privileged directory \texttt{SYSX},
+holds ambient authority to write statistics to \texttt{(SYSX)STAT}. A user invokes the
+compiler and provides \texttt{(SYSX)BILL}, the system billing file, as the name of the
+debugging output. The compiler opens the target for output using its own authority over
+\texttt{SYSX}, thereby overwriting \texttt{(SYSX)BILL}. The user never possessed this
+privilege, but the deputy exercised it on behalf of the user. The failure arises from
+ambient authority and lack of provenance.
+
 \section{Proof-of-Possession (PoP)}
 
 A token $t$ grants a set of privileges:
@@ -77,7 +88,7 @@ A token $t$ grants a set of privileges:
 Auth(t) \subseteq O \times R.
 \]
 
-\paragraph{PoP Semantics:}
+\paragraph{PoP Semantics.}
 Possession implies usability:
 if a principal holds $t$, it may exercise all $(o,r)\in Auth(t)$.
 
@@ -87,32 +98,38 @@ PoP systems do not constrain authority by causality or provenance.
 
 Assume:
 \begin{align}
-&(\text{delete},r) \notin Priv(U) \tag{H1}\\
-&(\text{delete},r) \in Priv(PDF) \tag{H2}
+&(\text{write},r) \notin Priv(U) \tag{H1}\\
+&(\text{write},r) \in Priv(COMP) \tag{H2}
 \end{align}
+
+Here $U$ is the user and $COMP$ is a compiler-like service acting as deputy,
+analogous to Hardy's original example.
 
 Further assume:
 
 \begin{quote}
-The payload of a request may influence control flow in $PDF$,
-including code paths that call internal privileges such as delete.
+The payload of a request (e.g., an output file name supplied by the user)
+may influence control flow in $COMP$, including code paths that open a
+resource $r$ for output using $COMP$'s own authority.
 \end{quote}
 
 \begin{theorem}[PoP admits confused deputy]
-Under assumptions (H1)--(H2), there exists a request $req^\*$ such that $PDF$
-executes $(\text{delete},r)$ as a result of processing $req^\*$.
+Under assumptions (H1)--(H2), there exists a request $req^\*$ such that $COMP$
+executes $(\text{write},r)$ as a result of processing $req^\*$.
 \end{theorem}
 
 \begin{proof}
-Since $(\text{delete},r)\in Priv(PDF)$ (H2), some code path in $PDF$ invokes
-$\text{Storage.delete}(r)$.
-Because processing is influenced by payload, there exists an adversarial payload
-that triggers that path.
-Since $U$ lacks $(\text{delete},r)$ (H1), and $PDF$ acts on behalf of $U$,
-conditions for a confused deputy are satisfied.
+Since $(\text{write},r)\in Priv(COMP)$ (H2), an internal code path in $COMP$
+may open $r$ for output using its own ambient authority.
+Because request processing is influenced by user-supplied parameters
+(such as the target file name), there exists an adversarial payload $req^\*$
+that causes $COMP$ to select $r$ and execute $(\text{write},r)$.
+By (H1), the user $U$ does not possess $(\text{write},r)$, yet by sending $req^\*$
+to the deputy $COMP$, $U$ causes $COMP$ to exercise this privilege on $U$'s behalf.
+All conditions of the Confused Deputy definition are therefore satisfied.
 \end{proof}
 
-This applies to OAuth tokens and sealed capabilities:
+This applies to OAuth bearer tokens and sealed capabilities:
 sealing protects transport, not authority semantics.
 
 \section{Proof-of-Continuity (PoC / PIC)}
@@ -128,14 +145,13 @@ Each hop transfers a privilege subset:
 ops_i \subseteq O \times R
 \]
 and must satisfy:
-
 \begin{equation}
 ops_{i+1} \subseteq ops_i. \tag{C1}
 \end{equation}
 
 Let $\pi$ be a verifiable sequence:
 \[
-\pi = \langle (p_0,ops_0), (p_1,ops_1),\dots,(p_n,ops_n) \rangle.
+\pi = \langle (p_0,ops_0), (p_1,ops_1), \dots, (p_n,ops_n) \rangle.
 \]
 
 \subsection{Authorization Rule}
@@ -161,16 +177,16 @@ at hop $n$ is a privilege originally granted by hop $0$.
 
 \begin{theorem}[PoC prevents confused deputy]
 If $ops_0 = \{(\text{convert},r)\}$ and (C1) holds for every hop,
-then $(\text{delete},r)$ can never be authorized at hop $n$.
+then $(\text{write},r)$ can never be authorized at hop $n$.
 \end{theorem}
 
 \begin{proof}
 Authorization requires:
 \[
-(\text{delete},r) \in \bigcap_{i=0}^{n} ops_i .
+(\text{write},r) \in \bigcap_{i=0}^{n} ops_i.
 \]
-But $(\text{delete},r)\notin ops_0$ and each $ops_{i+1}\subseteq ops_i$.
-Therefore $(\text{delete},r)\notin ops_i$ for all $i$,
+But $(\text{write},r)\notin ops_0$ and each $ops_{i+1}\subseteq ops_i$.
+Therefore $(\text{write},r)\notin ops_i$ for all $i$,
 hence not in the intersection.
 The request is rejected.
 \end{proof}
@@ -210,7 +226,6 @@ responsibility of the author.
 \item N. Gallo.
    ``PIC Model — Provenance Identity Continuity for Distributed Execution Systems.''
    Zenodo (2025). \url{https://zenodo.org/records/17777421}.
-   \label{gallo2025pic}
 
 \item N. Hardy. ``The Confused Deputy (or why capabilities might have been
    better than addresses).'' \textit{Operating Systems Review}, 22(4), 1988.

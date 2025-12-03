@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  2 DEC 2025 11:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  3 DEC 2025 17:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -255,41 +255,48 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 [1
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:102: Missing { inserted.
+Overfull \hbox (12.7541pt too wide) in paragraph at lines 76--83
+\OT1/cmr/m/n/10.95 statis-tics to \OT1/cmtt/m/n/10.95 (SYSX)STAT\OT1/cmr/m/n/10.95 . A user in-vokes the com-piler and pro-vides \OT1/cmtt/m/n/10.95 (SYSX)BILL\OT1/cmr/m/n/10.95 ,
+ []
+
+
+
+[2]
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:117: Missing { inserted.
 <to be read again> 
                    \discretionary 
-l.102 ...H1)--(H2), there exists a request $req^\*
-                                                  $ such that $PDF$
+l.117 ...H1)--(H2), there exists a request $req^\*
+                                                  $ such that $COMP$
 A left brace was mandatory here, so I've put one in.
 You might want to delete and/or insert some corrections
 so that I will find a matching right brace soon.
 (If you're confused by all this, try typing `I}' now.)
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:102: Missing } inserted.
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:117: Missing } inserted.
 <inserted text> 
                 }
-l.102 ...1)--(H2), there exists a request $req^\*$
-                                                   such that $PDF$
+l.117 ...1)--(H2), there exists a request $req^\*$
+                                                   such that $COMP$
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
 With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:103: Missing { inserted.
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:118: Missing { inserted.
 <to be read again> 
                    \discretionary 
-l.103 ...te},r)$ as a result of processing $req^\*
+l.118 ...te},r)$ as a result of processing $req^\*
                                                   $.
 A left brace was mandatory here, so I've put one in.
 You might want to delete and/or insert some corrections
 so that I will find a matching right brace soon.
 (If you're confused by all this, try typing `I}' now.)
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:103: Missing } inserted.
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:118: Missing } inserted.
 <inserted text> 
                 }
-l.103 ...e},r)$ as a result of processing $req^\*$
+l.118 ...e},r)$ as a result of processing $req^\*$
                                                   .
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -297,27 +304,66 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:125: Missing { inserted.
+<to be read again> 
+                   \discretionary 
+l.125 ...ere exists an adversarial payload $req^\*
+                                                  $
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:125: Missing } inserted.
+<inserted text> 
+                }
+l.125 ...re exists an adversarial payload $req^\*$
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
+
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:127: Missing { inserted.
+<to be read again> 
+                   \discretionary 
+l.127 ...(\text{write},r)$, yet by sending $req^\*
+                                                  $
+A left brace was mandatory here, so I've put one in.
+You might want to delete and/or insert some corrections
+so that I will find a matching right brace soon.
+(If you're confused by all this, try typing `I}' now.)
+
+/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:127: Missing } inserted.
+<inserted text> 
+                }
+l.127 ...\text{write},r)$, yet by sending $req^\*$
+                                                  
+I've inserted something that you may have forgotten.
+(See the <inserted text> above.)
+With luck, this will get me unwedged. But if you
+really didn't forget anything, try typing `2' now; then
+my insertion and my current dilemma will both disappear.
 
 
-[2]
-Overfull \hbox (0.60158pt too wide) in paragraph at lines 158--160
+
+[3]
+Overfull \hbox (0.60158pt too wide) in paragraph at lines 174--176
 \OT1/cmr/m/it/10.95 au-thor-ity if ev-ery ex-e-cutable priv-i-lege at hop $\OML/cmm/m/it/10.95 n$ \OT1/cmr/m/it/10.95 is a priv-i-lege orig-i-nally granted
  []
 
 
 
-[3]
-
 [4]
 
-[5] (./pic-model.aux)
+[5]
+
+[6] (./pic-model.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-09-02>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
 
 Package rerunfilecheck Warning: File `pic-model.out' has changed.
@@ -329,18 +375,18 @@ Package rerunfilecheck Info: Checksums for `pic-model.out':
 (rerunfilecheck)             After:  4B9B5BFA56D2CDC723F2FE875BE3A921;1118.
  ) 
 Here is how much of TeX's memory you used:
- 8951 strings out of 467748
- 135211 string characters out of 5426959
+ 8952 strings out of 467748
+ 135214 string characters out of 5426959
  543709 words of memory out of 5000000
- 37534 multiletter control sequences out of 15000+600000
+ 37533 multiletter control sequences out of 15000+600000
  636648 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,634b,640s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,14n,79p,634b,538s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (5 pages, 165765 bytes).
+Output written on pic-model.pdf (6 pages, 171698 bytes).
 PDF statistics:
- 137 PDF objects out of 1000 (max. 8388607)
- 104 compressed objects within 2 object streams
- 42 named destinations out of 1000 (max. 500000)
+ 143 PDF objects out of 1000 (max. 8388607)
+ 109 compressed objects within 2 object streams
+ 44 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
