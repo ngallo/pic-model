@@ -75,11 +75,10 @@ only on the mismatch of authority and causality.
 \paragraph{Classical example (Hardy, 1988).}
 A FORTRAN compiler \texttt{FORT}, installed in the privileged directory \texttt{SYSX},
 holds ambient authority to write statistics to \texttt{(SYSX)STAT}. A user invokes the
-compiler and provides \texttt{(SYSX)BILL}, the system billing file, as the name of the
-debugging output. The compiler opens the target for output using its own authority over
-\texttt{SYSX}, thereby overwriting \texttt{(SYSX)BILL}. The user never possessed this
-privilege, but the deputy exercised it on behalf of the user. The failure arises from
-ambient authority and lack of provenance.
+compiler and provides \texttt{(SYSX)BILL} as the debugging output filename.
+The compiler opens the target for output using its own authority over \texttt{SYSX},
+thereby overwriting \texttt{(SYSX)BILL}. The user never possessed this privilege,
+but the deputy exercised it on the user's behalf.
 
 \section{Proof-of-Possession (PoP)}
 
@@ -102,15 +101,13 @@ Assume:
 &(\text{write},r) \in Priv(COMP) \tag{H2}
 \end{align}
 
-Here $U$ is the user and $COMP$ is a compiler-like service acting as deputy,
-analogous to Hardy's original example.
+Here $U$ is the user and $COMP$ is a compiler-like service acting as deputy.
 
 Further assume:
 
 \begin{quote}
-The payload of a request (e.g., an output file name supplied by the user)
-may influence control flow in $COMP$, including code paths that open a
-resource $r$ for output using $COMP$'s own authority.
+The payload of a request may influence control flow in $COMP$,
+including code paths that open a resource $r$ using $COMP$'s own authority.
 \end{quote}
 
 \begin{theorem}[PoP admits confused deputy]
@@ -119,124 +116,124 @@ executes $(\text{write},r)$ as a result of processing $req^\*$.
 \end{theorem}
 
 \begin{proof}
-Since $(\text{write},r)\in Priv(COMP)$ (H2), an internal code path in $COMP$
-may open $r$ for output using its own ambient authority.
-Because request processing is influenced by user-supplied parameters
-(such as the target file name), there exists an adversarial payload $req^\*$
-that causes $COMP$ to select $r$ and execute $(\text{write},r)$.
-By (H1), the user $U$ does not possess $(\text{write},r)$, yet by sending $req^\*$
-to the deputy $COMP$, $U$ causes $COMP$ to exercise this privilege on $U$'s behalf.
-All conditions of the Confused Deputy definition are therefore satisfied.
+Since $(\text{write},r)\in Priv(COMP)$, an internal code path may open $r$
+under COMP's ambient authority. Because user input influences that path,
+there exists a malicious payload $req^\*$ that triggers it. Thus $COMP$
+executes a privilege the user does not possess.
 \end{proof}
 
 This applies to all artifact-based delegation models:
-sealing or encryption protects transport, not authority semantics
-(e.g., JWT bearer tokens, sealed capabilities, cryptographic credential sets).
+JWTs, sealed capabilities, cryptographic bearer credentials, etc.
 
 \section{Proof-of-Continuity (PoC / PIC)}
 
-Execution is modeled as a causal chain of hops:
+Execution is a causal chain:
 \[
 p_0 \rightarrow p_1 \rightarrow \dots \rightarrow p_n,
 \]
 with $p_0 = U$.
 
-Each hop transfers a privilege subset:
+Each hop transfers:
 \[
-ops_i \subseteq O \times R
-\]
-and must satisfy:
-\begin{equation}
 ops_{i+1} \subseteq ops_i. \tag{C1}
-\end{equation}
+\]
 
-Let $\pi$ be a verifiable sequence:
+Let:
 \[
 \pi = \langle (p_0,ops_0), (p_1,ops_1), \dots, (p_n,ops_n) \rangle.
 \]
 
 \subsection{Authorization Rule}
-The final service authorizes $(o,r)$ if and only if:
+$(o,r)$ is authorized at the final hop iff:
 \[
-(o,r) \in \bigcap_{i=0}^{n} ops_i
+(o,r) \in \bigcap_{i=0}^{n} ops_i.
 \]
-and $\pi$ is valid.
 
-Since the chain is monotonic decreasing,
+Since the chain is monotonic decreasing:
 \[
 \bigcap_{i=0}^{n} ops_i = ops_n.
 \]
 
-Thus no hop may acquire new authority not present at the origin.
+Thus no hop may acquire authority not already present at the origin.
 
-\begin{lemma}[Early rejection]
-Let $\pi = \langle (p_0,ops_0),\dots,(p_j,ops_j),\dots,(p_n,ops_n)\rangle$
-be a monotonic chain, i.e.\ $ops_{i+1}\subseteq ops_i$ for all $i$.
-If $(o,r)\notin ops_j$ for some $0\le j\le n$, then 
+\begin{lemma}[Irreversible loss of authority]
+If $(o,r)\notin ops_j$ for some hop $j$, then 
 $(o,r)\notin ops_k$ for all $k \ge j$.
 \end{lemma}
 
 \begin{proof}
 By monotonicity, $ops_k \subseteq ops_j$ for all $k\ge j$.
-Since $(o,r)\notin ops_j$, it cannot belong to any of its subsets.
 \end{proof}
-
-\paragraph{Interpretation.}
-Loss of authority is irreversible: if a privilege is absent at hop $j$,
-no subsequent hop can recover it. Therefore a compliant system may reject
-at hop $j$ without waiting for the final authorization stage.
 
 \section{Safety Property}
 
 \begin{definition}[Origin-bounded authority]
 A model enforces origin-bounded authority if every executable privilege
-at hop $n$ is a privilege originally granted by hop $0$.
+at hop $n$ was originally granted at hop $0$.
 \end{definition}
 
 \begin{theorem}[PoC prevents confused deputy]
-If $ops_0 = \{(\text{convert},r)\}$ and (C1) holds for every hop,
-then $(\text{write},r)$ can never be authorized at hop $n$.
+If $ops_0 = \{(\text{convert},r)\}$, then $(\text{write},r)$ can never be authorized.
 \end{theorem}
 
 \begin{proof}
-Authorization requires:
-\[
-(\text{write},r) \in \bigcap_{i=0}^{n} ops_i.
-\]
-But $(\text{write},r)\notin ops_0$ and each $ops_{i+1}\subseteq ops_i$.
-Therefore $(\text{write},r)\notin ops_i$ for all $i$,
-hence not in the intersection.
-The request is rejected.
+$(\text{write},r)\notin ops_0$ and $ops_{i+1}\subseteq ops_i$.
+Thus $(\text{write},r)\notin ops_n$.
 \end{proof}
+
+\section{Elimination of the Confused Deputy}
+
+The Confused Deputy requires an ontological assumption:
+that authority is a transferable or rebindable object that a principal may
+hold or reinterpret on behalf of another.
+
+PIC eliminates this ontology entirely.
+
+\begin{theorem}[Confused Deputy is non-formulable under PIC]
+In any system satisfying PIC monotonicity $ops_{i+1}\subseteq ops_i$
+and origin-bounded authority $ops_n \subseteq ops_0$,
+the Confused Deputy conditions cannot be jointly satisfied.
+\end{theorem}
+
+\begin{proof}
+The Confused Deputy requires:
+\[
+(o,r)\notin ops_0 \quad \text{and} \quad (o,r)\in ops_k \text{ for some } k>0.
+\]
+But PIC enforces:
+\[
+ops_k \subseteq ops_0 \;\; \forall k.
+\]
+Thus if $(o,r)\notin ops_0$, it cannot appear in any $ops_k$.
+The privilege mismatch required for a Confused Deputy is impossible.
+\end{proof}
+
+\paragraph{Interpretation.}
+Authority in PIC is not something that a subject \emph{has};
+it is a continuity property of the execution chain.
+Since no hop may introduce or reinterpret authority absent at the origin,
+no deputy can be ``confused.''  
+The attack does not occur; it is not even definable in the model.
 
 \section{Discussion}
 
-PoP systems conflate authority and possession, enabling confused deputy attacks
-whenever privileged internal code paths exist.
+PoP systems conflate authority and possession, enabling confused deputy attacks.
 PIC/PoC systems propagate only non-expansive subsets of authority,
-ensuring that downstream services cannot perform operations not explicitly
-authorized at the origin.
+ensuring no downstream service can perform operations not authorized at the origin.
 
 \section*{Related Work}
 
-The confused deputy was originally formalized by Hardy (1988),
-showing how ambient authority enables unintended privilege escalation.
-Earlier foundations of capability systems date back to Dennis and Van Horn (1966),
-while confinement and controlled execution were explored by Lampson (1973).
-Modern capability systems such as EROS (Shapiro et al., 1999)
-and seL4 (Klein et al., 2009) provide strong isolation properties and monotonic
-privilege enforcement.
-The formal theory of distributed authorization and delegation traces back to
-Abadi et al. (1993--2000) and the SPKI certificate model (RFC 2693).
-Recent identity systems such as BeyondCorp and SPIFFE apply similar causal
-principles to zero-trust environments.
+The confused deputy was formalized by Hardy (1988).
+Capability theory originates in Dennis \& Van Horn (1966).
+Confinement was introduced by Lampson (1973).
+EROS (Shapiro et al., 1999) and seL4 (Klein et al., 2009) provide strong isolation.
+Distributed authorization theories include Abadi et al. (1993--2000) and SPKI (RFC 2693).
+Modern zero-trust models (BeyondCorp, SPIFFE) apply causal constraints similar in spirit.
 
 \section*{Acknowledgments}
 
-The author used automated language assistance tools, including large language models,
-to help with grammar, wording, and formal phrasing.
-All ideas, models, proofs, and conclusions in this document are solely the 
-responsibility of the author.
+The author used automated language assistance tools for grammar and phrasing.
+All conceptual contributions, models, and proofs are solely the author's.
 
 \section*{References}
 
@@ -245,38 +242,23 @@ responsibility of the author.
    ``PIC Model — Provenance Identity Continuity for Distributed Execution Systems.''
    Zenodo (2025). \url{https://zenodo.org/records/17777421}.
 
-\item N. Hardy. ``The Confused Deputy (or why capabilities might have been
-   better than addresses).'' \textit{Operating Systems Review}, 22(4), 1988.
+\item N. Hardy. ``The Confused Deputy.'' Operating Systems Review, 1988.
 
-\item J. B. Dennis and E. C. Van Horn.
-   ``Programming Semantics for Multiprogrammed Computations.''
-   \textit{Communications of the ACM}, 9(3), 1966.
+\item Dennis \& Van Horn. ``Programming Semantics for Multiprogrammed Computations.'' CACM, 1966.
 
-\item B. W. Lampson.
-   ``A Note on the Confinement Problem.''
-   \textit{Communications of the ACM}, 16(10), 1973.
+\item B. Lampson. ``A Note on the Confinement Problem.'' CACM, 1973.
 
-\item J. S. Shapiro, J. M. Smith, and D. J. Farber.
-   ``EROS: A Fast Capability System.''
-   \textit{Proceedings of the 17th ACM Symposium on Operating Systems Principles (SOSP)}, 1999.
+\item Shapiro et al. ``EROS: A Fast Capability System.'' SOSP, 1999.
 
-\item G. Klein et al.
-   ``seL4: Formal Verification of an OS Kernel.''
-   \textit{Proceedings of the 22nd ACM Symposium on Operating Systems Principles (SOSP)}, 2009.
+\item Klein et al. ``seL4: Formal Verification of an OS Kernel.'' SOSP, 2009.
 
-\item M. Abadi, M. Burrows, B. Lampson, and G. Plotkin.
-   ``A Calculus for Access Control in Distributed Systems.''
-   \textit{ACM Transactions on Programming Languages and Systems}, 1993--2000.
+\item Abadi et al. ``A Calculus for Access Control.'' TOPLAS, 1993--2000.
 
-\item C. Ellison et al.
-   ``SPKI Certificate Theory.'' RFC 2693, IETF, 1999.
+\item C. Ellison et al. ``SPKI Certificate Theory.'' RFC 2693, IETF, 1999.
 
-\item Google.
-   ``BeyondCorp: A New Approach to Enterprise Security.''
-   Google Whitepaper, 2014.
+\item Google. ``BeyondCorp: A New Approach to Enterprise Security.'' 2014.
 
-\item SPIFFE Working Group.
-   ``Secure Production Identity Framework for Everyone (SPIFFE).''
+\item SPIFFE Working Group. ``Secure Production Identity Framework for Everyone.''
 \end{enumerate}
 
 \end{document}
