@@ -1,0 +1,489 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\renewcommand{\qedsymbol}{}
+
+\title{Authority is a Continuous System}
+\author{Nicola Gallo}
+\date{8 December 2025}
+
+\begin{document}
+\maketitle
+
+\section{Motivation}
+
+In prior work~[1], we formally showed that Proof-of-Possession (PoP)--based
+authorization models admit confused deputy conditions.
+Because authority is exercised solely through possession of a
+transferable artifact, deputies may reinterpret privileges outside the
+causal intent of the originator.
+
+The same work showed that the Provenance Identity Continuity (PIC) model
+eliminates the confused deputy entirely.
+By enforcing monotonic authority restriction and origin-bounded
+execution, PIC makes the confused deputy condition non-formulable:
+no privilege can be exercised unless it was present at the execution
+origin and causally propagated through a verifiable chain.
+
+This leads to a fundamental insight: authority is not a transferable
+object, but a continuity property of execution.
+Once this is understood---against decades of research in access
+control---it becomes clear that many existing models have incorrectly
+treated authority as a form of possession.
+
+This paper elevates the PIC model to a more abstract and general form,
+analyzing authority as a continuous system and formalizing its
+implications for trust, governance, concurrency, and zero-trust
+architectures.
+
+\section{Authority Continuity Principle}
+
+Let $P$ be a finite set of principals, $O$ a set of operations, and $R$ a
+set of resources.
+A privilege is a pair $(o,r) \in O \times R$.
+
+Let $p_0 \in P$ be the immutable originating principal of an execution.
+The set $\mathrm{ops}_0 \subseteq O \times R$ denotes the authority
+explicitly exercised within this execution.
+Importantly, $\mathrm{ops}_0$ is a subset of the total authority of $p_0$;
+only this subset participates in execution continuity.
+
+In prior work~[1], execution was intentionally modeled as:
+\[
+\pi = \langle (p_0, \mathrm{ops}_0), (p_1, \mathrm{ops}_1), \dots,
+(p_n, \mathrm{ops}_n) \rangle,
+\quad
+\mathrm{ops}_{i+1} \subseteq \mathrm{ops}_i,
+\]
+in order to demonstrate the elimination of the confused deputy under
+monotonic restriction.
+
+For a more general and abstract treatment, we model execution as a
+continuous flow of authority rather than a reassignment between
+principals.
+
+\begin{quote}
+\emph{The originating principal of an execution is immutable.}
+\end{quote}
+
+Execution is represented as a chain of authority states:
+\[
+\pi = \langle \alpha_0, \alpha_1, \dots, \alpha_n \rangle,
+\quad
+\alpha_i = (p_0, \mathrm{ops}_i, e_{i-1}, e_i),
+\]
+where $e_i \in P$ is the executor performing hop $i$.
+
+Monotonicity holds for all $i$:
+\[
+\mathrm{ops}_{i+1} \subseteq \mathrm{ops}_i.
+\]
+
+\section{Guardrails}
+
+Authority continuity is enforced by invariant constraints evaluated at
+every execution step $i$.
+Guardrails validate continuity; they never grant authority.
+
+\subsection{Origin Guardrail}
+\[
+\forall i:\; p_0^{(i)} = p_0^{(0)}.
+\]
+
+\subsection{Operational Guardrail}
+\[
+\forall i:\; \mathrm{ops}_{i+1} \subseteq \mathrm{ops}_i.
+\]
+
+\subsection{Executor Guardrail}
+\[
+\forall i:\; \mathrm{ExecCont}(p_0, e_i, e_{i+1}, \mathrm{ops}_{i+1}).
+\]
+
+\subsection{Temporal Guardrail}
+
+Temporal validity is defined by a predicate, not by simple set
+containment.
+
+Let $\tau_i$ be the current time, included in the execution context.
+Let $T_i$ denote a temporal constraint associated with state $\alpha_i$.
+
+\[
+\mathrm{TimeValid}(T_i, \tau_i) \in \{\mathsf{true}, \mathsf{false}\}.
+\]
+
+The temporal constraint $T_i$ may represent:
+\begin{itemize}
+\item an absolute time range $[t_{\min}, t_{\max}]$ such that
+      $\mathrm{TimeValid}(T_i, \tau_i)$ holds iff
+      $\tau_i \in [t_{\min}, t_{\max}]$;
+\item a relative duration from an origin time $t_0$
+      (e.g.\ valid for $\Delta t$ after $t_0$), such that validity holds
+      iff $\tau_i - t_0 \leq \Delta t$;
+\item an unbounded (infinite) interval, in which case
+      $\mathrm{TimeValid}(T_i, \tau_i)$ is always $\mathsf{true}$.
+\end{itemize}
+
+If no temporal constraint is specified, execution is temporally
+unbounded.
+
+\subsection{Contextual Guardrail}
+
+Context is validated by predicate, not merely by set inclusion.
+
+Let $C_i$ be the execution context associated with $\alpha_i$ and
+$X_i$ external signals (including time and environmental conditions).
+
+\[
+\mathrm{CtxValid}(C_i, X_i) \in \{\mathsf{true}, \mathsf{false}\}.
+\]
+
+Simple containment $C_{i+1} \subseteq C_i$ is a sufficient but not
+necessary condition.
+Context validity may depend on policies, environment, or other external
+constraints.
+
+\section{Executor Continuity Predicate}
+
+\begin{definition}[Executor Continuity]
+The predicate
+\[
+\mathrm{ExecCont}(p_0, e_i, e_{i+1}, \mathrm{ops})
+\]
+holds iff executor $e_{i+1}$ is a causally valid continuation of
+execution from $e_i$ under origin $p_0$ and authority $\mathrm{ops}$.
+\end{definition}
+
+Executor continuity may depend on implementation-specific predicates,
+including but not limited to:
+\begin{itemize}
+\item proof that $e_{i+1}$ is the executor it claims to be,
+\item proof of required execution attributes or environment,
+\item proof of contextual binding (e.g.\ request provenance),
+\item proof that execution proceeds within authority $\mathrm{ops}$.
+\end{itemize}
+
+Crucially, $\mathrm{ExecCont}$:
+\begin{itemize}
+\item does not grant authority,
+\item does not expand authority,
+\item does not preserve authority,
+\item does not substitute authority continuity.
+\end{itemize}
+
+It merely validates that execution at hop $i+1$ is causally derived from
+execution at hop $i$ and is therefore eligible to participate in
+authority continuity.
+
+\section{Authority Succession}
+
+Authority evolves by applying all guardrails atomically.
+
+We enrich authority states as:
+\[
+\alpha_i = (p_0, \mathrm{ops}_i, e_{i-1}, e_i, T_i, C_i).
+\]
+
+Given proposed inputs
+\[
+(e_{i+1}, \mathrm{ops}_{i+1}, T_{i+1}, C_{i+1}),
+\]
+we construct the candidate successor:
+\[
+\alpha_{i+1} =
+(p_0, \mathrm{ops}_{i+1}, e_i, e_{i+1}, T_{i+1}, C_{i+1}).
+\]
+
+We define the combined guardrail predicate:
+\[
+\begin{aligned}
+\mathrm{Guard}(\alpha_i, \alpha_{i+1}) \equiv\;&
+\big(p_0^{(i+1)} = p_0^{(i)}\big)
+\land \big(\mathrm{ops}_{i+1} \subseteq \mathrm{ops}_i\big) \land{}\\
+& \mathrm{ExecCont}\big(p_0, e_i, e_{i+1}, \mathrm{ops}_{i+1}\big) \land{}\\
+& \mathrm{TimeValid}(T_{i+1}, \tau_{i+1})
+\land \mathrm{CtxValid}(C_{i+1}, X_{i+1}) .
+\end{aligned}
+\]
+
+The succession function is:
+\[
+\mathsf{Next}(
+  \alpha_i,\,
+  e_{i+1},\,
+  \mathrm{ops}_{i+1},\,
+  T_{i+1},\,
+  C_{i+1}
+)
+=
+\begin{cases}
+\alpha_{i+1} &
+\text{if } \mathrm{Guard}(\alpha_i, \alpha_{i+1}) = \mathsf{true},\\[4pt]
+\mathsf{halt} & \text{otherwise.}
+\end{cases}
+\]
+
+Succession:
+\begin{itemize}
+\item constructs a candidate $\alpha_{i+1}$,
+\item applies all guardrails as a single predicate,
+\item returns $\alpha_{i+1}$ only if continuity is preserved,
+\item otherwise halts execution at $\alpha_i$.
+\end{itemize}
+
+Succession preserves continuity and never introduces new authority.
+
+\section{Transactional Structure of Authority Continuity}
+
+Authority continuity admits both sequential and parallel evolution.
+
+\subsection{Sequential Continuation}
+
+Repeated application of $\mathsf{Next}$ yields linear chains:
+\[
+\alpha_0 \rightarrow \alpha_1 \rightarrow \dots \rightarrow \alpha_n.
+\]
+Failure of a single transition halts execution.
+
+Sequential composition is purely structural: the existence of a syntactic
+sequence $\alpha_i \rightarrow \alpha_{i+1}$ does not, by itself,
+guarantee that execution is authorized to proceed.
+Each transition in the chain is realized only when the corresponding
+call to $\mathsf{Next}$ returns $\alpha_{i+1}$ (i.e.\ when
+$\mathrm{Guard}$ holds and any governance decisions allow it); otherwise
+execution halts at $\alpha_i$.
+
+\subsection{Parallel Continuation (Fork)}
+
+Given a state $\alpha_i$, multiple successors may be generated:
+\[
+\alpha_{i+1}^{(1)}, \dots, \alpha_{i+1}^{(k)},
+\]
+each constructed via $\mathsf{Next}$ with different parameters.
+
+Every branch must independently satisfy all guardrails.
+Forking does not duplicate or expand authority: each branch maintains
+monotonicity relative to its own execution line.
+
+The existence of multiple successor candidates does not, by itself,
+authorize execution along any branch.
+For each branch $j$, the transition
+$\alpha_i \rightarrow \alpha_{i+1}^{(j)}$ becomes effective only if the
+corresponding $\mathsf{Next}$ call returns $\alpha_{i+1}^{(j)}$ and any
+governance decisions permit that branch to proceed; otherwise the branch
+halts at $\alpha_i$.
+
+\subsection{Join (Convergent Continuation)}
+
+Let $\alpha_i^{(1)}, \dots, \alpha_i^{(k)}$ be states that share the
+same origin $p_0$.
+A join function produces a new candidate state:
+\[
+\mathsf{Join}(\alpha_i^{(1)}, \dots, \alpha_i^{(k)}) \rightarrow \alpha'_i.
+\]
+
+Let:
+\[
+\mathrm{ops}' \subseteq \bigcap_j \mathrm{ops}_i^{(j)}, \quad
+T' \subseteq \bigcap_j T_i^{(j)}, \quad
+C' \subseteq \bigcap_j C_i^{(j)}.
+\]
+
+Join is thus a transformation that produces $\alpha'_i$ with authority,
+time, and context no greater than what is already present in the input
+branches.
+Join by itself does not imply authorization to execute.
+The resulting state $\alpha'_i$ must be treated as a candidate and,
+for any subsequent step
+$\alpha'_i \rightarrow \alpha'_{i+1}$, must again be passed through:
+\begin{itemize}
+\item continuity guardrails via $\mathsf{Next}$ and $\mathrm{Guard}$,
+\item any applicable governance decisions via $\mathrm{PDP}$.
+\end{itemize}
+
+Authority after join can never exceed the authority available before
+join.
+
+\section{Trust, Possession, and Execution}
+
+Authority continuity cleanly separates execution, trust, and possession.
+
+\subsection{Executor Verification}
+
+At each hop exactly one executor performs the concrete action.
+The executor is the only element that must demonstrate anything: that it
+is in fact the executor it claims to be.
+
+This demonstration binds execution to reality (identity, environment,
+attributes) but does not confer additional authority and does not alter
+authority continuity.
+
+\subsection{Possession as Binding, Not Authority}
+
+Proof of Possession (PoP) has a purely binding role:
+\begin{itemize}
+\item it associates identity, attributes, environment, or context with
+      execution,
+\item it provides \emph{untrusted evidence} that may be evaluated by
+      $\mathrm{ExecCont}$, $\mathrm{TimeValid}$, or $\mathrm{CtxValid}$,
+\end{itemize}
+but it does \emph{not}:
+\begin{itemize}
+\item provide trusted evidence for continuity, temporal, or contextual
+      validation,
+\item create authority,
+\item preserve authority,
+\item propagate authority,
+\item justify authority expansion.
+\end{itemize}
+
+Possession is orthogonal to continuity.
+
+\subsection{Trust as Continuity}
+
+Trust does not arise from possession of an artifact.
+Trust emerges from verified causal continuity.
+
+An executor is considered trustworthy if and only if its execution
+constitutes a valid continuation from the immutable origin $p_0$ under
+all guardrails and any applicable governance decisions.
+
+Trust may decrease or be revoked over time by changing policies, but such
+revocation does not introduce discontinuity: it halts or restricts the
+evolution of authority.
+
+\section{Governance as Policy-Constrained Continuity}
+
+Continuity defines what is structurally possible.
+Governance defines what is currently permitted.
+
+Let $\mathrm{Policy}$ be the set of governance rules (which may change
+over time) and $X_i$ the external context (network state, risk signals,
+operational conditions, etc.).
+
+We define the policy decision predicate:
+\[
+\mathrm{PDP}(\alpha_i, \alpha_{i+1}, X_i, \mathrm{Policy})
+\in \{\mathsf{allow}, \mathsf{deny}\}.
+\]
+
+A transition $\alpha_i \rightarrow \alpha_{i+1}$ may occur if and only
+if:
+\[
+\mathrm{Guard}(\alpha_i, \alpha_{i+1})
+\;\land\;
+\mathrm{PDP}(\alpha_i, \alpha_{i+1}, X_i, \mathrm{Policy})
+= \mathsf{allow}.
+\]
+
+Governance:
+\begin{itemize}
+\item may deny transitions that are structurally valid,
+\item may further restrict operations, time, and context,
+\item may terminate execution in response to external conditions,
+\end{itemize}
+but it cannot:
+\begin{itemize}
+\item introduce new authority,
+\item expand $\mathrm{ops}$ beyond what continuity allows,
+\item bypass guardrails.
+\end{itemize}
+
+In continuous-authority systems, governance is therefore an inherently
+authority-reducing layer.
+
+\section{Zero-Trust Incompatibility of PoP-Based Propagation}
+
+\begin{definition}[Zero-Trust Compatibility]
+A system is compatible with the zero-trust model if every execution
+advance is produced exclusively by the succession function
+$\mathsf{Next}$ and satisfies all guardrails, possibly subject to
+governance decisions.
+\end{definition}
+
+\begin{definition}[PoP-Based Propagation]
+A system is \emph{PoP-based} if there exists an artifact $a$ such that,
+for some contexts, authority at a subsequent hop can be
+(re)materialized solely on the basis of possession of $a$, independently
+of the current authority state.
+\end{definition}
+
+\begin{theorem}
+No authorization system based on Proof of Possession is compatible with
+the zero-trust model under the authority continuity assumption.
+\end{theorem}
+
+\begin{proof}
+PoP-based propagation allows authority to be reconstructed in contexts
+that do not causally derive from the current state $\alpha_i$.
+Authority continuity instead requires monotonic, causally derived
+succession constrained by $\mathrm{Guard}$ and, optionally, by
+$\mathrm{PDP}$.
+
+Therefore, there exist execution steps enabled solely by possession of
+$a$ that cannot be represented as $\mathsf{Next}(\alpha_i, \dots)$ with
+$\mathrm{Guard} = \mathsf{true}$.
+Such steps violate zero-trust compatibility as defined above.
+\end{proof}
+
+\begin{quote}
+\emph{Systems that derive authority from Proof of Possession are not
+zero-trust systems by construction.}
+\end{quote}
+
+\section{Conclusion}
+
+Authority is not an artifact, a credential, or a possession.
+It is a continuous, causally constrained property of execution rooted in
+an immutable origin.
+
+By modeling authority as continuity:
+\begin{itemize}
+\item authority propagation becomes intrinsically monotonic,
+\item concurrency is handled via fork and join under continuity,
+\item governance is expressed as a policy layer that only restricts,
+\item the zero-trust model emerges as a native property of the system.
+\end{itemize}
+
+Systems that treat authority as possession cannot, by construction,
+achieve these properties.
+Authority continuity instead provides a unified foundation for
+re-thinking security, identity, and access control in distributed
+systems.
+
+\section*{Acknowledgments}
+
+The author used automated language assistance tools exclusively for
+grammar and phrasing.
+All conceptual contributions and formalizations are solely the author’s.
+
+\section*{References}
+
+\begin{enumerate}
+\item N.~Gallo.
+\emph{Authority Propagation Models: PoP vs PoC and the Confused Deputy Problem.}
+Zenodo, 2025.
+
+\item N.~Gallo.
+\emph{PIC Model---Provenance Identity Continuity for Distributed Execution Systems.}
+Zenodo, 2025.
+
+\item N.~Hardy.
+\emph{The Confused Deputy.}
+Operating Systems Review, 1988.
+
+\item J.~Kindervag et al.
+\emph{Zero Trust Architecture.}
+NIST Special Publication 800-207, 2020.
+
+\item Google.
+\emph{BeyondCorp: A New Approach to Enterprise Security.}
+;login:, 2014.
+
+\item B.~Lampson.
+\emph{Protection.}
+ACM Operating Systems Review, 1974.
+\end{enumerate}
+
+\end{document}
