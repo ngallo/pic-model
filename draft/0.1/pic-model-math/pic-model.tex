@@ -252,7 +252,10 @@ Two things propagate together. First, authority attenuates monotonically: write
 $C_{i+1} \preceq C_i$ for authority \emph{attenuation} --- every authority at a
 hop is a restriction of one held at the previous hop, never an expansion. When
 the context is a set of atomic privileges this specializes to
-$C_{i+1} \subseteq C_i$, the form used in our examples. Second, the hops are
+$C_{i+1} \subseteq C_i$, the form used in our examples. Although the core model
+represents authority contexts as sets of atomic privileges, we use $\preceq$ when
+referring to the general attenuation order; in the set-valued case used
+throughout the formal examples, this order is $\subseteq$. Second, the hops are
 bound into a single causal lineage by $PoR$: continuity is a property not of a
 hop in isolation but of the \emph{chain}. Formally the lineage is a logical
 causal chain; in an implementation it need not be carried whole --- it may be
@@ -274,6 +277,10 @@ local translation. We treat $\mathcal{T}$ as fixed policy input; synthesizing or
 verifying such translations is out of scope. Heterogeneity here is semantic
 rather than merely administrative: different hops may describe authority through
 different operation/resource vocabularies even within a single trust perimeter.
+In heterogeneous systems, safety is therefore relative to the soundness of the
+chosen policy translation $\mathcal{T}_{i \to i+1}$; an overly permissive
+translation is a policy error rather than a violation of the continuity invariant
+itself.
 
 \begin{lemma}[Continuity implies origin binding]
 If $PoC(\pi)$ holds, then $s_n$ is causally linked to $s_0$ through a verifiable
@@ -335,8 +342,8 @@ $O \times R \times \mathcal{L}$, where $\mathcal{L}$ is the causal lineage of th
 execution. Concretely, $\mathcal{L}$ is the set of finite linear causal
 lineages: a lineage is a sequence
 $\ell = \langle s_0 \prec s_1 \prec \dots \prec s_n \rangle$, where $\prec$
-denotes causal precedence, so each event is an occurrence of a privilege within
-a particular lineage. Two actions identical in possession --- same principal, same token,
+denotes causal precedence, witnessed between adjacent steps by $PoR$, so each
+event is an occurrence of a privilege within a particular lineage. Two actions identical in possession --- same principal, same token,
 same privilege --- may be distinct in continuity, because they descend from
 different causes. A request to \emph{pay 100}, issued once by the user and once
 by a replay, is indistinguishable under possession, yet the two are distinct
@@ -414,8 +421,7 @@ lineage-invariant possession-based policy can separate them.
 \begin{theorem}[Any resolution reintroduces continuity]\label{thm:reintro}
 A policy $A$ authorizes $e$ and denies $e'$, with $p(e) = p(e')$ and
 $\ell \neq \ell'$, only if $A$ is not lineage-invariant; that is, $A$ must read
-some function $g : \mathcal{L} \to X$ of the lineage that is non-constant on the
-fiber $p^{-1}(o,r)$.
+some function $g : \mathcal{L} \to X$ of the lineage with $g(\ell) \neq g(\ell')$.
 \end{theorem}
 
 \begin{proof}
@@ -723,16 +729,16 @@ and chain them cryptographically --- precisely our monotone attenuation
 $C_{i+1}\preceq C_i$ along a chain --- yet a macaroon remains a bearer
 credential: absent a caveat that binds the request context, it can be presented
 outside the lineage that produced it. DPoP~\cite{fett2023dpop} and Token
-Binding~\cite{popov2018token} bind a token to a key or transport channel, which
-is exactly a function $g$ of the occurrence in the sense of
-Theorem~\ref{thm:reintro}. The unifying observation is that these mechanisms
-defeat replay or cross-context misuse precisely to the extent that a caveat or
-binding makes the decision read $\ell$ --- that is, they reintroduce continuity.
-They are therefore continuity-aware mechanisms in the sense of this model ---
-reading the lineage coordinate at a single hop or through context binding ---
-rather than purely lineage-invariant possession mechanisms; PIC makes the same
-lineage dimension global and explicit. Such mechanisms strengthen possession but
-do not by themselves establish global continuity.
+Binding~\cite{popov2018token} bind a token to a key or transport channel; in the
+terminology of Theorem~\ref{thm:reintro}, such bindings make the decision depend
+on additional occurrence context, and are therefore continuity-aware in a local
+or contextual sense. The unifying observation is that macaroons, DPoP, and Token
+Binding defeat replay or cross-context misuse precisely to the extent that a
+caveat or binding makes the decision read $\ell$ --- that is, they reintroduce
+continuity. They strengthen possession by reducing such misuse, but do not by
+themselves establish global Proof-of-Continuity: the decision still need not read
+the full causal lineage from the origin request across a multi-hop execution
+chain. PIC makes that lineage dimension global and explicit.
 
 The PIC model is developed independently in~\cite{gallo2025pic}, where Provenance
 Identity Continuity is introduced as a general model for distributed execution
