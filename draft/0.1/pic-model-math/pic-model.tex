@@ -36,11 +36,12 @@ model behavior: any privilege exercised at a later step must already be present
 in the origin authority context. This is directly relevant to distributed
 systems and AI agents, where executors invoke tools and downstream services
 while holding multiple authority sources, so that the same authority/causality
-mismatch recurs across service boundaries. This paper concerns authorization
-propagation, not authentication: identity mechanisms such as OIDC, verifiable
-credentials, wallets, and workload identity remain complementary and are assumed
-as origin establishment; Proof-of-Continuity addresses how authority propagates
-once that origin exists.
+mismatch recurs across service boundaries.
+
+This paper concerns authorization propagation rather than authentication:
+identity mechanisms such as OIDC, verifiable credentials, wallets, and workload
+identity remain complementary mechanisms for establishing the origin, while
+Proof-of-Continuity addresses how authority propagates after that origin exists.
 \end{abstract}
 
 \section{Model}

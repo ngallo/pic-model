@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  8 JUL 2026 22:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  8 JUL 2026 22:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -321,7 +321,7 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 [8]
 
 [9]
-Underfull \hbox (badness 3323) in paragraph at lines 493--495
+Underfull \hbox (badness 3323) in paragraph at lines 494--496
 []\OT1/cmr/bx/n/10.95 (+20) Theorem 5 \OT1/cmr/m/n/10.95 (+20) (Pos-ses-sion--del-e-ga-tion--safety trade-off)\OT1/cmr/bx/n/10.95 (+20) . \OT1/cmr/m/it/10.95 (+20) No authority-
  []
 
@@ -354,15 +354,15 @@ Package rerunfilecheck Info: File `pic-model.out' has not changed.
 (rerunfilecheck)             Checksum: 0E444FF373343A562B39F118E64A6D41;2798.
  ) 
 Here is how much of TeX's memory you used:
- 11207 strings out of 467748
- 172384 string characters out of 5426959
+ 11205 strings out of 467748
+ 172366 string characters out of 5426959
  613859 words of memory out of 5000000
  39514 multiletter control sequences out of 15000+600000
- 642863 words of font info for 172 fonts, out of 8000000 for 9000
+ 642812 words of font info for 171 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,14n,79p,1074b,594s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (19 pages, 243744 bytes).
+Output written on pic-model.pdf (19 pages, 243754 bytes).
 PDF statistics:
  345 PDF objects out of 1000 (max. 8388607)
  295 compressed objects within 3 object streams
