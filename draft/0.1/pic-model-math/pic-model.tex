@@ -1,6 +1,8 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{hyperref}
+\usepackage{microtype}
+\emergencystretch=3em
 
 % Remove end-of-proof square
 \renewcommand{\qedsymbol}{}
@@ -49,6 +51,24 @@ Each principal $p$ has an associated privilege set:
 Priv(p) \subseteq O \times R.
 \]
 
+A principal is used here as an abstract permissioned entity: it may be a human
+identity established through an identity provider, wallet, OIDC/OIDC4VC-style
+flow~\cite{openidconnect2014,openid4vc2024}, or decentralized
+identifier~\cite{didcore2022}; a workload or machine identity such as those
+used in WIMSE/SPIFFE-style environments~\cite{wimse2024,spiffe2017}; a role; a
+service account; or another execution context. What matters for this model is
+that permissions are associated with it and that it can express an intent within
+those permissions. When a permissioned entity expresses such an intent, the
+system creates the origin authority context $C_0$ for a new execution lineage.
+
+For example, if Bob has the privilege $(\text{read},\text{Book})$, then two
+different executions may both involve Bob and the same privilege. They are not
+therefore the same authority event. One execution may be a valid continuation of
+an intent Bob expressed within a lineage, while another may be a replay,
+confused-deputy action, or unrelated execution using the same apparent privilege.
+The identity and privilege coordinates may be identical; the lineage coordinate
+distinguishes the authority event.
+
 A request is a message $req$ sent between principals and may contain a payload.
 
 Execution is modeled as a causal chain of steps:
@@ -57,6 +77,11 @@ Execution is modeled as a causal chain of steps:
 \]
 where $s_0$ is the origin step and $C_i \subseteq O \times R$ is the authority
 context carried at step $s_i$.
+We use $s_i$ for the formal execution step at hop $i$; operationally, a hop is
+the execution of one such step by an executor that receives, processes, and may
+propagate a request. Each hop may be performed by a service, workload, function,
+tool, or agent; the model requires continuity of authority, not propagation of
+identity.
 
 \begin{definition}[PIC Model]
 A system enforces Provenance Identity Continuity if, for every execution chain
@@ -124,14 +149,14 @@ the deputy exercised it as a consequence of the user's request~\cite{hardy1988co
 
 \section{Proof-of-Possession (PoP)}
 
-A token $t$ grants a set of privileges:
+A token $t$ represents a set of privileges:
 \[
-Auth(t) \subseteq O \times R.
+Priv(t) \subseteq O \times R.
 \]
 
 \paragraph{PoP Semantics.}
 Possession implies usability:
-if a principal holds $t$, it may exercise all $(o,r)\in Auth(t)$.
+if a principal holds $t$, it may exercise all $(o,r)\in Priv(t)$.
 
 PoP systems constrain authority by artifact possession, but do not, by
 themselves, require that the exercised authority be a causal continuation of
@@ -230,9 +255,10 @@ the context is a set of atomic privileges this specializes to
 $C_{i+1} \subseteq C_i$, the form used in our examples. Second, the hops are
 bound into a single causal lineage by $PoR$: continuity is a property not of a
 hop in isolation but of the \emph{chain}. Formally the lineage is a logical
-causal chain; in an implementation it need not be carried whole --- it is a
-collection of hashes that reconstruct and verify the chain, so each hop proves
-its place in the lineage without transporting the entire history.
+causal chain; in an implementation it need not be carried whole --- it may be
+represented by cryptographic commitments, references, hashes, signatures, or
+summarized proofs that allow each hop to prove its place in the lineage without
+transporting the entire history.
 
 \paragraph{Heterogeneous operation spaces.}
 The notation assumes a common privilege universe $O \times R$. In heterogeneous
@@ -245,7 +271,9 @@ universe at hop $i$. A transition is then governed by a policy translation
 and monotonicity becomes $C_{i+1} \subseteq \mathcal{T}_{i \to i+1}(C_i)$: the
 successor authority is no greater than what the predecessor permits under the
 local translation. We treat $\mathcal{T}$ as fixed policy input; synthesizing or
-verifying such translations is out of scope.
+verifying such translations is out of scope. Heterogeneity here is semantic
+rather than merely administrative: different hops may describe authority through
+different operation/resource vocabularies even within a single trust perimeter.
 
 \begin{lemma}[Continuity implies origin binding]
 If $PoC(\pi)$ holds, then $s_n$ is causally linked to $s_0$ through a verifiable
@@ -264,6 +292,10 @@ realized by a companion enforcement architecture. As capability and token models
 assume their credentials unforgeable, we assume the lineage is unforgeable.
 
 \subsection{Authorization Rule}
+
+The following rule is evaluated only for a valid continuity chain, i.e.\ a chain
+in which every adjacent transition satisfies both $PoR(s_i,s_{i+1})$ and
+$C_{i+1}\subseteq C_i$.
 
 $(o,r)$ is authorized at the final hop iff:
 \[
@@ -313,7 +345,10 @@ Possession is the spatial component of authority; lineage is its temporal
 component, and a possession-only model is therefore a projection of authority
 that forgets time. This does not make possession-based models wrong; it makes
 them incomplete for the multi-hop case, where authority continuation becomes a
-temporal property.
+temporal property. Thus the relevant event is not merely $(p,o,r)$, or identity
+plus privilege, but an occurrence of a privilege within a lineage. When the same
+principal and the same privilege occur in two different lineages, the identity
+coordinate does not separate them; the lineage coordinate does.
 
 In the projection language this is the \emph{temporal reading} of the confused
 deputy of Definition~\ref{def:confused}: an action spatially valid but temporally invalid --- the
@@ -415,7 +450,11 @@ for the missing lineage. Once the perimeter dissolves --- zero-trust deployments
 multi-organisation chains on the public internet, and autonomous AI agents
 calling tools and services --- lineage-invariance becomes visible as a
 vulnerability at the second hop. The definition of a possession policy above
-therefore describes deployed systems, not a caricature of them.
+therefore describes deployed systems, not a caricature of them. A trust perimeter
+may hide the temporal gap by making authority and causality appear co-located,
+but the model does not depend on crossing such a perimeter: the mismatch can
+arise whenever authority is selected independently of the execution that caused
+its use.
 
 \subsection{A Trade-off Theorem for Authority Propagation}
 
@@ -594,7 +633,26 @@ loose coupling; but revocation, delegation state, scope changes, and lineage are
 global authority facts. Local authorization and global authority consistency can
 diverge when these facts are not represented at the point of use. PoC addresses
 this divergence by carrying lineage explicitly and requiring non-expansive
-authority propagation across the chain.
+authority propagation across the chain. Continuity is therefore not identity
+propagation. Identity remains useful for authentication, audit, attribution,
+accountability, and origin creation, but it is insufficient as the propagated
+authorization primitive. Identifiers are the technical handles by which
+identities, workloads, roles, or executors are named and bound to evidence; they
+are necessary for verification and accountability, but an identifier repeated at
+later hops does not by itself prove that the authority being exercised belongs to
+the same execution lineage. Identity providers, wallets, OIDC/OIDC4VC-style
+flows~\cite{openidconnect2014,openid4vc2024}, WIMSE/SPIFFE-style workload
+identity~\cite{wimse2024,spiffe2017}, and machine identities remain important for
+authentication, credential presentation, technical binding, and origin bootstrap. PoC concerns
+what happens after such a permissioned entity has expressed an intent within its
+privileges: the authorization question becomes whether later authority uses are
+valid continuations of the origin authority context $C_0$, not whether the same
+identity or identifier is repeated at each hop. A lineage begins when a permissioned entity
+expresses an intent within its privileges, thereby creating an origin authority
+context $C_0$.
+Subsequent hops need not carry, reveal, or reinterpret the origin identity; they
+must only preserve a non-expansive authority context that remains causally linked
+to that origin.
 
 \paragraph{Application to AI agents.}
 For the purposes of authority propagation, AI agents can be modeled as autonomous
@@ -691,8 +749,9 @@ outstanding continuations, or triggers lineage-wide cancellation. Second, the
 model is linear; forks, joins, fan-out, fan-in, and DAG-shaped executions require
 a partial-order generalization of $\mathcal{L}$. Third, the construction of
 $PoR$ is abstract: concrete implementations may use signatures, hash chains,
-verifiable credentials, secure channels, trusted execution environments, or
-tamper-evident logs, with implementation-dependent security and performance.
+verifiable credentials~\cite{vcdm2022}, secure channels, trusted execution
+environments, or tamper-evident logs, with implementation-dependent security and
+performance.
 Fourth, lineage validation is an implementation concern rather than a limitation
 of the model: practical realizations need not revalidate an entire history at
 every hop, and may use checkpoints, summarized proofs, compact encodings, or
@@ -716,6 +775,20 @@ accepted as valid model behavior --- it is precisely the authority/causality
 mismatch that continuity rules out. More broadly, PoC reframes authority
 propagation as a temporal property of an execution lineage rather than merely a
 static property of artifact possession.
+
+\paragraph{Note on the name PIC.}
+In Provenance Identity Continuity, the term Identity refers to the security
+identity or execution identity of the permissioned entity from which authority is
+created or anchored at the origin. It does not mean that identity is propagated
+as the authorization primitive at every hop. The model instead shifts the
+authorization burden from repeatedly interpreting identity to verifying execution
+continuity: a causal lineage carrying a non-expansive authority context.
+Provenance denotes the causal origin and lineage of the execution, Identity
+denotes the authenticated permissioned origin, and Continuity denotes the
+preservation of authority across later hops without expansion. Identity and
+identifiers therefore remain essential for authentication, credential
+presentation, audit, accountability, and origin bootstrap; PoC concerns the
+authorization continuity that must hold after that origin has been established.
 
 \section*{Acknowledgments}
 
@@ -782,6 +855,39 @@ D. Fett, B. Campbell, J. Bradley, T. Lodderstedt, M. B. Jones, and D. Waite.
 A. Popov, M. Nystr\"om, D. Balfanz, and J. Hodges.
 \newblock The Token Binding Protocol Version 1.0.
 \newblock RFC 8471, Internet Engineering Task Force, October 2018.
+
+\bibitem{wimse2024}
+IETF WIMSE Working Group.
+\newblock Workload Identity in Multi-System Environments (WIMSE).
+\newblock Internet Engineering Task Force, 2024.
+\url{https://datatracker.ietf.org/wg/wimse/}.
+
+\bibitem{spiffe2017}
+SPIFFE Project.
+\newblock Secure Production Identity Framework for Everyone (SPIFFE)
+Specification.
+\newblock Cloud Native Computing Foundation, 2017.
+\url{https://github.com/spiffe/spiffe}.
+
+\bibitem{openidconnect2014}
+OpenID Foundation.
+\newblock OpenID Connect Core 1.0.
+\newblock 2014. \url{https://openid.net/specs/openid-connect-core-1_0.html}.
+
+\bibitem{openid4vc2024}
+OpenID Foundation.
+\newblock OpenID for Verifiable Credentials (OpenID4VC).
+\newblock Specification, 2024. \url{https://openid.net/sg/openid4vc/}.
+
+\bibitem{didcore2022}
+World Wide Web Consortium (W3C).
+\newblock Decentralized Identifiers (DIDs) v1.0.
+\newblock W3C Recommendation, 2022. \url{https://www.w3.org/TR/did-core/}.
+
+\bibitem{vcdm2022}
+World Wide Web Consortium (W3C).
+\newblock Verifiable Credentials Data Model v1.1.
+\newblock W3C Recommendation, 2022. \url{https://www.w3.org/TR/vc-data-model/}.
 
 \bibitem{gallo2025pic}
 N. Gallo.

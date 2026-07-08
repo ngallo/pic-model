@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1783534863.84948 "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" "pic-model.pdf" "pic-model" 1783534864.23686 0
-  "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" 1783534769.13095 39202 93d49b38f80bc69082caf66943f64b5a ""
+["pdflatex"] 1783541942.16146 "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" "pic-model.pdf" "pic-model" 1783541942.57307 0
+  "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" 1783541911.74504 45270 6dc8bc7ecd0aca7caed47df0f56e863b ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -73,6 +73,12 @@
   "/usr/local/texlive/2025/texmf-dist/tex/latex/kvoptions/kvoptions.sty" 1655478651 22555 6d8e155cfef6d82c3d5c742fea7c992e ""
   "/usr/local/texlive/2025/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty" 1665067230 13815 760b0c02f691ea230f5359c4e1de23a7 ""
   "/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1751059413 30351 a2b09edc6c93a742566b222c33d0278e ""
+  "/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/microtype-pdftex.def" 1752091573 49656 229fb67764dc0abf5c6f072ee0d27147 ""
+  "/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/microtype.cfg" 1752091573 27628 65e257a6863987c0e5097054c917d02d ""
+  "/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/microtype.sty" 1752091573 102775 cc4629d7100508b1ba679322aef9b545 ""
+  "/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/mt-cmr.cfg" 1739394495 22906 b0be544692bb405a84d147a96af5d777 ""
+  "/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/mt-msa.cfg" 1739394495 5929 11976688d7d8ed4d0d05efd1b3d5a7e9 ""
+  "/usr/local/texlive/2025/texmf-dist/tex/latex/microtype/mt-msb.cfg" 1739394495 5594 d52d5015abe666fae752ed7674c2dd73 ""
   "/usr/local/texlive/2025/texmf-dist/tex/latex/refcount/refcount.sty" 1576624809 9878 9e94e8fa600d95f9c7731bb21dfb67a4 ""
   "/usr/local/texlive/2025/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1750533675 9684 a33a14b82ce60d6e77cb9be689d79ee6 ""
   "/usr/local/texlive/2025/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
@@ -80,9 +86,9 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1759087145 5528139 daf1353d2d3d7fed9df2ebbf1b26218e ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1759087269 3628859 1441feffd97cccdc369188e738ca193c ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "pic-model.aux" 1783534864.20128 4658 c2b4a5bef242fe9eeba8a47fc48a7250 "pdflatex"
-  "pic-model.out" 1783534864.20194 2798 0e444ff373343a562b39f118e64a6d41 "pdflatex"
-  "pic-model.tex" 1783534769.13095 39202 93d49b38f80bc69082caf66943f64b5a ""
+  "pic-model.aux" 1783541942.53769 5162 761e1a681bc551a67331f48e9b96d07a "pdflatex"
+  "pic-model.out" 1783541942.53832 2798 0e444ff373343a562b39f118e64a6d41 "pdflatex"
+  "pic-model.tex" 1783541911.74504 45270 6dc8bc7ecd0aca7caed47df0f56e863b ""
   (generated)
   "pic-model.aux"
   "pic-model.log"
