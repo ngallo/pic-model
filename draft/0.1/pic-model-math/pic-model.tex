@@ -28,9 +28,10 @@ that possession is insufficient for discrete execution chains, whether they
 span multiple services or occur as separated steps within the same machine,
 because it does not preserve the causal relationship between the origin of a
 request and the authority exercised at later steps. We introduce
-Proof-of-Continuity as a minimal authority propagation model in which each
-execution step must be causally linked to the previous step and may only
-propagate a non-expansive subset of the authority received from the origin.
+Proof-of-Continuity, a minimal authority-propagation discipline for the
+Provenance Identity Continuity (PIC) model, in which each execution step must be
+causally linked to the previous step and may only propagate a non-expansive
+subset of the authority received from the origin.
 Under this model, the confused deputy condition cannot be satisfied as valid
 model behavior: any privilege exercised at a later step must already be present
 in the origin authority context. This is directly relevant to distributed
@@ -62,19 +63,21 @@ flow~\cite{openidconnect2014,openid4vc2024}, or decentralized
 identifier~\cite{didcore2022}; a workload or machine identity such as those
 used in WIMSE/SPIFFE-style environments~\cite{wimse2024,spiffe2017}; a role; a
 service account; or another execution context. What matters for this model is
-that permissions are associated with it and that it can express an intent within
-those permissions. When a permissioned entity expresses such an intent, the
-system creates the origin authority context $C_0$ for a new execution lineage.
+that a privilege set $Priv(p)$ is associated with it and that it can express an
+intent within those privileges. When a permissioned entity $p$ expresses such an
+intent, it selects a subset of $Priv(p)$; that subset becomes the origin
+authority context $C_0 \subseteq Priv(p)$ for a new execution lineage.
 
 For example, if Bob has the privilege $(\text{read},\text{Book})$, then two
-different executions may both involve Bob and the same privilege. They are not
-therefore the same authority event. One execution may be a valid continuation of
-an intent Bob expressed within a lineage, while another may be a replay,
-confused-deputy action, or unrelated execution using the same apparent privilege.
-The identity and privilege coordinates may be identical; the lineage coordinate
-distinguishes the authority event.
+different executions may both involve Bob and the same privilege, yet they need
+not be the same occurrence: each execution carries authority propagated along its
+own lineage. One may be a valid continuation of an intent Bob expressed within a
+lineage, while another may be a replay, confused-deputy action, or unrelated
+execution using the same apparent privilege. The identity and privilege
+coordinates may be identical; the lineage coordinate distinguishes the two.
 
-A request is a message $req$ sent between principals and may contain a payload.
+A request is a message $req$ passed between executors --- the entities that
+perform execution steps --- and may contain a payload.
 
 Execution is modeled as a causal chain of steps:
 \[
@@ -339,7 +342,7 @@ execution that led to an action.
 Proof-of-Relationship supplies the missing axis: it binds an execution step to
 its causal predecessor. Proof-of-Continuity is built on it --- continuity is the
 transitive composition of relationships --- and combines two conditions: monotone
-restriction of permissions ($C_{i+1} \subseteq C_i$) and causal continuity, via
+restriction of privileges ($C_{i+1} \subseteq C_i$) and causal continuity, via
 $PoR$, of the execution that carries them.
 
 Authority therefore no longer lives in $O \times R$ alone but in
@@ -385,7 +388,13 @@ viewed as a one-hop instance of the continuity discipline, and PIC generalizes
 that discipline across multi-hop execution. PIC is therefore a temporal
 refinement of capability-style authority propagation, not a replacement for it;
 the temporal dimension is not an optional stronger check but one that possession
-alone cannot encode.
+alone cannot encode. The two eliminate the classical confused deputy in
+complementary registers: the object-capability discipline eliminates it
+operationally --- authority is exercised only through designated invocation, so
+the mismatch does not arise --- while PIC eliminates it by construction of the
+model, since, with authority defined as continuity, a privilege absent from the
+origin is not a valid later state at all rather than a behavior to be separately
+prevented.
 
 \subsection{Projection: Lineage-Invariant Possession Cannot Individuate Occurrences}
 \label{sec:impossibility}
