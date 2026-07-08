@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  8 JUL 2026 14:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  8 JUL 2026 14:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -217,8 +217,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 28
  (/usr/local/texlive/2025/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-06-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count310
-)
-No file pic-model.aux.
+) (./pic-model.aux)
 \openout1 = `pic-model.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
@@ -240,92 +239,34 @@ LaTeX Font Info:    ... okay on input line 16.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 16.
 LaTeX Font Info:    ... okay on input line 16.
 Package hyperref Info: Link coloring OFF on input line 16.
+ (./pic-model.out) (./pic-model.out)
 \@outlinefile=\write3
 \openout3 = `pic-model.out'.
 
 LaTeX Font Info:    Trying to load font information for U+msa on input line 18.
-(/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 18.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
+Overfull \hbox (0.36171pt too wide) in paragraph at lines 20--32
+\OT1/cmr/m/n/10 pa-per ar-gues that pos-ses-sion is in-suf-fi-cient for dis-crete ex-e-cu-tion chains,
+ []
+
+
 
 [1
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (9.71243pt too wide) in paragraph at lines 76--82
+Overfull \hbox (9.71243pt too wide) in paragraph at lines 94--101
 \OT1/cmr/m/n/10.95 statis-tics to \OT1/cmtt/m/n/10.95 (SYSX)STAT\OT1/cmr/m/n/10.95 . A user in-vokes the com-piler and pro-vides \OT1/cmtt/m/n/10.95 (SYSX)BILL
  []
 
 
 
 [2]
-/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:114: Missing { inserted.
-<to be read again> 
-                   \discretionary 
-l.114 ...H1)--(H2), there exists a request $req^\*
-                                                  $ such that $COMP$
-A left brace was mandatory here, so I've put one in.
-You might want to delete and/or insert some corrections
-so that I will find a matching right brace soon.
-(If you're confused by all this, try typing `I}' now.)
-
-/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:114: Missing } inserted.
-<inserted text> 
-                }
-l.114 ...1)--(H2), there exists a request $req^\*$
-                                                   such that $COMP$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:115: Missing { inserted.
-<to be read again> 
-                   \discretionary 
-l.115 ...te},r)$ as a result of processing $req^\*
-                                                  $.
-A left brace was mandatory here, so I've put one in.
-You might want to delete and/or insert some corrections
-so that I will find a matching right brace soon.
-(If you're confused by all this, try typing `I}' now.)
-
-/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:115: Missing } inserted.
-<inserted text> 
-                }
-l.115 ...e},r)$ as a result of processing $req^\*$
-                                                  .
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:121: Missing { inserted.
-<to be read again> 
-                   \discretionary 
-l.121 there exists a malicious payload $req^\*
-                                              $ that triggers it. Thus $COMP$
-A left brace was mandatory here, so I've put one in.
-You might want to delete and/or insert some corrections
-so that I will find a matching right brace soon.
-(If you're confused by all this, try typing `I}' now.)
-
-/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:121: Missing } inserted.
-<inserted text> 
-                }
-l.121 there exists a malicious payload $req^\*$
-                                                that triggers it. Thus $COMP$
-I've inserted something that you may have forgotten.
-(See the <inserted text> above.)
-With luck, this will get me unwedged. But if you
-really didn't forget anything, try typing `2' now; then
-my insertion and my current dilemma will both disappear.
-
-
 
 [3]
 
@@ -338,29 +279,22 @@ my insertion and my current dilemma will both disappear.
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-09-02>
  ***********
-
-
-Package rerunfilecheck Warning: File `pic-model.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `pic-model.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  E9BD9D62D714BED725A964A9248833BC;1343.
+Package rerunfilecheck Info: File `pic-model.out' has not changed.
+(rerunfilecheck)             Checksum: A55BF1F63D28E8B98374EF397DB274C4;1308.
  ) 
 Here is how much of TeX's memory you used:
- 8947 strings out of 467748
- 135121 string characters out of 5426959
- 543709 words of memory out of 5000000
- 37533 multiletter control sequences out of 15000+600000
- 636648 words of font info for 73 fonts, out of 8000000 for 9000
+ 8967 strings out of 467748
+ 135401 string characters out of 5426959
+ 543784 words of memory out of 5000000
+ 37546 multiletter control sequences out of 15000+600000
+ 636956 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,614b,536s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (6 pages, 172372 bytes).
+ 75i,14n,79p,614b,619s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on pic-model.pdf (6 pages, 183987 bytes).
 PDF statistics:
- 137 PDF objects out of 1000 (max. 8388607)
- 103 compressed objects within 2 object streams
- 39 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 171 PDF objects out of 1000 (max. 8388607)
+ 135 compressed objects within 2 object streams
+ 40 named destinations out of 1000 (max. 500000)
+ 73 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -16,39 +16,27 @@
 \begin{document}
 \maketitle
 
+\begin{abstract}
+Proof-of-Possession authorization models derive authority from the possession
+of artifacts such as tokens, credentials, or capabilities. This paper argues
+that possession is insufficient for discrete execution chains, whether they
+span multiple services or occur as separated steps within the same machine,
+because it does not preserve the causal relationship between the origin of a
+request and the authority exercised at later steps. We introduce
+Proof-of-Continuity as a minimal authority propagation model in which each
+execution step must be causally linked to the previous step and may only
+propagate a non-expansive subset of the authority received from the origin.
+Under this model, the confused deputy condition cannot be satisfied as valid
+model behavior: any privilege exercised at a later step must already be present
+in the origin authority context.
+\end{abstract}
+
 \section{Model}
 
 We formalize the PIC (Provenance Identity Continuity) Model as follows.
 
 Let $P$ be a finite set of principals, $O$ a set of operations, and $R$ a set of resources.
 Define a privilege as $(o, r) \in O \times R$.
-
-Execution is modeled as a causal chain of hops:
-\[
-\pi = \langle (p_0, ops_0), (p_1, ops_1), \dots, (p_n, ops_n) \rangle
-\]
-where $p_0$ is the originator and each $ops_{i+1} \subseteq ops_i$ (monotonicity).
-Here $ops_i \subseteq O \times R$ denotes the set of privileges that principal $p_i$
-may exercise at hop $i$.
-
-\begin{definition}[PIC Model]
-A system enforces Provenance Identity Continuity if, for every execution chain $\pi$,
-the set of privileges at the final hop is bounded by the privileges at the origin:
-\[
-ops_n \subseteq ops_0
-\]
-and every privilege exercised at hop $n$ is causally linked to the origin via a verifiable chain.
-\end{definition}
-
-\begin{theorem}[PIC Safety]
-If the PIC Model holds, no principal can exercise a privilege not present at the origin.
-\end{theorem}
-
-\begin{proof}
-By construction, $ops_{i+1} \subseteq ops_i$ for all $i$, so $ops_n \subseteq ops_0$.
-Thus, any $(o,r) \in ops_n$ must also be in $ops_0$.
-Therefore, no privilege can be gained beyond the origin.
-\end{proof}
 
 Each principal $p$ has an associated privilege set:
 \[
@@ -57,10 +45,40 @@ Priv(p) \subseteq O \times R.
 
 A request is a message $req$ sent between principals and may contain a payload.
 
+Execution is modeled as a causal chain of steps:
+\[
+\pi = \langle (s_0, C_0), (s_1, C_1), \dots, (s_n, C_n) \rangle
+\]
+where $s_0$ is the origin step and $C_i \subseteq O \times R$ is the authority
+context carried at step $s_i$.
+
+\begin{definition}[PIC Model]
+A system enforces Provenance Identity Continuity if, for every execution chain
+$\pi$, each transition preserves causal continuity and monotonic authority
+restriction:
+\[
+C_{i+1} \subseteq C_i
+\]
+for all $i$, and every privilege exercised at hop $n$ is causally linked to the
+origin via a verifiable chain.
+\end{definition}
+
+\begin{theorem}[PIC Safety]
+If the PIC Model holds, no execution step can exercise a privilege not present
+at the origin.
+\end{theorem}
+
+\begin{proof}
+By construction, $C_{i+1} \subseteq C_i$ for all $i$, so $C_n \subseteq C_0$.
+Thus, any $(o,r) \in C_n$ must also be in $C_0$.
+Therefore, no privilege can be gained beyond the origin authority context.
+\end{proof}
+
 \section{Confused Deputy}
 
 \begin{definition}[Confused Deputy]
-A confused deputy occurs when there exist principals $U$ (user) and $D$ (deputy) such that:
+A confused deputy occurs when there exist principals $U$ (user) and $D$ (deputy)
+such that:
 \begin{enumerate}
     \item $(o,r) \notin Priv(U)$,
     \item $(o,r) \in Priv(D)$,
@@ -73,12 +91,13 @@ This definition does not depend on implementation details,
 only on the mismatch of authority and causality.
 
 \paragraph{Classical example (Hardy, 1988).}
-A FORTRAN compiler \texttt{FORT}, installed in the privileged directory \texttt{SYSX},
-holds ambient authority to write statistics to \texttt{(SYSX)STAT}. A user invokes the
-compiler and provides \texttt{(SYSX)BILL} as the debugging output filename.
-The compiler opens the target for output using its own authority over \texttt{SYSX},
-thereby overwriting \texttt{(SYSX)BILL}. The user never possessed this privilege,
-but the deputy exercised it on the user's behalf.
+A FORTRAN compiler \texttt{FORT}, installed in the privileged directory
+\texttt{SYSX}, holds ambient authority to write statistics to
+\texttt{(SYSX)STAT}. A user invokes the compiler and provides
+\texttt{(SYSX)BILL} as the debugging output filename. The compiler opens the
+target for output using its own authority over \texttt{SYSX}, thereby
+overwriting \texttt{(SYSX)BILL}. The user never possessed this privilege, but
+the deputy exercised it as a consequence of the user's request.
 
 \section{Proof-of-Possession (PoP)}
 
@@ -91,135 +110,180 @@ Auth(t) \subseteq O \times R.
 Possession implies usability:
 if a principal holds $t$, it may exercise all $(o,r)\in Auth(t)$.
 
-PoP systems do not constrain authority by causality or provenance.
+PoP systems constrain authority by artifact possession, but do not, by
+themselves, require that the exercised authority be a causal continuation of
+the authority context of the request.
 
-\subsection{Vulnerability Condition}
+\subsection{Authority Mixing}
 
 Assume:
 \begin{align}
 &(\text{write},r) \notin Priv(U) \tag{H1}\\
-&(\text{write},r) \in Priv(COMP) \tag{H2}
+&(\text{write},r) \in Priv(D) \tag{H2}
 \end{align}
 
-Here $U$ is the user and $COMP$ is a compiler-like service acting as deputy.
+Here $U$ is the user and $D$ is a deputy.
 
-Further assume:
+In a possession-based model, a deputy may hold multiple authority sources:
+its own ambient privileges, delegated tokens, bearer credentials, or other
+artifacts. The model authorizes an operation by checking whether some possessed
+authority source grants the requested privilege.
 
-\begin{quote}
-The payload of a request may influence control flow in $COMP$,
-including code paths that open a resource $r$ using $COMP$'s own authority.
-\end{quote}
-
-\begin{theorem}[PoP admits confused deputy]
-Under assumptions (H1)--(H2), there exists a request $req^\*$ such that $COMP$
-executes $(\text{write},r)$ as a result of processing $req^\*$.
+\begin{theorem}[PoP admits authority mixing]
+In a possession-based model, if an executor may select authority from any
+artifact or ambient privilege it holds independently of the request authority
+context, then the confused deputy condition is admissible in the model.
 \end{theorem}
 
 \begin{proof}
-Since $(\text{write},r)\in Priv(COMP)$, an internal code path may open $r$
-under COMP's ambient authority. Because user input influences that path,
-there exists a malicious payload $req^\*$ that triggers it. Thus $COMP$
-executes a privilege the user does not possess.
+Let a request originate from an authority context that does not contain
+$(o,r)$. Let the executor hold another authority context, artifact, or ambient
+privilege that does contain $(o,r)$.
+
+In a PoP model, authorization depends on the possession of an artifact or
+privilege granting $(o,r)$, not on whether that authority is a continuation of
+the request authority context. Therefore the model permits an execution in
+which the request causally triggers $(o,r)$ while $(o,r)$ is absent from the
+request authority context. This is exactly the confused deputy condition.
 \end{proof}
 
-This applies to all artifact-based delegation models:
-JWTs, sealed capabilities, cryptographic bearer credentials, etc.
+This applies to artifact-based delegation models whenever authorization is
+derived from possession rather than continuity: JWTs, sealed capabilities,
+cryptographic bearer credentials, and related mechanisms.
 
 \section{Proof-of-Continuity (PoC / PIC)}
 
 Execution is a causal chain:
 \[
-p_0 \rightarrow p_1 \rightarrow \dots \rightarrow p_n,
+s_0 \rightarrow s_1 \rightarrow \dots \rightarrow s_n.
 \]
-with $p_0 = U$.
 
-Each hop transfers:
+Let $C_i \subseteq O \times R$ denote the authority context carried by execution
+step $s_i$.
+
+We write:
 \[
-ops_{i+1} \subseteq ops_i. \tag{C1}
+PoR(s_i,s_{i+1})
+\]
+when $s_{i+1}$ is a valid causal continuation of $s_i$ within the same execution
+lineage.
+
+\begin{definition}[Proof of Continuity]
+A Proof-of-Continuity transition is valid iff:
+\[
+PoC(s_i,C_i,s_{i+1},C_{i+1})
+\Longleftrightarrow
+PoR(s_i,s_{i+1}) \land C_{i+1}\subseteq C_i.
+\]
+\end{definition}
+
+The first condition proves causal relationship.
+The second condition proves monotonic authority restriction.
+
+Thus, each hop transfers only:
+\[
+C_{i+1} \subseteq C_i. \tag{C1}
 \]
 
 Let:
 \[
-\pi = \langle (p_0,ops_0), (p_1,ops_1), \dots, (p_n,ops_n) \rangle.
+\pi = \langle (s_0,C_0), (s_1,C_1), \dots, (s_n,C_n) \rangle.
 \]
 
 \subsection{Authorization Rule}
+
 $(o,r)$ is authorized at the final hop iff:
 \[
-(o,r) \in \bigcap_{i=0}^{n} ops_i.
+(o,r) \in \bigcap_{i=0}^{n} C_i.
 \]
 
 Since the chain is monotonic decreasing:
 \[
-\bigcap_{i=0}^{n} ops_i = ops_n.
+C_n \subseteq C_{n-1} \subseteq \dots \subseteq C_0,
+\]
+we have:
+\[
+\bigcap_{i=0}^{n} C_i = C_n.
 \]
 
 Thus no hop may acquire authority not already present at the origin.
 
 \begin{lemma}[Irreversible loss of authority]
-If $(o,r)\notin ops_j$ for some hop $j$, then 
-$(o,r)\notin ops_k$ for all $k \ge j$.
+If $(o,r)\notin C_j$ for some hop $j$, then
+$(o,r)\notin C_k$ for all $k \ge j$.
 \end{lemma}
 
 \begin{proof}
-By monotonicity, $ops_k \subseteq ops_j$ for all $k\ge j$.
+By monotonicity, $C_k \subseteq C_j$ for all $k\ge j$.
+Therefore, if $(o,r)\notin C_j$, then $(o,r)$ cannot appear in any later
+authority context $C_k$.
 \end{proof}
 
 \section{Safety Property}
 
 \begin{definition}[Origin-bounded authority]
-A model enforces origin-bounded authority if every executable privilege
-at hop $n$ was originally granted at hop $0$.
+A model enforces origin-bounded authority if every executable privilege at hop
+$n$ was originally granted at hop $0$.
 \end{definition}
 
 \begin{theorem}[PoC prevents confused deputy]
-If $ops_0 = \{(\text{convert},r)\}$, then $(\text{write},r)$ can never be authorized.
+If $C_0 = \{(\text{convert},r)\}$, then $(\text{write},r)$ can never be
+authorized within the same execution chain.
 \end{theorem}
 
 \begin{proof}
-$(\text{write},r)\notin ops_0$ and $ops_{i+1}\subseteq ops_i$.
-Thus $(\text{write},r)\notin ops_n$.
+$(\text{write},r)\notin C_0$ and $C_{i+1}\subseteq C_i$ for every transition.
+Thus $(\text{write},r)\notin C_n$.
 \end{proof}
 
 \section{Elimination of the Confused Deputy}
 
-The Confused Deputy requires an ontological assumption:
-that authority is a transferable or rebindable object that a principal may
-hold or reinterpret on behalf of another.
+The confused deputy condition requires an authority mismatch:
+a privilege absent from the authority context of the request is nevertheless
+exercised as a consequence of that request.
 
-PIC eliminates this ontology entirely.
+PIC eliminates this condition as valid model behavior.
 
-\begin{theorem}[Confused Deputy is non-formulable under PIC]
-In any system satisfying PIC monotonicity $ops_{i+1}\subseteq ops_i$
-and origin-bounded authority $ops_n \subseteq ops_0$,
-the Confused Deputy conditions cannot be jointly satisfied.
+\begin{theorem}[Confused deputy is invalid under PIC]
+In any system satisfying PIC monotonicity $C_{i+1}\subseteq C_i$ and
+origin-bounded authority $C_n \subseteq C_0$, the confused deputy conditions
+cannot be jointly satisfied as valid behavior within the model.
 \end{theorem}
 
 \begin{proof}
-The Confused Deputy requires:
+The confused deputy condition requires:
 \[
-(o,r)\notin ops_0 \quad \text{and} \quad (o,r)\in ops_k \text{ for some } k>0.
+(o,r)\notin C_0 \quad \text{and} \quad (o,r)\in C_k \text{ for some } k>0.
 \]
 But PIC enforces:
 \[
-ops_k \subseteq ops_0 \;\; \forall k.
+C_k \subseteq C_0 \;\; \forall k.
 \]
-Thus if $(o,r)\notin ops_0$, it cannot appear in any $ops_k$.
-The privilege mismatch required for a Confused Deputy is impossible.
+Thus if $(o,r)\notin C_0$, it cannot appear in any $C_k$.
+The privilege mismatch required for a confused deputy is impossible within a
+valid PIC execution.
 \end{proof}
 
 \paragraph{Interpretation.}
-Authority in PIC is not something that a subject \emph{has};
+Authority in PIC is not something that a subject merely \emph{has};
 it is a continuity property of the execution chain.
 Since no hop may introduce or reinterpret authority absent at the origin,
-no deputy can be ``confused.''  
-The attack does not occur; it is not even definable in the model.
+a confused-deputy execution may still be attempted physically, but it cannot be
+accepted as valid behavior within the PIC model.
 
 \section{Discussion}
 
-PoP systems conflate authority and possession, enabling confused deputy attacks.
-PIC/PoC systems propagate only non-expansive subsets of authority,
-ensuring no downstream service can perform operations not authorized at the origin.
+PoP systems conflate authority and possession, enabling authority mixing across
+execution contexts. PIC/PoC systems instead propagate only non-expansive subsets
+of authority along a causally verified execution chain.
+
+Proof of Possession proves artifact control.
+Proof of Relationship proves execution relationship.
+Proof of Continuity proves authority continuation.
+
+The resulting security invariant is simple: no downstream service can perform,
+as part of a valid execution chain, an operation that was not authorized at the
+origin.
 
 \section*{Related Work}
 
