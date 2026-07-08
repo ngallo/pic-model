@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1783513308.69087 "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" "pic-model.pdf" "pic-model" 1783513309.01702 0
-  "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" 1783513308.05731 10418 44e87467745d883389f8329df8ab914a ""
+["pdflatex"] 1783523338.17289 "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" "pic-model.pdf" "pic-model" 1783523338.51956 0
+  "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" 1783523282.53166 33772 4edfe2ba37fbccd3852d70a66b12ed8e ""
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -24,8 +24,6 @@
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1136768653 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1136768653 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1136768653 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
-  "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmti7.tfm" 1136768653 1492 86331993fe614793f5e7e755835c31c5 ""
-  "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmti8.tfm" 1136768653 1504 1747189e0441d1c18f3ea56fafc1c480 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1136768653 768 1321e9409b4137d6fb428ac9dc956269 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1248133631 34811 78b52f49e893bcba91bd7581cdc144c0 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1248133631 32080 340ef9bf63678554ee606688e7b5339d ""
@@ -82,9 +80,9 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1759087145 5528139 daf1353d2d3d7fed9df2ebbf1b26218e ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1759087269 3628859 1441feffd97cccdc369188e738ca193c ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "pic-model.aux" 1783513308.98525 1540 8ab3cd2ca5c5f5fca3c3da6e207caee6 "pdflatex"
-  "pic-model.out" 1783513308.98578 1308 a55bf1f63d28e8b98374ef397db274c4 "pdflatex"
-  "pic-model.tex" 1783513308.05731 10418 44e87467745d883389f8329df8ab914a ""
+  "pic-model.aux" 1783523338.48605 4294 9f27fe7c82facc4cc30c4ce6224ea4ea "pdflatex"
+  "pic-model.out" 1783523338.48649 2500 3fbe6bdb365ba3aaa710f27e685ca63b "pdflatex"
+  "pic-model.tex" 1783523282.53166 33772 4edfe2ba37fbccd3852d70a66b12ed8e ""
   (generated)
   "pic-model.aux"
   "pic-model.log"

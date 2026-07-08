@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(latexmk -pdf -interaction=nonstopmode pic-model.tex)"
+    ]
+  }
+}
