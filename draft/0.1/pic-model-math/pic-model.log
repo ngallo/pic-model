@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  8 DEC 2025 17:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  8 JUL 2026 14:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex
-(/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex
+**/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex
+(/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-09-02>
 (/usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
@@ -262,7 +262,7 @@ Overfull \hbox (9.71243pt too wide) in paragraph at lines 76--82
 
 
 [2]
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:114: Missing { inserted.
+/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:114: Missing { inserted.
 <to be read again> 
                    \discretionary 
 l.114 ...H1)--(H2), there exists a request $req^\*
@@ -272,7 +272,7 @@ You might want to delete and/or insert some corrections
 so that I will find a matching right brace soon.
 (If you're confused by all this, try typing `I}' now.)
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:114: Missing } inserted.
+/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:114: Missing } inserted.
 <inserted text> 
                 }
 l.114 ...1)--(H2), there exists a request $req^\*$
@@ -283,7 +283,7 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:115: Missing { inserted.
+/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:115: Missing { inserted.
 <to be read again> 
                    \discretionary 
 l.115 ...te},r)$ as a result of processing $req^\*
@@ -293,7 +293,7 @@ You might want to delete and/or insert some corrections
 so that I will find a matching right brace soon.
 (If you're confused by all this, try typing `I}' now.)
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:115: Missing } inserted.
+/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:115: Missing } inserted.
 <inserted text> 
                 }
 l.115 ...e},r)$ as a result of processing $req^\*$
@@ -304,7 +304,7 @@ With luck, this will get me unwedged. But if you
 really didn't forget anything, try typing `2' now; then
 my insertion and my current dilemma will both disappear.
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:121: Missing { inserted.
+/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:121: Missing { inserted.
 <to be read again> 
                    \discretionary 
 l.121 there exists a malicious payload $req^\*
@@ -314,7 +314,7 @@ You might want to delete and/or insert some corrections
 so that I will find a matching right brace soon.
 (If you're confused by all this, try typing `I}' now.)
 
-/Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex:121: Missing } inserted.
+/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex:121: Missing } inserted.
 <inserted text> 
                 }
 l.121 there exists a malicious payload $req^\*$
@@ -349,18 +349,18 @@ Package rerunfilecheck Info: Checksums for `pic-model.out':
 (rerunfilecheck)             After:  E9BD9D62D714BED725A964A9248833BC;1343.
  ) 
 Here is how much of TeX's memory you used:
- 8955 strings out of 467748
- 135234 string characters out of 5426959
+ 8947 strings out of 467748
+ 135121 string characters out of 5426959
  543709 words of memory out of 5000000
  37533 multiletter control sequences out of 15000+600000
  636648 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,634b,534s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,14n,79p,614b,536s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (6 pages, 173496 bytes).
+Output written on pic-model.pdf (6 pages, 172372 bytes).
 PDF statistics:
- 146 PDF objects out of 1000 (max. 8388607)
- 112 compressed objects within 2 object streams
- 47 named destinations out of 1000 (max. 500000)
+ 137 PDF objects out of 1000 (max. 8388607)
+ 103 compressed objects within 2 object streams
+ 39 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

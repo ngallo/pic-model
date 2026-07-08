@@ -223,12 +223,14 @@ ensuring no downstream service can perform operations not authorized at the orig
 
 \section*{Related Work}
 
-The confused deputy was formalized by Hardy (1988).
-Capability theory originates in Dennis \& Van Horn (1966).
-Confinement was introduced by Lampson (1973).
-EROS (Shapiro et al., 1999) and seL4 (Klein et al., 2009) provide strong isolation.
-Distributed authorization theories include Abadi et al. (1993--2000) and SPKI (RFC 2693).
-Modern zero-trust models (BeyondCorp, SPIFFE) apply causal constraints similar in spirit.
+The confused deputy problem was introduced by Hardy (1988).
+This paper focuses narrowly on the confused deputy as a mismatch between
+authority and causality, and compares possession-based authority propagation
+with provenance-continuity-based authority propagation.
+
+The PIC model is developed independently in Gallo (2025), where Provenance
+Identity Continuity is introduced as a general model for distributed execution
+systems.
 
 \section*{Acknowledgments}
 
@@ -238,27 +240,13 @@ All conceptual contributions, models, and proofs are solely the author's.
 \section*{References}
 
 \begin{enumerate}
+\item N. Hardy.
+``The Confused Deputy.''
+\emph{ACM Operating Systems Review}, 1988.
+
 \item N. Gallo.
-   ``PIC Model — Provenance Identity Continuity for Distributed Execution Systems.''
-   Zenodo (2025). \url{https://zenodo.org/records/17777421}.
-
-\item N. Hardy. ``The Confused Deputy.'' Operating Systems Review, 1988.
-
-\item Dennis \& Van Horn. ``Programming Semantics for Multiprogrammed Computations.'' CACM, 1966.
-
-\item B. Lampson. ``A Note on the Confinement Problem.'' CACM, 1973.
-
-\item Shapiro et al. ``EROS: A Fast Capability System.'' SOSP, 1999.
-
-\item Klein et al. ``seL4: Formal Verification of an OS Kernel.'' SOSP, 2009.
-
-\item Abadi et al. ``A Calculus for Access Control.'' TOPLAS, 1993--2000.
-
-\item C. Ellison et al. ``SPKI Certificate Theory.'' RFC 2693, IETF, 1999.
-
-\item Google. ``BeyondCorp: A New Approach to Enterprise Security.'' 2014.
-
-\item SPIFFE Working Group. ``Secure Production Identity Framework for Everyone.''
+``PIC Model --- Provenance Identity Continuity for Distributed Execution Systems.''
+Zenodo, 2025. \url{https://zenodo.org/records/17777421}.
 \end{enumerate}
 
 \end{document}

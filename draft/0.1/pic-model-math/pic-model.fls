@@ -1,8 +1,8 @@
-PWD /Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math
+PWD /Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math
 INPUT /usr/local/texlive/2025/texmf.cnf
 INPUT /usr/local/texlive/2025/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/nicolagallo/source/ngallo/wg-workspaces/repos/pic-model/draft/0.1/pic-model-math/pic-model.tex
+INPUT /Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex
 OUTPUT pic-model.log
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/base/article.cls
