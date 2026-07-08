@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(latexmk -pdf -interaction=nonstopmode pic-model.tex)"
+      "Bash(latexmk -pdf -interaction=nonstopmode pic-model.tex)",
+      "Bash(grep -nE \"\\\\\\\\\\\\\\\\le\\([^f]|$\\)\" pic-model.tex)"
     ]
   }
 }

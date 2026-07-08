@@ -14,6 +14,7 @@ Distributed Systems and AI Agents}
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
 
 \begin{document}
 \maketitle
@@ -170,9 +171,9 @@ request authority context. This is exactly the confused deputy condition.
 \end{proof}
 
 This applies to any model in which authorization is derived from possession
-independently of the causal lineage: JWTs, bearer credentials, and even
-capabilities when a held capability may be applied outside the execution that
-requested it. The gap is not possession itself but the absence of a temporal
+independently of the causal lineage, including JWTs, bearer credentials, and
+capabilities treated as held artifacts when they may be applied outside the
+execution that requested them. The gap is not possession itself but the absence of a temporal
 binding between the authority used and the execution that caused its use.
 
 \section{Proof-of-Continuity (PoC / PIC)}
@@ -308,6 +309,11 @@ different causes. A request to \emph{pay 100}, issued once by the user and once
 by a replay, is indistinguishable under possession, yet the two are distinct
 executions: one continues an authorizing lineage, the other continues none.
 Possession is the projection onto $O \times R$ that forgets the lineage axis.
+Possession is the spatial component of authority; lineage is its temporal
+component, and a possession-only model is therefore a projection of authority
+that forgets time. This does not make possession-based models wrong; it makes
+them incomplete for the multi-hop case, where authority continuation becomes a
+temporal property.
 
 In the projection language this is the \emph{temporal reading} of the confused
 deputy of Definition~\ref{def:confused}: an action spatially valid but temporally invalid --- the
@@ -326,12 +332,12 @@ capabilities, not merely reduced. What \emph{capability-as-possession} lacks ---
 a held capability applied without occurrence binding --- is the extension of that
 binding across a chain: it may still be exercised outside the lineage that
 requested it, and in that use falls into lineage-invariant possession.
-Proof-of-Continuity is exactly this extension, the transitive
-composition of the single-hop binding across the whole execution. Capability
-invocation can be viewed as a one-hop instance of the continuity discipline; PIC
-generalizes this discipline across multi-hop execution. The temporal dimension
-is not an optional stronger check: it is a dimension that possession alone cannot
-encode.
+Proof-of-Continuity is exactly this extension: a capability invocation can be
+viewed as a one-hop instance of the continuity discipline, and PIC generalizes
+that discipline across multi-hop execution. PIC is therefore a temporal
+refinement of capability-style authority propagation, not a replacement for it;
+the temporal dimension is not an optional stronger check but one that possession
+alone cannot encode.
 
 \subsection{Projection: Lineage-Invariant Possession Cannot Individuate Occurrences}
 \label{sec:impossibility}
@@ -392,15 +398,16 @@ Whether the lineage is carried alongside the request or embedded inside the
 artifact is immaterial: a token that encodes a nonce or a causal context makes
 $A$ depend on $\ell$ and is therefore continuity-aware by definition, not
 possession-based. The distinction is not where the information lives but whether
-the decision reads it. Possession does not fail for lack of engineering; by the
-first theorem it is structurally unable to individuate occurrences, and every
-working fix is lineage-sensitive --- continuity-aware --- rather than
-possession-based.
+the decision reads it. The limitation is not an engineering failure of possession-based systems; it is
+a modeling boundary of lineage-invariant authorization: by the first theorem it
+is structurally unable to individuate occurrences, and every working fix is
+lineage-sensitive --- continuity-aware --- rather than lineage-invariant.
 
 \paragraph{Why the possession model is representative.}
-A bearer token is lineage-invariant by construction: a JWT asserts that ``the
-holder may read,'' not the causal chain that led to its use; the decision reads
-$(o,r)$ and the token's validity, never $\ell$. Such systems often work not because they
+In the abstraction considered here, a bearer token used without explicit context
+or lineage binding is lineage-invariant: the decision reads the artifact and the
+requested privilege, not the causal lineage of the use. A JWT, for instance,
+asserts that ``the holder may read,'' not the causal chain that led to it. Such systems often work not because they
 encode continuity explicitly, but because a perimeter supplies part of it
 implicitly ---
 mutual TLS, network boundaries, and transport-inferred delegation often stand in
@@ -409,6 +416,65 @@ multi-organisation chains on the public internet, and autonomous AI agents
 calling tools and services --- lineage-invariance becomes visible as a
 vulnerability at the second hop. The definition of a possession policy above
 therefore describes deployed systems, not a caricature of them.
+
+\subsection{A Trade-off Theorem for Authority Propagation}
+
+The projection of Section~\ref{sec:impossibility} is the technical basis for a
+trade-off among three properties an authority-propagation system may be asked to
+satisfy at once.
+
+\begin{definition}[Lineage-invariant authorization]
+Authorization of an event $e = (o,r,\ell)$ depends only on the possessed
+authority for $(o,r)$, not on the lineage $\ell$ that caused the event.
+\end{definition}
+
+\begin{definition}[Authority-mixing-capable delegation]
+An executor may hold both a request-derived authority context $C_0$ and an
+independent authority source $A_D$, with some $(o,r)$ such that
+$(o,r) \notin C_0$ and $(o,r) \in A_D$.
+\end{definition}
+
+\begin{definition}[Confused-deputy safety]
+No request whose origin context $C_0$ lacks $(o,r)$ can cause a later executor to
+exercise $(o,r)$ using authority not derived from that request.
+\end{definition}
+
+\begin{theorem}[Possession--delegation--safety trade-off]
+No authority-propagation system can simultaneously satisfy lineage-invariant
+authorization, authority-mixing-capable delegation, and confused-deputy safety.
+\end{theorem}
+
+\begin{proof}
+Suppose all three hold. By authority-mixing-capable delegation there is an
+executor $D$ with a request-derived context $C_0$ and an independent source
+$A_D$, and an $(o,r)$ with $(o,r) \notin C_0$ and $(o,r) \in A_D$. Let a request
+cause $D$ to process a target requiring $(o,r)$. Lineage-invariant authorization
+reads that $D$ possesses $A_D$ granting $(o,r)$; but by the projection theorem of
+Section~\ref{sec:impossibility}, events sharing $(o,r)$ yet differing in lineage
+receive the same judgment, so the policy cannot condition on whether $A_D$
+belongs to the lineage of this request. The system therefore admits an execution
+in which the request causes $D$ to exercise $(o,r)$ while $(o,r) \notin C_0$,
+violating confused-deputy safety --- a contradiction.
+\end{proof}
+
+The theorem is not an attack on possession: it shows that lineage-invariant
+possession is insufficient for multi-hop authority propagation precisely when
+authority mixing and confused-deputy safety are both required. The trade-off is
+resolved only by relinquishing one property --- forbidding
+authority-mixing-capable delegation, accepting confused-deputy executions, or
+making authorization lineage-sensitive. Proof-of-Continuity takes the third
+option: it does not remove possession but restores the missing temporal
+coordinate, making authorization lineage-sensitive so that each authority use is
+a valid continuation of the context that caused it. The contribution is not to
+reject possession but to show that possession is the spatial projection of a
+richer authority relation; the missing coordinate is temporal lineage.
+
+\begin{corollary}[Continuity restores confused-deputy safety]
+Relinquishing lineage-invariance regains safety: under non-expansive propagation
+$C_{i+1} \subseteq C_i$, so $C_k \subseteq C_0$, and an $(o,r) \notin C_0$ cannot
+appear at any later hop. This is the impossibility established in
+Section~\ref{sec:cdimposs}.
+\end{corollary}
 
 \section{Safety Property}
 \label{sec:openpassthrough}
@@ -457,6 +523,7 @@ within the same execution chain: $(\text{write},r)\notin C_0$ and
 $C_{i+1}\subseteq C_i$ at every transition, so $(\text{write},r)\notin C_n$.
 
 \section{Impossibility of the Confused Deputy}
+\label{sec:cdimposs}
 
 The confused deputy condition requires an authority mismatch:
 a privilege absent from the authority context of the request is nevertheless
@@ -475,17 +542,9 @@ cannot be jointly satisfied as valid behavior within the model.
 \end{theorem}
 
 \begin{proof}
-The confused deputy condition requires:
-\[
-(o,r)\notin C_0 \quad \text{and} \quad (o,r)\in C_k \text{ for some } k>0.
-\]
-But PIC enforces:
-\[
-C_k \subseteq C_0 \;\; \forall k.
-\]
-Thus if $(o,r)\notin C_0$, it cannot appear in any $C_k$.
-The privilege mismatch required for a confused deputy is impossible within a
-valid PIC execution.
+Immediate from monotonicity: $C_k \subseteq C_0$ for all $k$, so
+$(o,r)\notin C_0$ implies $(o,r)\notin C_k$. The privilege mismatch a confused
+deputy requires is therefore unsatisfiable in a valid PIC execution.
 \end{proof}
 
 \paragraph{Interpretation.}
@@ -497,13 +556,20 @@ accepted as valid behavior within the PIC model.
 
 \section{Discussion}
 
-PoP systems conflate authority and possession, enabling authority mixing across
-execution contexts. PIC/PoC systems instead propagate only non-expansive subsets
-of authority along a causally verified execution chain.
+PoP systems intentionally derive authorization from artifact control, which is
+often useful and necessary for local authorization decisions. In multi-hop
+execution, however, artifact control alone does not determine whether a later use
+is a valid continuation of the authority lineage that caused it. PIC/PoC systems
+instead propagate only non-expansive subsets of authority along a causally
+verified execution chain.
 
 Proof of Possession proves artifact control.
 Proof of Relationship proves execution relationship.
 Proof of Continuity proves authority continuation.
+Proof-of-Possession establishes control over an authority artifact at a point in
+execution; it does not by itself establish that a later use is a valid
+continuation of the authority lineage that caused it, which is the temporal
+condition Proof-of-Continuity adds.
 
 \paragraph{Design space.}
 The temporal binding may be realized in two ways: embedded \emph{inside} the
@@ -514,7 +580,21 @@ the two approaches are complementary rather than exclusive.
 
 The resulting security invariant is simple: no downstream service can perform,
 as part of a valid execution chain, an operation that was not authorized at the
-origin.
+origin. This is a modeling refinement rather than a criticism of existing
+mechanisms: possession, capabilities, bearer tokens, and proof-of-possession
+bindings remain useful local authorization tools, while PoC makes explicit the
+additional temporal condition needed when authority is propagated across an
+execution lineage.
+
+\paragraph{Authority as a distributed transaction.}
+A multi-hop authority chain is a distributed transaction over authority rather
+than over data. A possessed artifact enables a local authorization decision at
+the point of use, which is often necessary for deployability, performance, and
+loose coupling; but revocation, delegation state, scope changes, and lineage are
+global authority facts. Local authorization and global authority consistency can
+diverge when these facts are not represented at the point of use. PoC addresses
+this divergence by carrying lineage explicitly and requiring non-expansive
+authority propagation across the chain.
 
 \paragraph{Application to AI agents.}
 For the purposes of authority propagation, AI agents can be modeled as autonomous
@@ -567,14 +647,18 @@ $\mathcal{L}$ --- so that possession-based mitigations that distinguish such
 cases must become lineage-sensitive, hence continuity-aware. The
 object-capability literature~\cite{miller2006robust} analyses the confused
 deputy as a separation of designation from authority, which capabilities
-reunify; this is the spatial resolution. Our impossibility result adds the temporal axis: even a correctly
-designated capability, treated as possession, cannot separate two occurrences
-that differ only in lineage.
+reunify; this is the spatial resolution. Our result adds the temporal axis: in the abstraction of this paper, a capability
+treated only as a portable held artifact, without occurrence or lineage binding,
+falls into the lineage-invariant projection and cannot distinguish two
+occurrences that differ only in lineage.
 
 \paragraph{Bearer tokens, macaroons, and proof-of-possession bindings.}
-The OAuth 2.0 framework~\cite{hardt2012oauth,jones2012bearer} issues bearer
-tokens whose authorization decision reads the token and $(o,r)$, never the
-lineage: they are lineage-invariant, and thus subject to the first theorem.
+OAuth 2.0 includes bearer-token usage as a common authorization
+pattern~\cite{hardt2012oauth,jones2012bearer}. In the abstraction considered
+here, a bearer token used without explicit
+context or lineage binding supports an authorization decision that reads the
+token and $(o,r)$, but not the causal lineage of the use: it is
+lineage-invariant, and thus subject to the first theorem.
 Macaroons~\cite{birgisson2014macaroons} add \emph{caveats} that only attenuate
 and chain them cryptographically --- precisely our monotone attenuation
 $C_{i+1}\preceq C_i$ along a chain --- yet a macaroon remains a bearer
@@ -609,8 +693,10 @@ a partial-order generalization of $\mathcal{L}$. Third, the construction of
 $PoR$ is abstract: concrete implementations may use signatures, hash chains,
 verifiable credentials, secure channels, trusted execution environments, or
 tamper-evident logs, with implementation-dependent security and performance.
-Fourth, naive lineage validation may cost work proportional to chain length;
-checkpoints, summarized proofs, or accumulator-style constructions can reduce it.
+Fourth, lineage validation is an implementation concern rather than a limitation
+of the model: practical realizations need not revalidate an entire history at
+every hop, and may use checkpoints, summarized proofs, compact encodings, or
+accumulator-style constructions to keep validation cost bounded.
 Finally, heterogeneous systems require policy translations $\mathcal{T}$ between
 local vocabularies, whose synthesis, verification, and governance we leave to
 future work.
@@ -627,14 +713,17 @@ privilege but arise from different causes; conversely, under Proof-of-Continuity
 privilege absent from the origin authority context cannot appear later in the
 same valid execution chain. The confused deputy condition is therefore not
 accepted as valid model behavior --- it is precisely the authority/causality
-mismatch that continuity rules out.
+mismatch that continuity rules out. More broadly, PoC reframes authority
+propagation as a temporal property of an execution lineage rather than merely a
+static property of artifact possession.
 
 \section*{Acknowledgments}
 
-Automated language-assistance tools were used only to speed
-up drafting and to improve the fluency of the writing; the ideas, design, and
-formulation originate entirely with the author, and these tools contributed no
-conceptual content.
+The model, definitions, arguments, and mathematical formalization presented in
+this paper are the author's own work. Automated language-assistance tools were
+used only to accelerate drafting and LaTeX editing, and to help present the
+author's reasoning through clearer exposition, English phrasing, mathematical
+notation, and formatting.
 
 \begin{thebibliography}{99}
 
