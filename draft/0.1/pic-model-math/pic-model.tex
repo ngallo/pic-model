@@ -108,6 +108,15 @@ for all $i$, and every privilege exercised at hop $n$ is causally linked to the
 origin via a verifiable chain.
 \end{definition}
 
+The single-hop causal link asserted at each transition is a \emph{Proof of
+Relationship} ($PoR$): evidence that a step is a valid continuation of its
+immediate predecessor within the same lineage. The PIC Model thus combines two
+conditions --- causal linkage, witnessed hop-by-hop by $PoR$, and monotonic
+restriction $C_{i+1}\subseteq C_i$ --- both introduced informally here and
+defined formally in Section~\ref{sec:poc}, where continuity is built as the
+transitive composition of these relationships. The theorem below states the
+authority consequence of the second condition.
+
 \begin{theorem}[PIC Safety]
 If the PIC Model holds, no execution step can exercise a privilege not present
 at the origin.
@@ -246,6 +255,7 @@ confused-deputy condition cannot arise (Section~\ref{sec:cdimposs}), because
 authority is defined only as a continuation of the causing lineage.
 
 \section{Proof-of-Continuity (PoC / PIC)}
+\label{sec:poc}
 
 Execution is a causal chain:
 \[
