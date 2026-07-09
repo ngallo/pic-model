@@ -71,7 +71,11 @@ service account; or another authenticated permissioned entity. What matters for 
 that a privilege set $Priv(p)$ is associated with it and that it can express an
 intent within those privileges. When a permissioned entity $p$ expresses such an
 intent, it selects a subset of $Priv(p)$; that subset becomes the origin
-authority context $C_0 \subseteq Priv(p)$ for a new execution lineage.
+authority context $C_0 \subseteq Priv(p)$ for a new execution lineage. The
+privileges in $Priv(p)$ may be expressed at the level of operations the principal
+is entitled to \emph{cause}, not only those it performs directly; a downstream hop
+may realize such an authority through a locally different operation vocabulary via
+the policy translation $\mathcal{T}$ of Section~\ref{sec:poc}.
 
 For example, suppose Bob holds the privileges $(\text{read},\text{Book})$ and
 $(\text{write},\text{Book})$. When Bob expresses an intent he selects a subset ---
@@ -812,8 +816,8 @@ reappears as an agent-influenced parameter --- a tenant id, document id, role id
 queue message, or request target. When the caller influences this target and the
 agent satisfies it using authority from a different context, the result is the
 confused deputy problem in distributed form. PIC binds each tool call and downstream request to
-the causal lineage that triggered it, so an agent cannot apply authority outside
-the execution that caused the action. An agent asked to summarize a document
+the causal lineage that triggered it, so authority applied outside the execution
+that caused the action is not a valid continuation. An agent asked to summarize a document
 carrying an indirect prompt injection --- instructions to delete files or
 exfiltrate secrets --- may attempt those actions, but under PoC they are valid
 only if the origin authority context holds the corresponding privileges: if it
@@ -859,6 +863,15 @@ reunify; this is the spatial resolution. Our result adds the temporal axis: in t
 treated only as a portable held artifact, without occurrence or lineage binding,
 falls into the lineage-invariant projection and cannot distinguish two
 occurrences that differ only in lineage.
+
+Provenance-based access control~\cite{park2012provenance} uses the recorded
+provenance of objects as an input to authorization decisions; PIC instead makes
+the causal lineage of the \emph{execution} itself the carrier of a non-expansive
+authority context. Decentralized information-flow
+control~\cite{myers1997decentralized} propagates labels on data under monotone
+restriction; Proof-of-Continuity propagates authority along an execution lineage
+under the same monotonicity discipline, but the propagated object differs ---
+authority rather than information-flow labels.
 
 \paragraph{Bearer tokens, macaroons, and proof-of-possession bindings.}
 OAuth 2.0 includes bearer-token usage as a common authorization
@@ -906,6 +919,13 @@ Fourth, lineage validation is an implementation concern rather than a limitation
 of the model: practical realizations need not revalidate an entire history at
 every hop, and may use checkpoints, summarized proofs, compact encodings, or
 accumulator-style constructions to keep validation cost bounded.
+Fifth, lineage origination: the model constrains authority \emph{within} a lineage
+but does not itself govern when an executor may legitimately open a new lineage
+rooted in its own privileges. An adversarially influenced executor could
+misclassify a request-caused action as self-originated, performing it outside the
+victim's chain without expanding any $C_i$. Distinguishing request-caused actions
+from executor-originated ones is a responsibility of the $PoR$ construction and the
+enforcement architecture, left to future work.
 Finally, heterogeneous systems require policy translations $\mathcal{T}$ between
 local vocabularies, whose synthesis, verification, and governance we leave to
 future work.
@@ -1053,6 +1073,18 @@ N. Gallo.
 \newblock Authority Propagation Models: PoP vs PoC and the Confused Deputy
 Problem.
 \newblock Zenodo, 2025. \url{https://doi.org/10.5281/zenodo.17833000}.
+
+\bibitem{park2012provenance}
+J. Park, D. Nguyen, and R. Sandhu.
+\newblock A Provenance-Based Access Control Model.
+\newblock In \emph{Proceedings of the International Conference on Privacy,
+Security and Trust (PST)}, 2012.
+
+\bibitem{myers1997decentralized}
+A. C. Myers and B. Liskov.
+\newblock A Decentralized Model for Information Flow Control.
+\newblock In \emph{Proceedings of the ACM Symposium on Operating Systems
+Principles (SOSP)}, 1997.
 
 \end{thebibliography}
 
