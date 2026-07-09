@@ -271,6 +271,49 @@ represented by cryptographic commitments, references, hashes, signatures, or
 summarized proofs that allow each hop to prove its place in the lineage without
 transporting the entire history.
 
+\paragraph{Embedding execution in the authority model.}
+Proof-of-Continuity is defined precisely for this setting: the successor step need
+not be known, selected, instantiated, or provisioned when the predecessor
+completes its step. Execution is then a sequence of causal steps in time, not a
+sequence of positions fixed by topology: the upstream executor acts at some time
+$t$, while the downstream executor may only come into existence at a later time
+$t' > t$. Pre-binding authority to a concrete holder, key, or channel of the
+successor is therefore not always possible, and placing bearer artifacts or shared
+secrets in an intermediary would shift the trust problem. When step $i$ causes
+step $i+1$, what must hold across the gap is not the identity of the successor,
+nor a policy attached to that identity, but that its authority continues the
+context that caused it. An artifact obtained purely from possession --- a workload
+identity, a service account, or a bound token --- authenticates the holder and its
+origin, but, carrying no history of the specific chain, it is identical across
+distinct executions: it identifies who acts, not which causal chain produced this
+request. Such possession therefore establishes origin, not continuity; the lineage
+question --- whether the authority exercised by the later step is a valid
+continuation of the causing context --- remains open. Re-deriving authority at
+$i+1$ from a fresh assertion about the successor, rather than from its
+relationship to the causing step, reintroduces exactly the individuation gap
+formalized in Section~\ref{sec:impossibility}: distinct occurrences that share the
+successor's attributes become indistinguishable, which is the structural condition
+behind the confused-deputy pattern (Definition~\ref{def:confused}). Continuity is
+not exposed to this, because it is not self-assertable: it cannot be constructed at
+$i+1$ in isolation but is defined only relative to the predecessor, so a successor
+can \emph{demonstrate} a continuation but cannot mint one. A predecessor may
+instead emit a continuation later consumed by some successor:
+\[
+(s_i,C_i)
+\;\xrightarrow{\;\mathrm{emit}\;}
+\text{unknown next hop}
+\;\xrightarrow{\;PoR,\; C_{i+1}\subseteq C_i\;}
+(s_{i+1},C_{i+1}).
+\]
+What persists across the gap is not possession by a pre-existing holder, but valid
+continuity: a causal relationship to the predecessor and a non-expansive successor
+authority context. Proof of Relationship witnesses this relationship as a property
+of the execution rather than of a holder: the successor demonstrates a link to the
+context of the step that caused it, and monotone attenuation
+($C_{i+1} \preceq C_i$) ensures that what it continues never expands. Proof of
+Relationship composed transitively under this attenuation is Proof-of-Continuity,
+the propagation discipline of the PIC model.
+
 \paragraph{Heterogeneous operation spaces.}
 The notation assumes a common privilege universe $O \times R$. In heterogeneous
 systems different hops use different vocabularies; let $O_i \times R_i$ be the
