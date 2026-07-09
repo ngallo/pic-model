@@ -218,7 +218,8 @@ Let an executor's held authority be a family $\{A_j\}$ of sources --- ambient
 privileges, delegated tokens, and bound or sender-constrained artifacts. A
 \emph{selection function} $\sigma$ chooses, for a requested $(o,r)$, some source
 $A_j$ with $(o,r) \in A_j$, independently of the request lineage $\ell$ --- the
-causal lineage of the request being processed.
+causal lineage of the request being processed, formalized in
+Section~\ref{sec:poc}.
 \end{definition}
 
 \begin{theorem}[PoP admits authority mixing]
@@ -236,7 +237,8 @@ In a PoP model, authorization depends on the possession of an artifact or
 privilege granting $(o,r)$, not on whether that authority is a continuation of
 the request authority context. Therefore the model permits an execution in
 which the request causally triggers $(o,r)$ while $(o,r)$ is absent from the
-request authority context. This is exactly the confused deputy condition.
+request authority context. This is the confused deputy condition of
+Definition~\ref{def:confused}.
 \end{proof}
 
 This applies to any model in which authorization is derived from possession
