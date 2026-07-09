@@ -762,11 +762,15 @@ authority \emph{is} continuous --- it exists only as the ongoing continuation of
 an origin, not as a possession detached from its lineage.
 
 \paragraph{Design space.}
-The temporal binding may be realized in two ways: embedded \emph{inside} the
-authority itself, as attenuated and context-bound capabilities, or maintained
-\emph{alongside} it as an explicit continuity proof. PIC takes the latter
-position, treating continuity as a first-class property of the execution chain;
-the two approaches are complementary rather than exclusive.
+The temporal binding may be realized in two ways: carried \emph{inside} the
+authority artifact itself, as attenuated and context-bound capabilities, or
+maintained \emph{alongside} it as an explicit continuity proof. Either is
+continuity-aware: by Theorem~\ref{thm:reintro} what matters is not where the
+binding lives but whether the authorization decision reads it. An artifact whose
+binding is ignored --- presented outside the occurrence that carried it ---
+reverts instead to lineage-invariant possession. PIC takes the latter position,
+treating continuity as a first-class property of the execution chain; the two
+approaches are complementary rather than exclusive.
 
 The resulting security invariant is simple: no downstream service can perform,
 as part of a valid execution chain, an operation that was not authorized at the

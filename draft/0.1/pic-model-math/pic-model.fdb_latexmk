@@ -1,6 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1783623066.13761 "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" "pic-model.pdf" "pic-model" 1783623066.56873 0
-  "/Users/nicolagallo/source/ngallo/pic-model/draft/0.1/pic-model-math/pic-model.tex" 1783623065.4576 54157 b4263c95868587c47167f18e0c45f852 ""
+["pdflatex"] 1783623356.85359 "pic-model.tex" "pic-model.pdf" "pic-model" 1783623357.27331 0
   "/usr/local/texlive/2025/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/local/texlive/2025/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -91,9 +90,9 @@
   "/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1759087145 5528139 daf1353d2d3d7fed9df2ebbf1b26218e ""
   "/usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1759087269 3628859 1441feffd97cccdc369188e738ca193c ""
   "/usr/local/texlive/2025/texmf.cnf" 1741450484 577 418a7058ec8e006d8704f60ecd22c938 ""
-  "pic-model.aux" 1783623066.53007 6400 5749c05fecd71a22bf5d55fe28528deb "pdflatex"
-  "pic-model.out" 1783623066.53058 3075 23c750ebff6b836f1aa9b9a00eff2c55 "pdflatex"
-  "pic-model.tex" 1783623065.4576 54157 b4263c95868587c47167f18e0c45f852 ""
+  "pic-model.aux" 1783623357.23005 6400 c188120e08bce367e72d07e70119195d "pdflatex"
+  "pic-model.out" 1783623357.23051 3075 23c750ebff6b836f1aa9b9a00eff2c55 "pdflatex"
+  "pic-model.tex" 1783623348.51244 54458 c5c4e22b6557597c729101721b06639b ""
   (generated)
   "pic-model.aux"
   "pic-model.log"
