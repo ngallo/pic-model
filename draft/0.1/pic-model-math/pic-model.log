@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 16:49
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 17:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -326,7 +326,7 @@ Underfull \hbox (badness 1009) in paragraph at lines 74--84
 [8]
 
 [9]
-Underfull \hbox (badness 7273) in paragraph at lines 461--471
+Underfull \hbox (badness 7273) in paragraph at lines 461--475
 []\OT1/cmr/m/n/10.95 (+20) Proof-of-Possession and Proof-of-Continuity are two authority-
  []
 
@@ -335,13 +335,13 @@ Underfull \hbox (badness 7273) in paragraph at lines 461--471
 [10]
 
 [11]
-Underfull \hbox (badness 3323) in paragraph at lines 575--577
+
+[12]
+Underfull \hbox (badness 3323) in paragraph at lines 579--581
 []\OT1/cmr/bx/n/10.95 (+20) Theorem 5 \OT1/cmr/m/n/10.95 (+20) (Pos-ses-sion--del-e-ga-tion--safety trade-off)\OT1/cmr/bx/n/10.95 (+20) . \OT1/cmr/m/it/10.95 (+20) No authority-
  []
 
 
-
-[12]
 
 [13]
 
@@ -350,13 +350,13 @@ Underfull \hbox (badness 3323) in paragraph at lines 575--577
 [15]
 
 [16]
-Underfull \hbox (badness 1286) in paragraph at lines 801--817
+
+[17]
+Underfull \hbox (badness 1286) in paragraph at lines 812--828
 \OT1/cmr/m/n/10.95 (+20) OAuth 2.0 in-cludes bearer-token us-age as a com-mon au-tho-riza-tion
  []
 
 
-
-[17]
 
 [18]
 
@@ -364,7 +364,9 @@ Underfull \hbox (badness 1286) in paragraph at lines 801--817
 
 [20]
 
-[21] (./pic-model.aux)
+[21]
+
+[22] (./pic-model.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-09-02>
@@ -373,18 +375,18 @@ Package rerunfilecheck Info: File `pic-model.out' has not changed.
 (rerunfilecheck)             Checksum: 23C750EBFF6B836F1AA9B9A00EFF2C55;3075.
  ) 
 Here is how much of TeX's memory you used:
- 11218 strings out of 467748
- 172495 string characters out of 5426959
- 612861 words of memory out of 5000000
+ 11219 strings out of 467748
+ 172502 string characters out of 5426959
+ 613861 words of memory out of 5000000
  39515 multiletter control sequences out of 15000+600000
  642926 words of font info for 174 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,14n,79p,1074b,690s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (21 pages, 268876 bytes).
+Output written on pic-model.pdf (22 pages, 270054 bytes).
 PDF statistics:
- 378 PDF objects out of 1000 (max. 8388607)
- 321 compressed objects within 4 object streams
- 102 named destinations out of 1000 (max. 500000)
+ 383 PDF objects out of 1000 (max. 8388607)
+ 325 compressed objects within 4 object streams
+ 103 named destinations out of 1000 (max. 500000)
  25217 words of extra memory for PDF output out of 29859 (max. 10000000)
 

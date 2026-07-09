@@ -464,10 +464,14 @@ primitive, whereas a capability held and presented as an artifact rests on
 possession; a capability system that carried continuity along the whole chain
 would, in these terms, be PIC-compliant. PIC is thus a temporal refinement of
 capability-style propagation, not a replacement --- a dimension possession alone
-cannot encode. The two eliminate the confused deputy in complementary registers:
-the object-capability discipline operationally, since authority is exercised only
-through designated invocation, and PIC by construction, since a privilege absent
-from the origin is not a valid later state at all.
+cannot encode. The two eliminate the confused deputy in complementary registers.
+Capabilities make it impossible \emph{provided the discipline is maintained} ---
+authority is exercised only through designated invocation, and a capability is
+never applied as a held artifact outside the occurrence that carried it; the
+guarantee is contingent on that discipline holding at runtime. PIC makes it
+impossible \emph{by construction}: the confused deputy is not a state a valid PIC
+execution can represent, since a privilege absent from the origin authority
+context is not a valid later state at all, independently of runtime discipline.
 
 \subsection{Projection: Lineage-Invariant Possession Cannot Individuate Occurrences}
 \label{sec:impossibility}
@@ -771,10 +775,17 @@ Capability-based access control~\cite{dennis1966programming} and the analysis of
 the confused deputy under capabilities~\cite{miller2003capability} address the spatial
 dimension of authority --- whether an actor holds authority over an object. This
 paper isolates the orthogonal temporal dimension: whether the authority used
-belongs to the execution that caused the action. It focuses narrowly on the
-confused deputy as a mismatch between authority and causality, and compares
-possession-based authority propagation with provenance-continuity-based
-authority propagation.
+belongs to the execution that caused the action. We take the confused deputy not
+as the specific operating-system compiler scenario in which it was first
+described, but as the general authority/causality mismatch that scenario
+exemplifies, and recast it for discrete multi-step execution --- the setting of
+distributed systems, service chains, and AI agents rather than a single local
+invocation. Framed this way, the confused deputy is one instance of a class of
+authority-propagation vulnerabilities that share the same mismatch; under
+Proof-of-Continuity that mismatch cannot arise as valid model behavior, since a
+privilege absent from the origin authority context cannot be exercised later in
+the same lineage. The paper compares possession-based authority propagation with
+provenance-continuity-based authority propagation on exactly this axis.
 
 The closest prior work is history-based access control~\cite{abadi2003history},
 where the authority available to a computation depends on the history of
