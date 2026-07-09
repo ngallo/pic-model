@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 08:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 16:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -305,6 +305,11 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 [1
 
 {/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Underfull \hbox (badness 1009) in paragraph at lines 74--84
+[]\OT1/cmr/m/n/10.95 (+20) For ex-am-ple, sup-pose Bob holds the priv-i-leges $([]\OML/cmm/m/it/10.95 ; []\OT1/cmr/m/n/10.95 (+20) )$ and
+ []
+
+
 
 [2]
 
@@ -321,11 +326,16 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 [8]
 
 [9]
+Underfull \hbox (badness 7273) in paragraph at lines 460--470
+[]\OT1/cmr/m/n/10.95 (+20) Proof-of-Possession and Proof-of-Continuity are two authority-
+ []
+
+
 
 [10]
 
 [11]
-Underfull \hbox (badness 3323) in paragraph at lines 546--548
+Underfull \hbox (badness 3323) in paragraph at lines 574--576
 []\OT1/cmr/bx/n/10.95 (+20) Theorem 5 \OT1/cmr/m/n/10.95 (+20) (Pos-ses-sion--del-e-ga-tion--safety trade-off)\OT1/cmr/bx/n/10.95 (+20) . \OT1/cmr/m/it/10.95 (+20) No authority-
  []
 
@@ -340,6 +350,11 @@ Underfull \hbox (badness 3323) in paragraph at lines 546--548
 [15]
 
 [16]
+Underfull \hbox (badness 1286) in paragraph at lines 800--816
+\OT1/cmr/m/n/10.95 (+20) OAuth 2.0 in-cludes bearer-token us-age as a com-mon au-tho-riza-tion
+ []
+
+
 
 [17]
 
@@ -355,21 +370,21 @@ LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-09-02>
  ***********
 Package rerunfilecheck Info: File `pic-model.out' has not changed.
-(rerunfilecheck)             Checksum: 0E444FF373343A562B39F118E64A6D41;2798.
+(rerunfilecheck)             Checksum: 23C750EBFF6B836F1AA9B9A00EFF2C55;3075.
  ) 
 Here is how much of TeX's memory you used:
- 11212 strings out of 467748
- 172427 string characters out of 5426959
- 613861 words of memory out of 5000000
- 39514 multiletter control sequences out of 15000+600000
- 642923 words of font info for 173 fonts, out of 8000000 for 9000
+ 11218 strings out of 467748
+ 172495 string characters out of 5426959
+ 612861 words of memory out of 5000000
+ 39515 multiletter control sequences out of 15000+600000
+ 642926 words of font info for 174 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,14n,79p,1074b,594s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,14n,79p,1074b,690s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (21 pages, 266780 bytes).
+Output written on pic-model.pdf (21 pages, 268811 bytes).
 PDF statistics:
- 368 PDF objects out of 1000 (max. 8388607)
- 311 compressed objects within 4 object streams
- 99 named destinations out of 1000 (max. 500000)
- 25209 words of extra memory for PDF output out of 29859 (max. 10000000)
+ 378 PDF objects out of 1000 (max. 8388607)
+ 321 compressed objects within 4 object streams
+ 102 named destinations out of 1000 (max. 500000)
+ 25217 words of extra memory for PDF output out of 29859 (max. 10000000)
 

@@ -37,7 +37,10 @@ model behavior: any privilege exercised at a later step must already be present
 in the origin authority context. This is directly relevant to distributed
 systems and AI agents, where executors invoke tools and downstream services
 while holding multiple authority sources, so that the same authority/causality
-mismatch recurs across service boundaries.
+mismatch recurs across service boundaries. Under Proof-of-Continuity these
+sources may be carried together but are never merged into a combined authority,
+since each step is authorized only against the authority context of the lineage
+that caused it.
 
 This paper concerns authorization propagation rather than authentication:
 identity mechanisms such as OIDC, verifiable credentials, wallets, and workload
@@ -62,19 +65,22 @@ identity established through an identity provider, wallet, OIDC/OIDC4VC-style
 flow~\cite{openidconnect2014,openid4vc2024}, or decentralized
 identifier~\cite{didcore2022}; a workload or machine identity such as those
 used in WIMSE/SPIFFE-style environments~\cite{wimse2024,spiffe2017}; a role; a
-service account; or another execution context. What matters for this model is
+service account; or another authenticated execution context. What matters for this model is
 that a privilege set $Priv(p)$ is associated with it and that it can express an
 intent within those privileges. When a permissioned entity $p$ expresses such an
 intent, it selects a subset of $Priv(p)$; that subset becomes the origin
 authority context $C_0 \subseteq Priv(p)$ for a new execution lineage.
 
-For example, if Bob has the privilege $(\text{read},\text{Book})$, then two
-different executions may both involve Bob and the same privilege, yet they need
-not be the same occurrence: each execution carries authority propagated along its
-own lineage. One may be a valid continuation of an intent Bob expressed within a
-lineage, while another may be a replay, confused-deputy action, or unrelated
-execution using the same apparent privilege. The identity and privilege
-coordinates may be identical; the lineage coordinate distinguishes the two.
+For example, suppose Bob holds the privileges $(\text{read},\text{Book})$ and
+$(\text{write},\text{Book})$. When Bob expresses an intent he selects a subset ---
+say only $(\text{write},\text{Book})$ --- and that subset becomes the origin
+authority context $C_0$ of a new lineage. Two executions may both involve Bob and
+the same selected privilege, yet need not be the same occurrence: each carries
+authority propagated along its own lineage. One may be a valid continuation of an
+intent Bob expressed within a lineage; another may be a confused-deputy action, or
+an unrelated execution exercising the same apparent privilege outside the lineage
+that granted it. The identity and privilege coordinates may be identical; the
+lineage coordinate distinguishes the two.
 
 A request is a message $req$ passed between executors --- the entities that
 perform execution steps --- and may contain a payload.
@@ -117,7 +123,7 @@ Therefore, no privilege can be gained beyond the origin authority context.
 
 We consider execution chains in which an origin request causes one or more later
 execution steps. Executors may be buggy, confused, or adversarially influenced
-through their inputs. An executor may hold multiple authority sources --- ambient
+through their inputs or their execution context. An executor may hold multiple authority sources --- ambient
 privileges, delegated tokens, bearer credentials, or capabilities --- and may
 attempt to use one unrelated to the request being processed.
 
@@ -170,6 +176,19 @@ PoP systems constrain authority by artifact possession, but do not, by
 themselves, require that the exercised authority be a causal continuation of
 the authority context of the request.
 
+\subsection{Sender-Constrained and Holder-Bound Tokens}
+
+Sender-constrained and holder-bound tokens --- for example
+DPoP~\cite{fett2023dpop} and Token Binding~\cite{popov2018token} --- prove
+\emph{who} may present or use an artifact by binding it to a key or transport
+channel. They do not, by themselves, prove that the authority exercised through
+that artifact is a continuation of the current execution lineage. Restricting who
+may present a token constrains transport, not causality: a legitimate holder can
+still, at some step, exercise a possessed authority that lies outside the lineage
+of the request it is processing. The binding answers holder authenticity; the
+lineage question --- whether this use continues the authority context that caused
+it --- remains open.
+
 \subsection{Authority Mixing}
 
 Assume:
@@ -184,6 +203,13 @@ In a possession-based model, a deputy may hold multiple authority sources:
 its own ambient privileges, delegated tokens, bearer credentials, or other
 artifacts. The model authorizes an operation by checking whether some possessed
 authority source grants the requested privilege.
+
+\begin{definition}[Selection function]
+Let an executor's held authority be a family $\{A_j\}$ of sources --- ambient
+privileges, delegated tokens, and bound or sender-constrained artifacts. A
+\emph{selection function} $\sigma$ chooses, for a requested $(o,r)$, some source
+$A_j$ with $(o,r) \in A_j$, independently of the request lineage $\ell$.
+\end{definition}
 
 \begin{theorem}[PoP admits authority mixing]
 In a possession-based model, if an executor may select authority from any
@@ -206,8 +232,17 @@ request authority context. This is exactly the confused deputy condition.
 This applies to any model in which authorization is derived from possession
 independently of the causal lineage, including JWTs, bearer credentials, and
 capabilities treated as held artifacts when they may be applied outside the
-execution that requested them. The gap is not possession itself but the absence of a temporal
-binding between the authority used and the execution that caused its use.
+execution that requested them. Holder binding and sender-constraint restrict
+which principal may present $A_j$, not whether $\sigma$'s choice lies in $\ell$;
+they therefore do not remove this admissibility. The gap is not possession itself
+but the absence of a temporal binding between the authority used and the execution
+that caused its use.
+
+These are execution-level conditions: authority belonging to one lineage is drawn
+into another, producing the confused deputy. Proof-of-Continuity removes the
+admissibility at the level of the model --- in a valid PIC execution the
+confused-deputy condition cannot arise (Section~\ref{sec:cdimposs}), because
+authority is defined only as a continuation of the causing lineage.
 
 \section{Proof-of-Continuity (PoC / PIC)}
 
@@ -274,30 +309,26 @@ transporting the entire history.
 \paragraph{Embedding execution in the authority model.}
 Proof-of-Continuity is defined precisely for this setting: the successor step need
 not be known, selected, instantiated, or provisioned when the predecessor
-completes its step. Execution is then a sequence of causal steps in time, not a
-sequence of positions fixed by topology: the upstream executor acts at some time
-$t$, while the downstream executor may only come into existence at a later time
-$t' > t$. Pre-binding authority to a concrete holder, key, or channel of the
-successor is therefore not always possible, and placing bearer artifacts or shared
-secrets in an intermediary would shift the trust problem. When step $i$ causes
-step $i+1$, what must hold across the gap is not the identity of the successor,
-nor a policy attached to that identity, but that its authority continues the
-context that caused it. An artifact obtained purely from possession --- a workload
-identity, a service account, or a bound token --- authenticates the holder and its
-origin, but, carrying no history of the specific chain, it is identical across
-distinct executions: it identifies who acts, not which causal chain produced this
-request. Such possession therefore establishes origin, not continuity; the lineage
-question --- whether the authority exercised by the later step is a valid
-continuation of the causing context --- remains open. Re-deriving authority at
-$i+1$ from a fresh assertion about the successor, rather than from its
-relationship to the causing step, reintroduces exactly the individuation gap
-formalized in Section~\ref{sec:impossibility}: distinct occurrences that share the
-successor's attributes become indistinguishable, which is the structural condition
-behind the confused-deputy pattern (Definition~\ref{def:confused}). Continuity is
-not exposed to this, because it is not self-assertable: it cannot be constructed at
-$i+1$ in isolation but is defined only relative to the predecessor, so a successor
-can \emph{demonstrate} a continuation but cannot mint one. A predecessor may
-instead emit a continuation later consumed by some successor:
+completes its step. Execution is a sequence of causal steps in time, not of
+positions fixed by topology --- the upstream executor acts at some time $t$, while
+the downstream executor may come into existence only at a later time $t' > t$.
+Pre-binding authority to a concrete holder, key, or channel of an unknown
+successor is therefore not always possible.
+
+What must hold across the gap is not the identity of the successor, nor a policy
+attached to it, but that its authority continues the context that caused it. An
+artifact obtained purely from possession --- a workload identity, a service
+account, or a bound token --- authenticates the holder and its origin, but,
+carrying no history of the specific chain, it is identical across distinct
+executions: it establishes origin, not continuity. Re-deriving authority at $i+1$
+from a fresh assertion about the successor, rather than from its relationship to
+the causing step, reintroduces the individuation gap of
+Section~\ref{sec:impossibility} --- the structural condition behind the confused
+deputy (Definition~\ref{def:confused}). Continuity avoids this because it is not
+self-assertable: defined only relative to the predecessor, it can be
+\emph{demonstrated} as a continuation but not asserted at $i+1$ in isolation.
+
+A predecessor may instead emit a continuation later consumed by some successor:
 \[
 (s_i,C_i)
 \;\xrightarrow{\;\mathrm{emit}\;}
@@ -305,14 +336,12 @@ instead emit a continuation later consumed by some successor:
 \;\xrightarrow{\;PoR,\; C_{i+1}\subseteq C_i\;}
 (s_{i+1},C_{i+1}).
 \]
-What persists across the gap is not possession by a pre-existing holder, but valid
-continuity: a causal relationship to the predecessor and a non-expansive successor
-authority context. Proof of Relationship witnesses this relationship as a property
-of the execution rather than of a holder: the successor demonstrates a link to the
-context of the step that caused it, and monotone attenuation
-($C_{i+1} \preceq C_i$) ensures that what it continues never expands. Proof of
-Relationship composed transitively under this attenuation is Proof-of-Continuity,
-the propagation discipline of the PIC model.
+What persists across the gap is valid continuity, not possession by a pre-existing
+holder: a causal relationship to the predecessor and a non-expansive authority
+context. Proof of Relationship witnesses this as a property of the execution
+rather than of a holder; composed transitively under monotone attenuation
+($C_{i+1} \preceq C_i$), it is Proof-of-Continuity, the propagation discipline of
+the PIC model.
 
 \paragraph{Heterogeneous operation spaces.}
 The notation assumes a common privilege universe $O \times R$. In heterogeneous
@@ -396,9 +425,11 @@ $\ell = \langle s_0 \prec s_1 \prec \dots \prec s_n \rangle$, where $\prec$
 denotes causal precedence, witnessed between adjacent steps by $PoR$, so each
 event is an occurrence of a privilege within a particular lineage. Two actions identical in possession --- same principal, same token,
 same privilege --- may be distinct in continuity, because they descend from
-different causes. A request to \emph{pay 100}, issued once by the user and once
-by a replay, is indistinguishable under possession, yet the two are distinct
-executions: one continues an authorizing lineage, the other continues none.
+different causes. The same $(o,r)$ exercised as a valid continuation of an
+authorizing request, and exercised by an executor drawing on an unrelated
+authority it happens to hold, is indistinguishable under possession, yet the two
+are distinct executions: one continues an authorizing lineage, the other
+continues none.
 Possession is the projection onto $O \times R$ that forgets the lineage axis.
 Possession is the spatial component of authority; lineage is its temporal
 component, and a possession-only model is therefore a projection of authority
@@ -418,26 +449,24 @@ gives the operational characterization (the \emph{open passthrough}), which
 refines Definition~\ref{def:confused} with designation.
 
 \paragraph{Relation to capabilities.}
-Capabilities solve the spatial question, and they do more: by fusing designation
-and authority in the act of invocation, a capability binds authority to a single
-causal step. In our terms this is \emph{single-hop continuity} --- a
-Proof-of-Relationship. The classical confused deputy is thereby ruled out by
-capabilities, not merely reduced. What \emph{capability-as-possession} lacks ---
-a held capability applied without occurrence binding --- is the extension of that
-binding across a chain: it may still be exercised outside the lineage that
-requested it, and in that use falls into lineage-invariant possession.
-Proof-of-Continuity is exactly this extension: a capability invocation can be
-viewed as a one-hop instance of the continuity discipline, and PIC generalizes
-that discipline across multi-hop execution. PIC is therefore a temporal
-refinement of capability-style authority propagation, not a replacement for it;
-the temporal dimension is not an optional stronger check but one that possession
-alone cannot encode. The two eliminate the classical confused deputy in
-complementary registers: the object-capability discipline eliminates it
-operationally --- authority is exercised only through designated invocation, so
-the mismatch does not arise --- while PIC eliminates it by construction of the
-model, since, with authority defined as continuity, a privilege absent from the
-origin is not a valid later state at all rather than a behavior to be separately
-prevented.
+Capabilities solve the spatial question and more: by fusing designation and
+authority in the act of invocation, a capability binds authority to a single
+causal step --- in our terms \emph{single-hop continuity}, a
+Proof-of-Relationship --- so the classical confused deputy is ruled out, not
+merely reduced. What a capability treated purely as a held artifact lacks is the
+extension of that binding across a chain: applied outside the lineage that
+requested it, it falls back to lineage-invariant possession.
+
+Proof-of-Possession and Proof-of-Continuity are two authority-propagation
+primitives. A capability invocation is a one-hop instance of the continuity
+primitive, whereas a capability held and presented as an artifact rests on
+possession; a capability system that carried continuity along the whole chain
+would, in these terms, be PIC-compliant. PIC is thus a temporal refinement of
+capability-style propagation, not a replacement --- a dimension possession alone
+cannot encode. The two eliminate the confused deputy in complementary registers:
+the object-capability discipline operationally, since authority is exercised only
+through designated invocation, and PIC by construction, since a privilege absent
+from the origin is not a valid later state at all.
 
 \subsection{Projection: Lineage-Invariant Possession Cannot Individuate Occurrences}
 \label{sec:impossibility}
@@ -468,12 +497,11 @@ $A = \bar{A} \circ p$ and $p(e) = p(e')$, hence
 $A(e) = \bar{A}(p(e)) = \bar{A}(p(e')) = A(e')$.
 \end{proof}
 
-The confused deputy and the replay are two instances of the same forbidden pair:
+The confused deputy is an instance of a forbidden pair:
 events sharing $(o,r)$ but differing in lineage, one of which must be authorized
-and the other denied. In the confused deputy one lineage originates from a
-context holding $(o,r)$ and the other does not; in a replay one lineage continues
-an authorizing request and the other continues none. By the theorem, \emph{no}
-lineage-invariant possession-based policy can separate them.
+and the other denied. One lineage originates from a context holding $(o,r)$; the
+other exercises $(o,r)$ though it never continued a context that held it. By the
+theorem, \emph{no} lineage-invariant possession-based policy can separate them.
 
 \begin{theorem}[Any resolution reintroduces continuity]\label{thm:reintro}
 A policy $A$ authorizes $e$ and denies $e'$, with $p(e) = p(e')$ and
@@ -491,7 +519,7 @@ $e'$.
 Such a $g$ is exactly a continuity mechanism --- a proof-of-relationship extract
 of the lineage. The mitigations deployed within possession-based systems
 (nonces, idempotency keys, timestamps, audience and context binding) are
-concrete instances of $g$: they resolve the confused deputy or the replay only by
+concrete instances of $g$: they resolve the confused deputy only by
 reintroducing lineage information --- that is, continuity --- into the decision.
 Whether the lineage is carried alongside the request or embedded inside the
 artifact is immaterial: a token that encodes a nonce or a causal context makes
@@ -674,6 +702,13 @@ execution; it does not by itself establish that a later use is a valid
 continuation of the authority lineage that caused it, which is the temporal
 condition Proof-of-Continuity adds.
 
+\paragraph{Authority is continuity.}
+Under PIC, authority is not a static property an entity merely \emph{has} but a
+continuity property of an execution: a privilege is authorized at a step iff it is
+a non-expansive continuation of the context that caused it. In this sense
+authority \emph{is} continuous --- it exists only as the ongoing continuation of
+an origin, not as a possession detached from its lineage.
+
 \paragraph{Design space.}
 The temporal binding may be realized in two ways: embedded \emph{inside} the
 authority itself, as attenuated and context-bound capabilities, or maintained
@@ -691,55 +726,42 @@ execution lineage.
 
 \paragraph{Authority as a distributed transaction.}
 A multi-hop authority chain is a distributed transaction over authority rather
-than over data. A possessed artifact enables a local authorization decision at
-the point of use, which is often necessary for deployability, performance, and
-loose coupling; but revocation, delegation state, scope changes, and lineage are
-global authority facts. Local authorization and global authority consistency can
+than over data. A possessed artifact enables a local authorization decision at the
+point of use --- often necessary for deployability, performance, and loose
+coupling --- but revocation, delegation state, scope changes, and lineage are
+global authority facts. Local authorization and global authority consistency
 diverge when these facts are not represented at the point of use. PoC addresses
-this divergence by carrying lineage explicitly and requiring non-expansive
-authority propagation across the chain. Continuity is therefore not identity
-propagation. Identity remains useful for authentication, audit, attribution,
-accountability, and origin creation, but it is insufficient as the propagated
-authorization primitive. Identifiers are the technical handles by which
-identities, workloads, roles, or executors are named and bound to evidence; they
-are necessary for verification and accountability, but an identifier repeated at
-later hops does not by itself prove that the authority being exercised belongs to
-the same execution lineage. Identity providers, wallets, OIDC/OIDC4VC-style
-flows~\cite{openidconnect2014,openid4vc2024}, WIMSE/SPIFFE-style workload
-identity~\cite{wimse2024,spiffe2017}, and machine identities remain important for
-authentication, credential presentation, technical binding, and origin bootstrap. PoC concerns
-what happens after such a permissioned entity has expressed an intent within its
-privileges: the authorization question becomes whether later authority uses are
-valid continuations of the origin authority context $C_0$, not whether the same
-identity or identifier is repeated at each hop. A lineage begins when a permissioned entity
-expresses an intent within its privileges, thereby creating an origin authority
-context $C_0$.
-Subsequent hops need not carry, reveal, or reinterpret the origin identity; they
-must only preserve a non-expansive authority context that remains causally linked
-to that origin.
+this by carrying lineage explicitly and requiring non-expansive authority
+propagation across the chain.
+
+Continuity is therefore not identity propagation. Identity providers, wallets,
+OIDC/OIDC4VC-style flows~\cite{openidconnect2014,openid4vc2024}, and
+WIMSE/SPIFFE-style workload identity~\cite{wimse2024,spiffe2017} remain important
+for authentication, credential presentation, audit, accountability, and origin
+bootstrap; but an identifier repeated at later hops does not by itself prove that
+the authority being exercised belongs to the same execution lineage. A lineage
+begins when a permissioned entity expresses an intent within its privileges,
+creating an origin authority context $C_0$; subsequent hops need not carry or
+reinterpret the origin identity, but must preserve a non-expansive authority
+context causally linked to that origin.
 
 \paragraph{Application to AI agents.}
-For the purposes of authority propagation, AI agents can be modeled as autonomous
-distributed systems; we name them explicitly because the temporal gap is most
-acute there, but the model treats them as a special case of distributed
-execution. An agent executes a chain of
-steps
---- planning, tool invocations, and calls to downstream services --- while
-holding multiple authority sources at once: its own service credentials,
-delegated user tokens, and per-tool scopes. The classical local-filename
-designation reappears as an agent-influenced parameter: a tenant id, document
-id, role ARN, queue message, cache key, or downstream request target. When the
-caller can influence this target and the agent satisfies it using authority from
-a different context, the result is the distributed analogue of the confused
-deputy. PIC binds each tool call and downstream request to the causal lineage
-of the request that triggered it, so an agent cannot apply authority that does
-not belong to the execution that caused the action. For example, an agent asked
-to summarize a document that contains an indirect prompt injection --- one
-instructing it to delete files, exfiltrate secrets, or invoke an administrative
-API --- may attempt those actions; under PoC they are valid only if the origin
-authority context contains the corresponding privileges. If the origin
+For authority propagation, AI agents are a special case of autonomous distributed
+execution; we name them because the temporal gap is most acute there. An agent
+runs a chain of steps --- planning, tool invocations, downstream calls --- while
+holding multiple authority sources at once: its own service credentials, delegated
+user tokens, and per-tool scopes. The classical local-filename designation
+reappears as an agent-influenced parameter --- a tenant id, document id, role ARN,
+queue message, or request target. When the caller influences this target and the
+agent satisfies it using authority from a different context, the result is the
+distributed confused deputy. PIC binds each tool call and downstream request to
+the causal lineage that triggered it, so an agent cannot apply authority outside
+the execution that caused the action. An agent asked to summarize a document
+carrying an indirect prompt injection --- instructions to delete files or
+exfiltrate secrets --- may attempt those actions, but under PoC they are valid
+only if the origin authority context holds the corresponding privileges: if it
 authorizes only $(\text{summarize},d)$, then $(\text{delete},r)$ or
-$(\text{exfiltrate},r)$ cannot be valid continuations of that request.
+$(\text{exfiltrate},r)$ cannot be valid continuations.
 
 \section*{Related Work}
 
@@ -764,7 +786,7 @@ The contribution here is orthogonal
 and more specific: we frame the dependence as a \emph{dimension} $\mathcal{L}$
 orthogonal to the privilege $(o,r)$, prove that possession (any policy invariant
 under $\mathcal{L}$) cannot individuate occurrences, and show that the confused
-deputy and the replay are the same collision under the projection that forgets
+deputy is a collision under the projection that forgets
 $\mathcal{L}$ --- so that possession-based mitigations that distinguish such
 cases must become lineage-sensitive, hence continuity-aware. The
 object-capability literature~\cite{miller2006robust} analyses the confused
@@ -776,26 +798,21 @@ occurrences that differ only in lineage.
 
 \paragraph{Bearer tokens, macaroons, and proof-of-possession bindings.}
 OAuth 2.0 includes bearer-token usage as a common authorization
-pattern~\cite{hardt2012oauth,jones2012bearer}. In the abstraction considered
-here, a bearer token used without explicit
-context or lineage binding supports an authorization decision that reads the
-token and $(o,r)$, but not the causal lineage of the use: it is
-lineage-invariant, and thus subject to the first theorem.
-Macaroons~\cite{birgisson2014macaroons} add \emph{caveats} that only attenuate
-and chain them cryptographically --- precisely our monotone attenuation
-$C_{i+1}\preceq C_i$ along a chain --- yet a macaroon remains a bearer
-credential: absent a caveat that binds the request context, it can be presented
+pattern~\cite{hardt2012oauth,jones2012bearer}. A bearer token used without
+explicit context or lineage binding supports a decision that reads the token and
+$(o,r)$ but not the causal lineage of the use: it is lineage-invariant, and thus
+subject to the first theorem. Macaroons~\cite{birgisson2014macaroons} add
+\emph{caveats} that only attenuate and chain cryptographically --- precisely our
+monotone attenuation $C_{i+1}\preceq C_i$ --- yet a macaroon remains a bearer
+credential: absent a caveat binding the request context, it can be presented
 outside the lineage that produced it. DPoP~\cite{fett2023dpop} and Token
 Binding~\cite{popov2018token} bind a token to a key or transport channel; in the
-terminology of Theorem~\ref{thm:reintro}, such bindings make the decision depend
-on additional occurrence context, and are therefore continuity-aware in a local
-or contextual sense. The unifying observation is that macaroons, DPoP, and Token
-Binding defeat replay or cross-context misuse precisely to the extent that a
-caveat or binding makes the decision read $\ell$ --- that is, they reintroduce
-continuity. They strengthen possession by reducing such misuse, but do not by
-themselves establish global Proof-of-Continuity: the decision still need not read
-the full causal lineage from the origin request across a multi-hop execution
-chain. PIC makes that lineage dimension global and explicit.
+terms of Theorem~\ref{thm:reintro} such bindings make the decision read
+additional occurrence context, and are continuity-aware in a local sense. Each
+reduces cross-context misuse to the extent that a caveat or binding makes the
+decision read $\ell$; none by itself establishes global Proof-of-Continuity, since
+the decision still need not read the full causal lineage from the origin across a
+multi-hop chain. PIC makes that lineage dimension global and explicit.
 
 The PIC model is developed independently in~\cite{gallo2025pic}, where Provenance
 Identity Continuity is introduced as a general model for distributed execution
@@ -805,13 +822,17 @@ analysis of authority.
 
 \section{Limitations and Future Work}
 
-This paper presents a minimal linear model of Proof-of-Continuity; several issues
-are intentionally left outside its scope. First, revocation is not treated as a
+This paper presents a minimal linear model of Proof-of-Continuity. Several of the
+directions below are not defects of the model but properties to be developed
+within the same continuity principle; we distinguish genuine scope limits from
+natural extensions. First, revocation is not treated as a
 retroactive operation on an already issued lineage: a practical system must
 decide whether revocation blocks only future transitions, invalidates
-outstanding continuations, or triggers lineage-wide cancellation. Second, the
-model is linear; forks, joins, fan-out, fan-in, and DAG-shaped executions require
-a partial-order generalization of $\mathcal{L}$. Third, the construction of
+outstanding continuations, or triggers lineage-wide cancellation. Second,
+composition: the model is linear, and forks, joins, fan-out, fan-in, and
+DAG-shaped executions are a natural generalization of $\mathcal{L}$ to a partial
+order --- an extension of the continuity principle to composed lineages rather
+than a limitation of it. Third, the construction of
 $PoR$ is abstract: concrete implementations may use signatures, hash chains,
 verifiable credentials~\cite{vcdm2022}, secure channels, trusted execution
 environments, or tamper-evident logs, with implementation-dependent security and
@@ -856,8 +877,14 @@ authorization continuity that must hold after that origin has been established.
 
 \section*{Acknowledgments}
 
-The author used automated language assistance tools for editorial refinement, LaTeX formatting, and notation polishing. 
-All conceptual contributions, models, and proofs are the author's own.
+This paper follows an earlier version of the PIC Model made available on Zenodo
+in December 2025~\cite{gallo2025pic}. The author thanks Alan H. Karp, whose
+experience was a valuable help in stress-testing the concepts of
+Proof-of-Continuity and Proof of Relationship; the concepts presented here are the
+author's own, and this acknowledgment does not imply his endorsement of the paper.
+The author also used automated language assistance tools for editorial refinement,
+LaTeX formatting, and notation polishing. All conceptual contributions, models,
+and proofs are the author's own.
 
 \begin{thebibliography}{99}
 
