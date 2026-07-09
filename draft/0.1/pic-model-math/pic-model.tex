@@ -32,7 +32,9 @@ origin of a request and the authority exercised at later steps. We introduce
 Proof-of-Continuity, a minimal authority-propagation discipline for the
 Provenance Identity Continuity (PIC) model, in which each execution step must be
 causally linked to the previous step and may only propagate a non-expansive
-subset of the authority received from the origin.
+subset of the authority received from the origin. It introduces Proof of
+Relationship, a single-hop causal primitive whose transitive composition is
+Proof-of-Continuity; these complement Proof-of-Possession rather than replace it.
 Under this model, the confused deputy condition cannot be satisfied as valid
 model behavior: any privilege exercised at a later step must already be present
 in the origin authority context. This is directly relevant to distributed
@@ -756,7 +758,10 @@ Proof of Continuity proves authority continuation.
 Proof-of-Possession establishes control over an authority artifact at a point in
 execution; it does not by itself establish that a later use is a valid
 continuation of the authority lineage that caused it, which is the temporal
-condition Proof-of-Continuity adds.
+condition Proof-of-Continuity adds. Proof-of-Possession can serve as one
+mechanism for constructing a Proof of Relationship --- possession of a
+predecessor-issued continuation artifact can witness a single hop --- but it is
+not the only one.
 
 \paragraph{Authority is continuity.}
 Under PIC, authority is not a static property an entity merely \emph{has} but a
