@@ -208,7 +208,8 @@ authority source grants the requested privilege.
 Let an executor's held authority be a family $\{A_j\}$ of sources --- ambient
 privileges, delegated tokens, and bound or sender-constrained artifacts. A
 \emph{selection function} $\sigma$ chooses, for a requested $(o,r)$, some source
-$A_j$ with $(o,r) \in A_j$, independently of the request lineage $\ell$.
+$A_j$ with $(o,r) \in A_j$, independently of the request lineage $\ell$ --- the
+causal lineage of the request being processed.
 \end{definition}
 
 \begin{theorem}[PoP admits authority mixing]
@@ -464,14 +465,17 @@ primitive, whereas a capability held and presented as an artifact rests on
 possession; a capability system that carried continuity along the whole chain
 would, in these terms, be PIC-compliant. PIC is thus a temporal refinement of
 capability-style propagation, not a replacement --- a dimension possession alone
-cannot encode. The two eliminate the confused deputy in complementary registers.
-Capabilities make it impossible \emph{provided the discipline is maintained} ---
-authority is exercised only through designated invocation, and a capability is
-never applied as a held artifact outside the occurrence that carried it; the
-guarantee is contingent on that discipline holding at runtime. PIC makes it
-impossible \emph{by construction}: the confused deputy is not a state a valid PIC
-execution can represent, since a privilege absent from the origin authority
-context is not a valid later state at all, independently of runtime discipline.
+cannot encode. Both eliminate the confused deputy by construction rather than by
+runtime vigilance, but over different spans. Within the object-capability model,
+fusing designation and authority at the point of invocation removes the classical,
+single-hop mismatch structurally: a deputy cannot apply authority to a target it
+was not given authority for. The mismatch re-appears only when the capability
+model is left --- under ambient authority, or when a capability is used as a held
+artifact outside the occurrence that carried it, the capability-as-possession case
+analysed above, where authority reverts to possession. PIC extends the same
+by-construction guarantee across a multi-hop lineage: the confused deputy is not a
+state a valid PIC execution can represent at any hop, since a privilege absent
+from the origin authority context is not a valid later state at all.
 
 \subsection{Projection: Lineage-Invariant Possession Cannot Individuate Occurrences}
 \label{sec:impossibility}
