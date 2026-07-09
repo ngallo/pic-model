@@ -622,13 +622,14 @@ violating confused-deputy safety --- a contradiction.
 The theorem is not an attack on possession: it shows that lineage-invariant
 possession is insufficient for multi-hop authority propagation precisely when
 authority mixing and confused-deputy safety are both required. Since the three
-cannot hold together, a system must relinquish at least one, and only one such
-choice is acceptable. Forbidding authority-mixing-capable delegation would bar
-executors from holding authority of their own alongside request-derived authority
---- impractical in real deployments, where a service legitimately retains its own
-privileges. Accepting confused-deputy executions abandons the safety property at
-issue. The remaining option is to relinquish lineage-invariance ---
-to make authorization lineage-sensitive. Proof-of-Continuity takes this third
+cannot hold together, a system must relinquish at least one. For systems that
+require both practical authority mixing and confused-deputy safety, the viable
+choice is to relinquish lineage-invariance --- to make authorization
+lineage-sensitive. Forbidding authority-mixing-capable delegation would instead
+bar executors from holding authority of their own alongside request-derived
+authority --- impractical in real deployments, where a service legitimately
+retains its own privileges. Accepting confused-deputy executions abandons the
+safety property at issue. Proof-of-Continuity takes this
 option: it does not remove possession but restores the missing temporal
 coordinate, so that authorization can read whether each authority use is a valid
 continuation of the context that caused it. The contribution is not to reject
@@ -648,8 +649,8 @@ Lineage-invariance & authorization becomes lineage-sensitive & adopted (Proof-of
 \bottomrule
 \end{tabular}
 \caption{The three properties cannot hold together, so a system must relinquish
-at least one. Forbidding authority mixing is impractical and accepting confused deputies
-is unsafe; the only acceptable choice is to relinquish lineage-invariance ---
+at least one. For systems that require practical authority mixing and
+confused-deputy safety, the viable choice is to relinquish lineage-invariance ---
 the option adopted by Proof-of-Continuity.}
 \label{tab:tradeoff}
 \end{table}

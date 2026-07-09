@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 21:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 21:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -363,27 +363,27 @@ Underfull \hbox (badness 3323) in paragraph at lines 605--607
 
 
 [13]
-Underfull \hbox (badness 10000) in paragraph at lines 643--643
+Underfull \hbox (badness 10000) in paragraph at lines 644--644
 []\OT1/cmr/m/n/10 (+20) Property re-lin-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 645--645
+Underfull \hbox (badness 10000) in paragraph at lines 646--646
 []\OT1/cmr/m/n/10 (+20) Authority-mixing
  []
 
 
-Underfull \hbox (badness 6978) in paragraph at lines 645--646
+Underfull \hbox (badness 6978) in paragraph at lines 646--647
 []\OT1/cmr/m/n/10 (+20) rejected (im-prac-ti-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 646--646
+Underfull \hbox (badness 10000) in paragraph at lines 647--647
 []\OT1/cmr/m/n/10 (+20) Confused-deputy
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 647--648
+Underfull \hbox (badness 10000) in paragraph at lines 648--649
 []\OT1/cmr/m/n/10 (+20) adopted (Proof-of-
  []
 
@@ -398,7 +398,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 647--648
 [17]
 
 [18]
-Underfull \hbox (badness 1286) in paragraph at lines 882--898
+Underfull \hbox (badness 1286) in paragraph at lines 883--899
 \OT1/cmr/m/n/10.95 (+20) OAuth 2.0 in-cludes bearer-token us-age as a com-mon au-tho-riza-tion
  []
 
@@ -423,13 +423,13 @@ Package rerunfilecheck Info: File `pic-model.out' has not changed.
 Here is how much of TeX's memory you used:
  11345 strings out of 467748
  174472 string characters out of 5426959
- 614140 words of memory out of 5000000
+ 614125 words of memory out of 5000000
  39615 multiletter control sequences out of 15000+600000
  645152 words of font info for 190 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,14n,79p,1074b,594s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on pic-model.pdf (23 pages, 275997 bytes).
+Output written on pic-model.pdf (23 pages, 275983 bytes).
 PDF statistics:
  398 PDF objects out of 1000 (max. 8388607)
  339 compressed objects within 4 object streams
