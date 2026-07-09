@@ -2,6 +2,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{hyperref}
 \usepackage{microtype}
+\usepackage{booktabs}
 \emergencystretch=3em
 
 % Remove end-of-proof square
@@ -506,7 +507,8 @@ the lineage.
 An authorization policy $A : E \to \{0,1\}$ is \emph{possession-based} iff it is
 invariant under lineage: it factors through $p$, i.e.\ there exists
 $\bar{A} : O \times R \to \{0,1\}$ with $A = \bar{A} \circ p$. Equivalently,
-$A(o,r,\ell) = A(o,r,\ell')$ for all $\ell, \ell' \in \mathcal{L}$.
+$A(o,r,\ell) = A(o,r,\ell')$ for all $\ell, \ell' \in \mathcal{L}$: the verdict
+does not depend on which lineage produced the event.
 \end{definition}
 
 \begin{theorem}[Lineage-invariant policies cannot individuate occurrences]
@@ -584,8 +586,8 @@ authority for $(o,r)$, not on the lineage $\ell$ that caused the event.
 
 \begin{definition}[Authority-mixing-capable delegation]
 An executor may hold both a request-derived authority context $C_0$ and an
-independent authority source $A_D$, with some $(o,r)$ such that
-$(o,r) \notin C_0$ and $(o,r) \in A_D$.
+independent authority source $C_D$, with some $(o,r)$ such that
+$(o,r) \notin C_0$ and $(o,r) \in C_D$.
 \end{definition}
 
 \begin{definition}[Confused-deputy safety]
@@ -601,11 +603,11 @@ authorization, authority-mixing-capable delegation, and confused-deputy safety.
 \begin{proof}
 Suppose all three hold. By authority-mixing-capable delegation there is an
 executor $D$ with a request-derived context $C_0$ and an independent source
-$A_D$, and an $(o,r)$ with $(o,r) \notin C_0$ and $(o,r) \in A_D$. Let a request
+$C_D$, and an $(o,r)$ with $(o,r) \notin C_0$ and $(o,r) \in C_D$. Let a request
 cause $D$ to process a target requiring $(o,r)$. Lineage-invariant authorization
-reads that $D$ possesses $A_D$ granting $(o,r)$; but by the projection theorem of
+reads that $D$ possesses $C_D$ granting $(o,r)$; but by the projection theorem of
 Section~\ref{sec:impossibility}, events sharing $(o,r)$ yet differing in lineage
-receive the same judgment, so the policy cannot condition on whether $A_D$
+receive the same judgment, so the policy cannot condition on whether $C_D$
 belongs to the lineage of this request. The system therefore admits an execution
 in which the request causes $D$ to exercise $(o,r)$ while $(o,r) \notin C_0$,
 violating confused-deputy safety --- a contradiction.
@@ -613,15 +615,38 @@ violating confused-deputy safety --- a contradiction.
 
 The theorem is not an attack on possession: it shows that lineage-invariant
 possession is insufficient for multi-hop authority propagation precisely when
-authority mixing and confused-deputy safety are both required. The trade-off is
-resolved only by relinquishing one property --- forbidding
-authority-mixing-capable delegation, accepting confused-deputy executions, or
-making authorization lineage-sensitive. Proof-of-Continuity takes the third
+authority mixing and confused-deputy safety are both required. Since the three
+cannot hold together, a system must relinquish exactly one, and only one such
+choice is acceptable. Forbidding authority-mixing-capable delegation would bar
+executors from holding authority of their own alongside request-derived authority
+--- impractical in real deployments, where a service legitimately retains its own
+privileges. Accepting confused-deputy executions abandons the safety property at
+issue. The remaining option is to relinquish lineage-invariance ---
+to make authorization lineage-sensitive. Proof-of-Continuity takes this third
 option: it does not remove possession but restores the missing temporal
-coordinate, making authorization lineage-sensitive so that each authority use is
-a valid continuation of the context that caused it. The contribution is not to
-reject possession but to show that possession is the spatial projection of a
-richer authority relation; the missing coordinate is temporal lineage.
+coordinate, so that authorization can read whether each authority use is a valid
+continuation of the context that caused it. The contribution is not to reject
+possession but to show that possession is the spatial projection of a richer
+authority relation; the missing coordinate is temporal lineage.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}p{2.9cm}p{5.0cm}p{3.1cm}@{}}
+\toprule
+Property relinquished & Consequence & Outcome \\
+\midrule
+Authority-mixing delegation & executors may not hold authority independent of the request & rejected (impractical) \\
+Confused-deputy safety & confused-deputy executions become admissible & rejected (unsafe) \\
+Lineage-invariance & authorization becomes lineage-sensitive & adopted (Proof-of-Continuity) \\
+\bottomrule
+\end{tabular}
+\caption{The three properties cannot hold together, so a system must relinquish
+one. Forbidding authority mixing is impractical and accepting confused deputies
+is unsafe; the only acceptable choice is to relinquish lineage-invariance ---
+the option adopted by Proof-of-Continuity.}
+\label{tab:tradeoff}
+\end{table}
 
 \begin{corollary}[Continuity restores confused-deputy safety]
 Relinquishing lineage-invariance regains safety: under non-expansive propagation
