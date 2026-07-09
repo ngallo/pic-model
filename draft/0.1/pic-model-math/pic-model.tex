@@ -316,11 +316,12 @@ Pre-binding authority to a concrete holder, key, or channel of an unknown
 successor is therefore not always possible.
 
 What must hold across the gap is not the identity of the successor, nor a policy
-attached to it, but that its authority continues the context that caused it. An
-artifact obtained purely from possession --- a workload identity, a service
-account, or a bound token --- authenticates the holder and its origin, but,
-carrying no history of the specific chain, it is identical across distinct
-executions: it establishes origin, not continuity. Re-deriving authority at $i+1$
+attached to it, but that its authority continues the context that caused it. A
+credential, workload-identity assertion, service-account credential, or bound
+token may authenticate the holder or bind an artifact to a key, workload, or
+channel. Unless the authorization decision also reads lineage-sensitive evidence,
+however, the same holder attributes may appear across distinct executions: they
+establish who acts, not which causal chain produced this request. Re-deriving authority at $i+1$
 from a fresh assertion about the successor, rather than from its relationship to
 the causing step, reintroduces the individuation gap of
 Section~\ref{sec:impossibility} --- the structural condition behind the confused
@@ -877,14 +878,14 @@ authorization continuity that must hold after that origin has been established.
 
 \section*{Acknowledgments}
 
-This paper follows an earlier version of the PIC Model made available on Zenodo
-in December 2025~\cite{gallo2025pic}. The author thanks Alan H. Karp, whose
-experience was a valuable help in stress-testing the concepts of
-Proof-of-Continuity and Proof of Relationship; the concepts presented here are the
-author's own, and this acknowledgment does not imply his endorsement of the paper.
-The author also used automated language assistance tools for editorial refinement,
-LaTeX formatting, and notation polishing. All conceptual contributions, models,
-and proofs are the author's own.
+This paper follows an earlier version of the PIC Model made available on
+Zenodo in December 2025~\cite{gallo2025pic}. The author thanks Alan H. Karp,
+whose experience was valuable in stress-testing the concepts of
+Proof-of-Continuity and Proof of Relationship. The concepts presented here are
+the author's own, and this acknowledgment does not imply his endorsement of the
+paper. The author also used automated language assistance tools for editorial
+refinement, LaTeX formatting, and notation polishing. All conceptual
+contributions, models, and proofs are the author's own.
 
 \begin{thebibliography}{99}
 
