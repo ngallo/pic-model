@@ -715,15 +715,19 @@ The condition is unsatisfiable within any valid PIC execution --- an impossibili
 by construction, at the level of valid model behavior.
 
 \begin{theorem}[Confused deputy is impossible under PIC]
-In any system satisfying PIC monotonicity $C_{i+1}\subseteq C_i$ and
-origin-bounded authority $C_n \subseteq C_0$, the confused deputy conditions
-cannot be jointly satisfied as valid behavior within the model.
+In any valid PIC execution --- one whose adjacent transitions satisfy $PoR$ and
+monotonicity $C_{i+1}\subseteq C_i$, so that authority is origin-bounded
+($C_n \subseteq C_0$) --- the confused deputy conditions cannot be jointly
+satisfied as valid behavior within the model.
 \end{theorem}
 
 \begin{proof}
-Immediate from monotonicity: $C_k \subseteq C_0$ for all $k$, so
-$(o,r)\notin C_0$ implies $(o,r)\notin C_k$. The privilege mismatch a confused
-deputy requires is therefore unsatisfiable in a valid PIC execution.
+By $PoR$ the hops form a single lineage rooted at $s_0$, and by monotonicity
+$C_k \subseteq C_0$ for all $k$; hence $(o,r)\notin C_0$ implies $(o,r)\notin C_k$.
+Authority the deputy holds outside this lineage has a distinct origin
+(Section~\ref{sec:openpassthrough}) and is not exercised as part of the request;
+within the request's lineage the privilege mismatch a confused deputy requires is
+therefore unsatisfiable.
 \end{proof}
 
 \paragraph{Interpretation.}
