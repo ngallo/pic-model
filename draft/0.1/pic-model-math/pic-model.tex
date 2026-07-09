@@ -791,8 +791,9 @@ this by carrying lineage explicitly and requiring non-expansive authority
 propagation across the chain.
 
 Continuity is therefore not identity propagation. Identity providers, wallets,
-OIDC/OIDC4VC-style flows~\cite{openidconnect2014,openid4vc2024}, and
-WIMSE/SPIFFE-style workload identity~\cite{wimse2024,spiffe2017} remain important
+verifiable credentials~\cite{vcdm2022}, OIDC/OIDC4VC-style
+flows~\cite{openidconnect2014,openid4vc2024}, and WIMSE/SPIFFE-style workload
+identity~\cite{wimse2024,spiffe2017} remain important
 for authentication, credential presentation, audit, accountability, and origin
 bootstrap; but an identifier repeated at later hops does not by itself prove that
 the authority being exercised belongs to the same execution lineage. A lineage
@@ -807,10 +808,10 @@ execution; we name them because the temporal gap is most acute there. An agent
 runs a chain of steps --- planning, tool invocations, downstream calls --- while
 holding multiple authority sources at once: its own service credentials, delegated
 user tokens, and per-tool scopes. The classical local-filename designation
-reappears as an agent-influenced parameter --- a tenant id, document id, role ARN,
+reappears as an agent-influenced parameter --- a tenant id, document id, role identifier,
 queue message, or request target. When the caller influences this target and the
 agent satisfies it using authority from a different context, the result is the
-distributed confused deputy. PIC binds each tool call and downstream request to
+confused deputy problem in distributed form. PIC binds each tool call and downstream request to
 the causal lineage that triggered it, so an agent cannot apply authority outside
 the execution that caused the action. An agent asked to summarize a document
 carrying an indirect prompt injection --- instructions to delete files or
@@ -896,10 +897,11 @@ composition: the model is linear, and forks, joins, fan-out, fan-in, and
 DAG-shaped executions are a natural generalization of $\mathcal{L}$ to a partial
 order --- an extension of the continuity principle to composed lineages rather
 than a limitation of it. Third, the construction of
-$PoR$ is abstract: concrete implementations may use signatures, hash chains,
-verifiable credentials~\cite{vcdm2022}, secure channels, trusted execution
-environments, or tamper-evident logs, with implementation-dependent security and
-performance.
+$PoR$ is abstract: its concrete construction is an implementation concern
+separate from the continuity model. The relationship evidence it requires can be
+derived from mechanisms such as trusted execution environments, or
+verifiable credentials, with implementation-dependent security and performance;
+the model is agnostic to the choice.
 Fourth, lineage validation is an implementation concern rather than a limitation
 of the model: practical realizations need not revalidate an entire history at
 every hop, and may use checkpoints, summarized proofs, compact encodings, or
