@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 21:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025) (preloaded format=pdflatex 2025.9.28)  9 JUL 2026 21:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -423,7 +423,7 @@ Package rerunfilecheck Info: File `pic-model.out' has not changed.
 Here is how much of TeX's memory you used:
  11345 strings out of 467748
  174472 string characters out of 5426959
- 614131 words of memory out of 5000000
+ 614140 words of memory out of 5000000
  39615 multiletter control sequences out of 15000+600000
  645152 words of font info for 190 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191

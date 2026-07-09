@@ -622,7 +622,7 @@ violating confused-deputy safety --- a contradiction.
 The theorem is not an attack on possession: it shows that lineage-invariant
 possession is insufficient for multi-hop authority propagation precisely when
 authority mixing and confused-deputy safety are both required. Since the three
-cannot hold together, a system must relinquish exactly one, and only one such
+cannot hold together, a system must relinquish at least one, and only one such
 choice is acceptable. Forbidding authority-mixing-capable delegation would bar
 executors from holding authority of their own alongside request-derived authority
 --- impractical in real deployments, where a service legitimately retains its own
@@ -648,7 +648,7 @@ Lineage-invariance & authorization becomes lineage-sensitive & adopted (Proof-of
 \bottomrule
 \end{tabular}
 \caption{The three properties cannot hold together, so a system must relinquish
-one. Forbidding authority mixing is impractical and accepting confused deputies
+at least one. Forbidding authority mixing is impractical and accepting confused deputies
 is unsafe; the only acceptable choice is to relinquish lineage-invariance ---
 the option adopted by Proof-of-Continuity.}
 \label{tab:tradeoff}
