@@ -270,7 +270,9 @@ step $s_i$.
 \begin{definition}[Proof of Relationship]
 $PoR(s_i, s_{i+1})$ holds iff $s_{i+1}$ is a valid causal continuation of $s_i$
 within the same execution lineage. $PoR$ is a \emph{relational}, single-hop
-property: it binds one step to its immediate predecessor.
+property: it binds one step to its immediate predecessor. The reach back to the
+origin is not carried by any single $PoR$ but obtained by composing consecutive
+relationships, as the definition of $PoC$ below makes precise.
 \end{definition}
 
 \begin{definition}[Valid transition]
