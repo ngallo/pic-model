@@ -26,8 +26,8 @@ Proof-of-Possession authorization models derive authority from the possession
 of artifacts such as tokens, credentials, or capabilities. This paper argues
 that possession is insufficient for discrete execution chains, whether they
 span multiple services or occur as separated steps within the same machine,
-because it does not preserve the causal relationship between the origin of a
-request and the authority exercised at later steps. We introduce
+because it does not guarantee preservation of the causal relationship between the
+origin of a request and the authority exercised at later steps. We introduce
 Proof-of-Continuity, a minimal authority-propagation discipline for the
 Provenance Identity Continuity (PIC) model, in which each execution step must be
 causally linked to the previous step and may only propagate a non-expansive
@@ -43,8 +43,9 @@ since each step is authorized only against the authority context of the lineage
 that caused it.
 
 This paper concerns authorization propagation rather than authentication:
-identity mechanisms such as OIDC, verifiable credentials, wallets, and workload
-identity remain complementary mechanisms for establishing the origin, while
+identity and authentication mechanisms such as OIDC, verifiable credentials,
+wallets, and workload identity remain complementary mechanisms for establishing
+the origin, while
 Proof-of-Continuity addresses how authority propagates after that origin exists.
 \end{abstract}
 
@@ -65,7 +66,7 @@ identity established through an identity provider, wallet, OIDC/OIDC4VC-style
 flow~\cite{openidconnect2014,openid4vc2024}, or decentralized
 identifier~\cite{didcore2022}; a workload or machine identity such as those
 used in WIMSE/SPIFFE-style environments~\cite{wimse2024,spiffe2017}; a role; a
-service account; or another authenticated execution context. What matters for this model is
+service account; or another authenticated permissioned entity. What matters for this model is
 that a privilege set $Priv(p)$ is associated with it and that it can express an
 intent within those privileges. When a permissioned entity $p$ expresses such an
 intent, it selects a subset of $Priv(p)$; that subset becomes the origin
@@ -77,9 +78,8 @@ say only $(\text{write},\text{Book})$ --- and that subset becomes the origin
 authority context $C_0$ of a new lineage. Two executions may both involve Bob and
 the same selected privilege, yet need not be the same occurrence: each carries
 authority propagated along its own lineage. One may be a valid continuation of an
-intent Bob expressed within a lineage; another may be a confused-deputy action, or
-an unrelated execution exercising the same apparent privilege outside the lineage
-that granted it. The identity and privilege coordinates may be identical; the
+intent Bob expressed within a lineage; another may be an unrelated execution
+exercising the same apparent privilege outside the lineage that granted it. The identity and privilege coordinates may be identical; the
 lineage coordinate distinguishes the two.
 
 A request is a message $req$ passed between executors --- the entities that
