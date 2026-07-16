@@ -306,21 +306,25 @@ but only one of the three.
 
 Most authorization systems and APIs in use today are built around a
 single request shape: \emph{may subject $S$ perform action $A$ on
-resource $R$ in context $C$?} That shape is inherited from the world in
-which authorization lived entirely inside one application, and it
-captures application policies well --- and nothing else. Execution
-policies do not speak about subjects and resources: they speak about
-steps, paths, and flows. Translation policies do not answer an access
-question at all: they map authority between vocabularies.
+resource $R$ in context $C$?} It is a reasonable shape, and it has served
+well: it captures application policies faithfully, and it is where the
+industry has rightly concentrated its effort.
 
-Forcing everything into the subject-centric shape leads to awkward
-questions. If a translation policy must be evaluated when the execution
-crosses a domain boundary, what evaluates it --- a second, ad hoc
-decision point? If an execution policy must be validated inside the
-network path, does the network now host an application-style PDP? A model
-whose only primitive is the subject tuple leaves every other policy type
-either squeezed into that mold or outside governance entirely. Both the
-store and the evaluation model must be aware of policy types.
+Once executions are looked at end to end, however, questions emerge that
+this shape was never designed to answer. Execution policies do not speak
+about subjects and resources: they speak about steps, paths, and flows.
+Translation policies do not answer an access question at all: they map
+authority between vocabularies. If a translation policy must be evaluated
+when the execution crosses a domain boundary, what evaluates it --- a
+second, ad hoc decision point? If an execution policy must be validated
+inside the network path, does the network now host an application-style
+PDP?
+
+These are not shortcomings of any particular design: they are problems we
+all share, surfaced by distributed execution and autonomous agents. The
+observation they lead to is simple: both the store and the evaluation
+model benefit from being aware of policy types, rather than assuming that
+the application type is the whole picture.
 
 \subsection{The Non-Expansion Invariant}
 
@@ -339,8 +343,20 @@ grant with the authority the step received at entry:
 \[
 A_{\mathit{effective}} \;=\; A_{\mathit{granted}} \,\cap\, A_{\mathit{entry}}
 \]
-Anything a policy grants beyond the entry authority is clipped;
-otherwise, authority expands.
+The symbol $\cap$ simply reads ``what appears in both'': a privilege is
+effective only if the policies grant it \emph{and} the authority received
+at entry already contained it. Anything a policy grants beyond the entry
+authority is clipped; without this rule, authority expands.
+
+This is zero trust taken to its full consequence. Zero trust is commonly
+read as \emph{never trust, always verify}, applied to identities and
+connections; applied to authority, it means that every boundary is a
+point of \term{attenuation}, never of amplification. Segmentation at the
+execution level narrows where the transaction may flow; translation at
+the domain level maps authority without enlarging it; evaluation at the
+application level grants at most what the origin already allowed.
+Attenuation applies at every level --- execution, domain, application ---
+and the intersection rule is what makes it hold end to end.
 
 Figure~\ref{fig:expansion-bug} shows how an expansion can look perfectly
 legitimate. Two independent executions (\emph{lineages}) run through the
@@ -457,17 +473,16 @@ objects, delta transfer, key-value persistence, versioned history --- do
 not need to be invented. A battle-tested system built exactly on them has
 existed for two decades: Git.
 
-Git as-is, however, is not the answer. It carries far more than needed
-(working trees, branching and merging workflows, hooks); it is a
-general-purpose content tracker, so it enforces no structure --- anything
+Adopting Git as-is, however, would carry more than the problem needs. It
+brings along working trees, branching and merging workflows, and hooks;
+as a general-purpose content tracker it enforces no structure --- anything
 can be committed, and nothing guarantees the invariants of a policy group
-(a manifest, partitions, one policy per object); and it is not designed
+(a manifest, partitions, one policy per object); and it was not designed
 for the evaluation path, where a decision point must materialize a
-precise version of a group quickly, at every decision. The solution is
-therefore a \term{git-like} object model, specialized and optimized for
-policies: battle-tested ideas, without reinventing the wheel and without
-inheriting what does not serve. We call the resulting structure a
-\term{ledger}.
+precise version of a group quickly, at every decision. A more fitting
+approach is a \term{git-like} object model, specialized for policies:
+battle-tested ideas, without reinventing the wheel and without inheriting
+what does not serve. We call the resulting structure a \term{ledger}.
 
 \subsection{Structure}
 
@@ -529,13 +544,15 @@ Each requirement stated in this document maps directly onto the ledger:
 
 \subsection{A Runtime, Not a Bundle}
 
-The obvious way to distribute policies --- and the wrong one --- is a
-compressed archive: zip the files, ship the bundle to the decision point,
-unpack, load. A bundle reintroduces everything the object model left
-behind: filesystem semantics instead of self-describing objects,
-whole-store transfer instead of deltas, no per-object verification, no
-resumable exchange, and no history at the destination. It treats policies
-as static configuration to be installed.
+A natural first answer to distribution is a compressed archive: package
+the files, ship the bundle to the decision point, unpack, load. Archives
+are simple and familiar, and for occasional deployments they can be
+enough. They give up, however, most of what the object model provides:
+filesystem semantics return in place of self-describing objects, the
+whole store travels instead of a delta, and there is no per-object
+verification, no resumable exchange, no history at the destination.
+Policies end up treated as static configuration to be installed rather
+than as governed, versioned objects.
 
 Policies are languages, as stated at the outset --- and at the point of
 decision they behave like code: they are brought onto the consumer and
