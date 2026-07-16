@@ -560,6 +560,46 @@ Each requirement stated in this document maps directly onto the ledger:
         with no working tree and no checkout.
 \end{itemize}
 
+\subsection{Negotiated Synchronization}
+
+Synchronization needs one more ingredient: a \term{negotiation} protocol.
+A consumer is not a passive receiver of whatever the store pushes: it
+must be able to state what it needs, and the two sides must agree on the
+smallest transfer that satisfies it. The negotiation spans a few natural
+axes:
+
+\begin{itemize}[nosep]
+  \item \textbf{Scope} --- everything, a single group, or only selected
+        partitions of a group: a decision point serving application
+        decisions may have no use for the execution partitions, and vice
+        versa;
+  \item \textbf{Version} --- the current head, a specific commit, or a
+        bounded slice of history;
+  \item \textbf{Capability} --- only the partitions whose declared
+        language and runtime the consumer actually supports, as read from
+        the manifest;
+  \item \textbf{Delta} --- given the last commit the consumer already
+        holds, only the objects it is missing.
+\end{itemize}
+
+The mechanics follow from the ledger itself. The two sides exchange refs
+--- each declares the commit it holds --- and walk the predecessor chain
+to compute what is missing; content addressing makes ``already present''
+verifiable, so nothing is transferred twice. A sketch of the dialogue:
+
+\begin{lstlisting}
+consumer: group "commerce-authz": I hold commit #C1;
+          I support cedar >= 4.0; I serve partitions "/" and "/agents"
+store:    head is #C3; between #C1 and #C3 you are missing #C2, #C3;
+          restricted to your partitions, that is 7 objects
+consumer: transfer them
+\end{lstlisting}
+
+A consumer with abundant resources can mirror the entire store; a
+constrained one can keep a razor-thin replica --- exactly the groups,
+partitions, and versions it evaluates --- kept aligned by the same
+protocol.
+
 \subsection{A Runtime, Not a Bundle}
 
 A natural first answer to distribution is a compressed archive: package
