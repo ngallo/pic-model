@@ -1,0 +1,10 @@
+name = "pic-lean-verification"
+version = "0.1.0"
+defaultTargets = ["pic_verification"]
+
+[[lean_lib]]
+name = "PICVerification"
+
+[[lean_exe]]
+name = "pic_verification"
+root = "Main"
