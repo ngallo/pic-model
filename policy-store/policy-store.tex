@@ -148,6 +148,12 @@ carry at least the following properties:
 Identity and meaning are intrinsic to the object: they travel with it,
 they do not derive from its position in a directory tree.
 
+Note that the unit is the policy, not the file. A single source file may
+well contain several policies: each of them becomes a distinct object,
+with its own identifier and its own properties. The file exists only to
+make authoring easier; once the policies are turned into objects, it
+plays no further role.
+
 \subsection{Logical Grouping}
 
 For the same reason, policies are not grouped as filesystem trees but as
@@ -405,6 +411,15 @@ partition declares its own.
 One group, one coherent unit of governance --- several policy types, each
 in the language that fits it best.
 
+This grouping has a consequence on the evaluation side as well. If a
+group declares partitions for different policy types, the decision
+point's interface must be able to address them: a caller needs a way to
+state which partition --- which policy type --- a request targets.
+Evaluation interfaces designed around the application type alone are the
+natural starting point, but for policy types to work end to end they need
+to be extended in this direction, so that the manifest and the interface
+speak the same language.
+
 % ------------------------------------------------------------------------------
 \section{Transferability and Persistence}
 
@@ -453,9 +468,12 @@ scratch.
 Persistence must require nothing more than an associative map from
 identifier to bytes. A directory on disk, an object store such as S3, or
 an in-memory dictionary are all sufficient backends: no database schema,
-no query engine, no storage-specific format. This keeps the model
-deployable everywhere the policies need to go --- from cloud services to
-edge nodes.
+no query engine, no storage-specific format. The same property scales
+down as well as up: a low-resource device can keep its objects in a small
+key-value store, and even a browser can persist them in its local
+storage. This keeps the model deployable everywhere the policies need to
+go --- from cloud services to edge nodes, constrained devices, and
+applications running in a browser.
 
 \subsection{Versioning and Auditing}
 
