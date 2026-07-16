@@ -1,12 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(latexmk -pdf -interaction=nonstopmode pic-model.tex)",
-      "Bash(grep -nE \"\\\\\\\\\\\\\\\\le\\([^f]|$\\)\" pic-model.tex)",
-      "Bash(grep -nA1 \"for every execution chain\" pic-model.tex)",
-      "Bash(command -v pdftotext)",
-      "Bash(pdftotext pic-model.pdf -)",
-      "Bash(grep -n \"= .*\\\\\\\\bp$\\\\|circ p\\\\|A\\(e\\)\")"
+      "Bash(pdflatex -interaction=nonstopmode policy-store.tex)"
+    ],
+    "additionalDirectories": [
+      "/Users/nicolagallo/source/ngallo/pic-model"
     ]
   }
 }
