@@ -5,3 +5,4 @@ import PICVerification.Projection
 import PICVerification.TradeOff
 import PICVerification.ConfusedDeputy
 import PICVerification.Translation
+import PICVerification.Refinement

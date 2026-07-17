@@ -37,6 +37,7 @@ cryptographic implementation of `PoR` is secure.
 | **Def 1 (Confused deputy)** | `ConfusedDeputy` (restated inside a lineage) | `ConfusedDeputy.lean` |
 | **Thm (Confused deputy is impossible under PIC)** | `confusedDeputyImpossible` | `ConfusedDeputy.lean` |
 | Heterogeneous operation spaces, `𝒯_{i→i+1}` | `Translation`, `MonotoneTranslation`, `composedTranslation`, `heterogeneousSafety` | `Translation.lean` |
+| **Refinement**: concrete Prover/Verifier acceptance ⇒ abstract `PoC` (and origin-bound safety) | `ConcreteChecks`, `ConcreteVerifierAccepts`, `concreteAcceptance_implies_PoC`, `concreteAcceptance_implies_originBound` | `Refinement.lean` |
 
 `Main.lean` instantiates the results on the paper's running examples: the
 `C₀ = {(convert, doc)}` chain where `(write, doc)` can never be authorized
@@ -90,6 +91,7 @@ It prints the list of verified results (paper → Lean names).
 - `PICVerification/TradeOff.lean`: possession–delegation–safety trade-off.
 - `PICVerification/ConfusedDeputy.lean`: open passthrough, confused deputy impossibility.
 - `PICVerification/Translation.lean`: heterogeneous vocabularies and policy translations.
+- `PICVerification/Refinement.lean`: refinement bridge from the concrete Prover/Verifier profile to the abstract model; concrete verifier acceptance implies abstract `PoC` and origin-bound safety, with cryptographic soundness isolated as one explicit assumption.
 - `Main.lean`: concrete examples and executable.
 - `lakefile.toml`: Lake project configuration.
 - `lean-toolchain`: pinned Lean version.

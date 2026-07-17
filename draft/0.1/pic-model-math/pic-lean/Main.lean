@@ -146,6 +146,8 @@ theorem separationRequiresLineage :
 #check @openPassthroughImpossible
 #check @confusedDeputyImpossible
 #check @heterogeneousSafety
+#check @concreteAcceptance_implies_PoC
+#check @concreteAcceptance_implies_originBound
 
 def main : IO Unit := do
   IO.println "PIC Lean verification project"
@@ -166,3 +168,5 @@ def main : IO Unit := do
   IO.println "  Def  Open passthrough                → openPassthroughImpossible"
   IO.println "  Thm  Confused deputy impossible      → confusedDeputyImpossible"
   IO.println "  Par  Heterogeneous operation spaces  → heterogeneousSafety"
+  IO.println "  Ref  Concrete acceptance ⇒ PoC       → concreteAcceptance_implies_PoC,"
+  IO.println "       (spec Prover/Verifier profile)     concreteAcceptance_implies_originBound"
