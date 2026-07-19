@@ -402,8 +402,4 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/osx,linux,windows,visualstudiocode,latex
 
-.claude/
 !*.md
-# The version dir "0.1" matches the LaTeX pattern *.[1-9] (0 . 1) and would
-# hide the whole tree; keep it tracked. File-level ignores below still apply.
-!draft/0.1/
