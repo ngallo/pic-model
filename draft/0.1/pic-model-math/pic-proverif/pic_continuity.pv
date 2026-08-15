@@ -1,0 +1,224 @@
+(*
+ * PIC Continuity — ProVerif symbolic verification
+ * ===============================================
+ *
+ * A Dolev-Yao instantiation of the PIC (Provenance Identity Continuity)
+ * model of `pic-model.tex` — the companion of the Tamarin theory in
+ * `../pic-tamarin` and of the Lean formalization in `../pic-lean`.
+ *
+ * Division of labor with the Tamarin companion
+ * --------------------------------------------
+ * This file verifies the authentication core of the continuity protocol
+ * against an active attacker:
+ *
+ *   - Proof of Relationship eligibility: only workloads attested by the
+ *     trusted issuer can advance continuity (token possession alone never
+ *     suffices, although the attacker holds every token);
+ *   - key control / agreement: an accepted advancement under an
+ *     uncompromised attested key was signed by that workload for exactly
+ *     that lineage and position;
+ *   - non-vacuity: the two-hop attenuation walkthrough is reachable.
+ *
+ * The origin-bound non-expansion theorem (PIC Safety: authority accepted
+ * at any hop never exceeds the origin authority context C0) is an
+ * invariant over unbounded checkpoint chains. Its proof needs induction
+ * over the chain, which is outside what ProVerif's Horn-clause
+ * abstraction establishes automatically for this model; it is proved in
+ * the Tamarin companion — `../pic-tamarin`, lemmas No_Escalation_Read,
+ * No_Escalation_Save, PIC_Safety_Read, PIC_Safety_Save and the
+ * Branch_Dropped lemmas — by explicit trace induction, and
+ * abstractly, for arbitrary privilege sets and chain lengths, in the
+ * Lean project (`../pic-lean`). Together the three projects cover the
+ * model end to end.
+ *
+ * Scope and modeling choices
+ * --------------------------
+ * - Minimal centralized-checker realization of the model: a trusted
+ *   continuity checker (the "realm") validates every proposed transition
+ *   and signs the next authority checkpoint, mirroring the paper's threat
+ *   model: the adversary cannot make a valid continuity checker accept a
+ *   transition that violates monotonicity.
+ * - The checker validates the predecessor checkpoint by verifying the
+ *   realm signature on the presented checkpoint artifact — the artifact
+ *   itself carries the trusted state, as in the concrete profile, where
+ *   the candidate embeds the signed predecessor checkpoint and the
+ *   verifier checks those exact signed bytes. Checkpoint artifacts are
+ *   never consumed, so sibling branches (fan-out) are possible by
+ *   construction and all results hold in their presence.
+ * - Authority contexts carry two atomic privileges, `read` and `save`,
+ *   each as a flag yes/no — the walkthrough example
+ *   { read, save } -> { save } -> { }.
+ * - Proof of Relationship evidence is an issuer-signed credential binding
+ *   the workload verification key (the SD-JWT PoR abstraction). The
+ *   credential supports issuer validation and key identification; key
+ *   control is proven separately by the workload signature on the
+ *   transition — two distinct steps, as in the model.
+ * - Positions are term naturals: zero, s(zero), s(s(zero)), ...
+ * - Signatures are message-revealing (getmess): PIC artifacts are signed,
+ *   not encrypted. Every settled checkpoint is public; no confidentiality
+ *   of token delivery is assumed.
+ * - Compromised-but-attested workloads are modeled: the attacker may
+ *   learn an attested workload's private key (KeyReveal).
+ *
+ * What is NOT claimed
+ * -------------------
+ * - No claim about the cryptographic soundness of a concrete SD-JWT,
+ *   issuer, or attestation deployment (the paper's bridge assumption).
+ * - No byte-level encoding or COSE/JOSE typing claims: the term algebra
+ *   gives perfect parsing, so encoding-level type confusion is out of
+ *   scope here by construction.
+ * - Lineage origination and executor-owned ambient authority are out of
+ *   scope, as in the paper (Section 9).
+ *)
+
+(* ------------------------------------------------------------------ *)
+(* Types, cryptography, constants                                      *)
+(* ------------------------------------------------------------------ *)
+
+free c: channel.
+
+type skey.
+type pkey.
+type lineage.
+type position.
+type flag.
+
+free skR: skey [private].   (* realm / continuity checker signing key *)
+free skI: skey [private].   (* PoR issuer signing key                 *)
+
+fun pk(skey): pkey.
+fun sign(bitstring, skey): bitstring.
+reduc forall m: bitstring, k: skey; checksign(sign(m, k), pk(k)) = m.
+(* signed, not encrypted: anyone can read a signed payload *)
+reduc forall m: bitstring, k: skey; getmess(sign(m, k)) = m.
+
+const yes, no: flag [data].
+const zero: position [data].
+fun s(position): position [data].
+
+const portag, transtag, ckpttag: bitstring.
+
+(* Monotone attenuation per privilege flag as a destructor: attOK(new, old)
+   is defined only when new = old or new = no — a flag may stay or drop,
+   never rise. Destructor failure silently rejects the transition, exactly
+   like the checker refusing an expansive proposal. *)
+fun attOK(flag, flag): flag
+reduc forall f: flag; attOK(f, f) = f
+otherwise forall f: flag; attOK(no, f) = no.
+
+(* Flag well-formedness (schema validation): defined only on yes/no. *)
+fun validflag(flag): flag
+reduc validflag(yes) = yes
+otherwise validflag(no) = no.
+
+(* ------------------------------------------------------------------ *)
+(* Events                                                              *)
+(* ------------------------------------------------------------------ *)
+
+event OriginAuth(lineage, flag, flag).        (* C0 selected at origin  *)
+event Settled(lineage, position, flag, flag). (* accepted checkpoint    *)
+event AcceptedT(pkey, lineage, position).     (* accepted advancement   *)
+event WSignT(pkey, lineage, position).        (* honest workload signed *)
+event Issued(pkey).                           (* PoR credential issued  *)
+event KeyReveal(pkey).                        (* attested key leaked    *)
+
+(* ------------------------------------------------------------------ *)
+(* Queries                                                             *)
+(* ------------------------------------------------------------------ *)
+
+(* Proof of Relationship: only workloads attested by the trusted issuer
+   can advance continuity. Token possession alone — and the attacker holds
+   every token — never suffices. Expected: true. *)
+query k: pkey, l: lineage, p: position;
+  event(AcceptedT(k, l, p)) ==> event(Issued(k)).
+
+(* Key control / agreement: an accepted advancement under an uncompromised
+   attested key was signed by that workload for that lineage and position.
+   Expected: true. *)
+query k: pkey, l: lineage, p: position;
+  event(AcceptedT(k, l, p)) ==> event(WSignT(k, l, p)) || event(KeyReveal(k)).
+
+(* Sanity (non-vacuity): the two-hop walkthrough end state
+   { read, save } -> { save } -> { } is reachable.
+   Expected: false (the event IS reachable). *)
+query l: lineage;
+  event(Settled(l, s(s(zero)), no, no)).
+
+(* ------------------------------------------------------------------ *)
+(* Lineage initialization: origin authority context C0                 *)
+(* ------------------------------------------------------------------ *)
+
+(* The environment (or the attacker) may start lineages with any
+   well-formed authority flags: the results hold for every C0. *)
+
+let lineageInit(skR: skey) =
+  in(c, (rf: flag, sf: flag));
+  let rfv = validflag(rf) in
+  let sfv = validflag(sf) in
+  new lid: lineage;
+  new c0: bitstring;
+  event OriginAuth(lid, rfv, sfv);
+  out(c, sign((ckpttag, lid, zero, rfv, sfv, c0), skR)).
+
+(* ------------------------------------------------------------------ *)
+(* Workloads: attestation (PoR issuance), advancement, compromise       *)
+(* ------------------------------------------------------------------ *)
+
+let workloadAdvance(skW: skey, csig: bitstring) =
+  (* the attacker fully schedules honest workloads *)
+  in(c, (l: lineage, p: position, ch: bitstring, nrf: flag, nsf: flag));
+  new nc: bitstring;
+  event WSignT(pk(skW), l, s(p));
+  out(c, (sign((transtag, l, s(p), ch, nc, nrf, nsf), skW), csig)).
+
+let workloads(skI: skey) =
+  ! (
+    new skW: skey;
+    let pkw = pk(skW) in
+    let csig = sign((portag, pkw), skI) in
+    event Issued(pkw);
+    out(c, pkw);
+    out(c, csig);
+    ( (! workloadAdvance(skW, csig))
+    | (event KeyReveal(pkw); out(c, skW)) )
+  ).
+
+(* ------------------------------------------------------------------ *)
+(* The continuity checker: validate and settle one transition          *)
+(* ------------------------------------------------------------------ *)
+
+(* Acceptance requires:
+   - a trusted predecessor checkpoint: the presented checkpoint artifact
+     verifies under the realm signature;
+   - PoR evidence: credential signed by the trusted issuer, binding pkw;
+   - key control: transition signed by that same PoR-bound key;
+   - predecessor binding and challenge continuity: the transition names
+     the predecessor lineage, position and challenge exactly;
+   - position progression: transition position = predecessor + 1;
+   - non-expansion: each flag stays or drops (attOK destructor).
+   Checkpoint artifacts are never consumed: sibling branches remain
+   possible, and every result holds in their presence. *)
+
+let advance(skR: skey, pkI: pkey) =
+  in(c, (ptok: bitstring, tsig: bitstring, csig: bitstring));
+  let (=ckpttag, lid: lineage, pos: position, rf: flag, sf: flag,
+       ch: bitstring) = checksign(ptok, pk(skR)) in
+  let (=portag, pkw: pkey) = checksign(csig, pkI) in
+  let (=transtag, =lid, =s(pos), =ch, nc: bitstring, nrf: flag,
+       nsf: flag) = checksign(tsig, pkw) in
+  let nrfv = attOK(nrf, rf) in
+  let nsfv = attOK(nsf, sf) in
+  event AcceptedT(pkw, lid, s(pos));
+  event Settled(lid, s(pos), nrfv, nsfv);
+  out(c, sign((ckpttag, lid, s(pos), nrfv, nsfv, nc), skR)).
+
+(* ------------------------------------------------------------------ *)
+(* System                                                              *)
+(* ------------------------------------------------------------------ *)
+
+process
+  out(c, pk(skR));
+  out(c, pk(skI));
+  ( (! lineageInit(skR))
+  | (! advance(skR, pk(skI)))
+  | workloads(skI) )

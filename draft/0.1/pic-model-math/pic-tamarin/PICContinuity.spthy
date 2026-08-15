@@ -1,0 +1,303 @@
+/*
+ * PIC Continuity — Tamarin symbolic verification
+ * ==============================================
+ *
+ * A Dolev-Yao instantiation of the PIC (Provenance Identity Continuity)
+ * model of `pic-model.tex` — the same results the Lean project
+ * (`../pic-lean`) proves abstractly, verified here at the message level
+ * against an active network attacker.
+ *
+ * Scope and modeling choices
+ * --------------------------
+ * - This is the paper's minimal centralized-checker realization: a trusted
+ *   continuity checker (the "realm") validates each proposed transition and
+ *   signs the next authority checkpoint. Mirrors the paper's threat model:
+ *   "the adversary cannot ... make a valid continuity checker accept a
+ *   transition that violates monotonicity" — here the checker's acceptance
+ *   rule enforces exactly that, and Tamarin verifies the global consequences.
+ * - Authority contexts use two atomic privileges, `read` and `save`, each
+ *   carried as a flag 'y'/'n'. This is the walkthrough example
+ *   { read, save } -> { save } -> { } and is sufficient to express
+ *   non-expansion, irreversible drop, and origin-bound authority.
+ * - Proof of Relationship evidence is an issuer-signed credential binding
+ *   the workload verification key (the SD-JWT PoR abstraction). PoR remains
+ *   a relation witnessed by evidence: the credential supports issuer/schema
+ *   validation and key identification; key control is proven by the
+ *   workload signature on the transition — two separate steps, as in the
+ *   model and the Profile 0.2 articles.
+ * - Positions are term-encoded naturals: 'zero', s('zero'), s(s('zero')) ...
+ * - Every settled checkpoint token is published (Out): tokens are signed,
+ *   not encrypted, and confidentiality of delivery is NOT assumed. All
+ *   safety lemmas hold even though the attacker holds every token.
+ * - Checkpoints carry a fresh internal identifier ~cid — the stand-in for
+ *   the unique signed-artifact identity (pca_hash) of the concrete profile.
+ * - Sibling branches are allowed by construction: a checkpoint fact is
+ *   persistent and any eligible workload may continue it. The safety
+ *   results below hold in the presence of arbitrary branching.
+ * - Compromised-but-attested workloads are modeled (Workload_Compromise):
+ *   the attacker may fully control an eligible workload's key. Non-expansion
+ *   and origin-bound authority still hold — authority never exceeds C0.
+ *
+ * What is NOT claimed
+ * -------------------
+ * - No claim about the cryptographic soundness of a concrete SD-JWT,
+ *   issuer, or attestation deployment (the paper's bridge assumption).
+ * - No byte-level encoding, canonicalization, or COSE/JOSE typing claims:
+ *   the term algebra gives perfect parsing, so encoding-level type
+ *   confusion is out of scope here by construction.
+ * - Lineage origination and executor-owned ambient authority are out of
+ *   scope, as in the paper (Section 9).
+ */
+
+theory PICContinuity
+begin
+
+builtins: signing, hashing
+
+functions: s/1
+
+/* ---------------------------------------------------------------------
+ * Restrictions — the checker's acceptance discipline
+ * ------------------------------------------------------------------ */
+
+// Equational checks (signature verification) recorded as action facts.
+restriction Equality:
+  "All x y #i. Eq(x, y) @ #i ==> x = y"
+
+// Monotone attenuation per privilege flag: a flag may stay or drop to 'n',
+// never rise from 'n' to 'y'. This is C_{i+1} <= C_i, per atomic privilege.
+restriction NonExpansion:
+  "All old new #i. NonExp(old, new) @ #i ==> ((new = old) | (new = 'n'))"
+
+// Authority flags are well-formed: exactly 'y' or 'n' (schema validation).
+restriction FlagsValid:
+  "All f #i. Flag(f) @ #i ==> ((f = 'y') | (f = 'n'))"
+
+// Single realm (continuity checker) and single PoR issuer in this model.
+restriction Single:
+  "All x #i #j. Once(x) @ #i & Once(x) @ #j ==> #i = #j"
+
+/* ---------------------------------------------------------------------
+ * Trust roots
+ * ------------------------------------------------------------------ */
+
+// The realm: the trusted continuity checker / settlement signer.
+rule Realm_Init:
+  [ Fr(~skR) ]
+  --[ Once('realm') ]->
+  [ !RealmKey(~skR), Out(pk(~skR)) ]
+
+// The PoR issuer (attestation issuer): signs workload credentials.
+rule Issuer_Init:
+  [ Fr(~skI) ]
+  --[ Once('issuer') ]->
+  [ !IssuerKey(~skI), Out(pk(~skI)) ]
+
+/* ---------------------------------------------------------------------
+ * Workloads and Proof of Relationship evidence
+ * ------------------------------------------------------------------ */
+
+// An eligible workload: the issuer binds its verification key into a
+// credential (PoR evidence). The credential travels on the wire, so it is
+// public. Only the private key stays with the workload.
+rule Workload_Attest:
+  let pkW  = pk(~skW)
+      cmsg = <'por', pkW>
+      csig = sign(cmsg, ~skI)
+  in
+  [ !IssuerKey(~skI), Fr(~skW) ]
+  --[ Issued(pkW) ]->
+  [ !WorkloadCred(~skW, cmsg, csig), Out(pkW), Out(<cmsg, csig>) ]
+
+// Full compromise of an attested workload: the attacker learns the
+// PoR-bound private key. Safety must survive this.
+rule Workload_Compromise:
+  [ !WorkloadCred(~skW, cmsg, csig) ]
+  --[ KeyReveal(pk(~skW)) ]->
+  [ Out(~skW) ]
+
+/* ---------------------------------------------------------------------
+ * Lineage initialization (origin authority context C0)
+ * ------------------------------------------------------------------ */
+
+// A permissioned origin selects an authority context C0 = (rf, sf) for a
+// new lineage (the OAuth-to-PIC exchange abstraction). The realm signs and
+// publishes settled checkpoint 0. The initial flags come from the network:
+// the environment (or the attacker) may start lineages with any well-formed
+// authority — safety must hold for all of them.
+rule Lineage_Init:
+  let cmsg = <'ckpt', ~lid, 'zero', rf, sf, ~c0>
+  in
+  [ !RealmKey(~skR), Fr(~lid), Fr(~c0), Fr(~cid), In(<rf, sf>) ]
+  --[ OriginAuth(~lid, rf, sf), Flag(rf), Flag(sf),
+      CkptCreated(~cid, ~lid, 'zero', rf, sf, ~c0) ]->
+  [ !Checkpoint(~cid, ~lid, 'zero', rf, sf, ~c0),
+    Out(<cmsg, sign(cmsg, ~skR)>) ]
+
+/* ---------------------------------------------------------------------
+ * Honest workload: propose a continuity transition
+ * ------------------------------------------------------------------ */
+
+// An eligible workload continues a lineage: it signs a transition binding
+// predecessor coordinates (lid, position, previous challenge), a fresh next
+// challenge, and the proposed attenuated flags. The parameters arrive from
+// the network — the attacker fully schedules honest workloads.
+rule Workload_Advance:
+  let pkW  = pk(~skW)
+      tmsg = <'trans', lid, s(pos), chal, ~nc, nrf, nsf>
+  in
+  [ !WorkloadCred(~skW, cmsg, csig),
+    In(<lid, pos, chal, nrf, nsf>),
+    Fr(~nc) ]
+  --[ WSign(pkW, lid, s(pos)) ]->
+  [ Out(<tmsg, sign(tmsg, ~skW), cmsg, csig>) ]
+
+/* ---------------------------------------------------------------------
+ * The continuity checker: validate and settle one transition
+ * ------------------------------------------------------------------ */
+
+// Acceptance requires, in one rule (the concrete acceptance predicate):
+//  - a currently trusted predecessor checkpoint (persistent fact);
+//  - position progression: transition position = predecessor position + 1;
+//  - challenge continuity: previous challenge equals the predecessor's;
+//  - PoR evidence: credential signed by the trusted issuer, binding pkW;
+//  - key control: transition signed by that same PoR-bound key;
+//  - non-expansion: each flag stays or drops (restriction NonExpansion);
+//  - flag well-formedness (restriction FlagsValid).
+// On success the realm signs and publishes the next settled checkpoint.
+// The predecessor fact is persistent: sibling branches remain possible.
+rule PICX_Advance:
+  let tmsg = <'trans', lid, s(pos), chal, nc, nrf, nsf>
+      cmsg = <'por', pkW>
+      nmsg = <'ckpt', lid, s(pos), nrf, nsf, nc>
+  in
+  [ !RealmKey(~skR), !IssuerKey(~skI),
+    !Checkpoint(~cid, lid, pos, rf, sf, chal),
+    Fr(~ncid),
+    In(<tmsg, tsig, cmsg, csig>) ]
+  --[ Eq(verify(csig, cmsg, pk(~skI)), true),
+      Eq(verify(tsig, tmsg, pkW), true),
+      Accepted(lid, s(pos), nrf, nsf, pkW),
+      NonExp(rf, nrf), NonExp(sf, nsf), Flag(nrf), Flag(nsf),
+      CkptCreated(~ncid, lid, s(pos), nrf, nsf, nc),
+      Derived(~cid, ~ncid, lid, s(pos), nrf, nsf) ]->
+  [ !Checkpoint(~ncid, lid, s(pos), nrf, nsf, nc),
+    Out(<nmsg, sign(nmsg, ~skR)>) ]
+
+/* =====================================================================
+ * Sanity: the model is not vacuous
+ * =================================================================== */
+
+// The blog walkthrough end to end: C0 = { read, save }, Worker 1 drops
+// read, Worker 2 drops save, reaching empty executable authority.
+lemma Sanity_TwoHop_Walkthrough:
+  exists-trace
+  "Ex lid pw1 pw2 #a #b #c.
+     OriginAuth(lid, 'y', 'y') @ #a &
+     Accepted(lid, s('zero'), 'n', 'y', pw1) @ #b &
+     Accepted(lid, s(s('zero')), 'n', 'n', pw2) @ #c &
+     #a < #b & #b < #c"
+
+// Sibling branches from one checkpoint are reachable (fan-out is a
+// feature, not a validation gap): two distinct accepted continuations
+// at the same position of the same lineage.
+lemma Sanity_Sibling_Branches:
+  exists-trace
+  "Ex lid pw1 pw2 sf1 sf2 #a #b.
+     Accepted(lid, s('zero'), 'y', sf1, pw1) @ #a &
+     Accepted(lid, s('zero'), 'n', sf2, pw2) @ #b &
+     not(#a = #b)"
+
+/* =====================================================================
+ * Structural facts
+ * =================================================================== */
+
+// One origin authority context per lineage (lineage ids are fresh).
+lemma Origin_Unique [reuse]:
+  "All lid r1 s1 r2 s2 #i #j.
+     OriginAuth(lid, r1, s1) @ #i & OriginAuth(lid, r2, s2) @ #j
+       ==> #i = #j"
+
+/* =====================================================================
+ * Origin-bound authority (paper: Theorem — PIC Safety)
+ * =================================================================== */
+
+// Inductive invariant: no checkpoint of a lineage can carry `read` when
+// the origin authority context of that lineage lacked it. Proved by
+// induction over the trace: the origin case contradicts Origin_Unique,
+// and the advancement case regresses to the predecessor checkpoint via
+// the NonExpansion restriction.
+lemma No_Escalation_Read [use_induction, reuse]:
+  "All cid lid pos sf ch sf0 #i #j.
+     CkptCreated(cid, lid, pos, 'y', sf, ch) @ #i &
+     OriginAuth(lid, 'n', sf0) @ #j
+       ==> F"
+
+lemma No_Escalation_Save [use_induction, reuse]:
+  "All cid lid pos rf ch rf0 #i #j.
+     CkptCreated(cid, lid, pos, rf, 'y', ch) @ #i &
+     OriginAuth(lid, rf0, 'n') @ #j
+       ==> F"
+
+// PIC Safety at the wire level: no accepted continuation ever carries a
+// privilege absent from the origin authority context of its lineage.
+// This is the confused-deputy impossibility instance: (o,r) not in C0
+// cannot be exercised at any accepted hop of that lineage — even with
+// every token public and attested workload keys compromised.
+lemma PIC_Safety_Read:
+  "All lid pos sf sf0 pkW #i #j.
+     Accepted(lid, pos, 'y', sf, pkW) @ #i &
+     OriginAuth(lid, 'n', sf0) @ #j
+       ==> F"
+
+lemma PIC_Safety_Save:
+  "All lid pos rf rf0 pkW #i #j.
+     Accepted(lid, pos, rf, 'y', pkW) @ #i &
+     OriginAuth(lid, rf0, 'n') @ #j
+       ==> F"
+
+/* =====================================================================
+ * Branch-local monotonicity (irreversible drop, per branch)
+ * =================================================================== */
+
+// A continuation derived from a checkpoint that dropped `read` can never
+// carry `read` again on that branch. (A sibling branch from an earlier
+// checkpoint may still carry it — that is fan-out, bounded by C0 above.)
+lemma Branch_Dropped_Read_Stays_Dropped:
+  "All cidP cidN lid pos sf ch #i lid2 pos2 nsf #j.
+     CkptCreated(cidP, lid, pos, 'n', sf, ch) @ #i &
+     Derived(cidP, cidN, lid2, pos2, 'y', nsf) @ #j
+       ==> F"
+
+lemma Branch_Dropped_Save_Stays_Dropped:
+  "All cidP cidN lid pos rf ch #i lid2 pos2 nrf #j.
+     CkptCreated(cidP, lid, pos, rf, 'n', ch) @ #i &
+     Derived(cidP, cidN, lid2, pos2, nrf, 'y') @ #j
+       ==> F"
+
+/* =====================================================================
+ * Proof of Relationship: only attested workloads advance
+ * =================================================================== */
+
+// Every accepted advancement was performed under a workload key that the
+// trusted PoR issuer attested earlier. Possession of tokens alone — all of
+// which the attacker holds — never suffices to advance continuity.
+lemma Only_Attested_Advance:
+  "All lid pos rf sf pkW #i.
+     Accepted(lid, pos, rf, sf, pkW) @ #i
+       ==> Ex #j. Issued(pkW) @ #j & #j < #i"
+
+/* =====================================================================
+ * Key control: the workload signature is the proof of key control
+ * =================================================================== */
+
+// If an advancement is accepted under pkW and that key was never
+// compromised, then the attested workload itself signed a transition for
+// exactly that lineage and position (agreement).
+lemma Key_Control_Or_Compromise:
+  "All lid pos rf sf pkW #i.
+     Accepted(lid, pos, rf, sf, pkW) @ #i
+       ==> (Ex #j. WSign(pkW, lid, pos) @ #j & #j < #i)
+         | (Ex #j. KeyReveal(pkW) @ #j & #j < #i)"
+
+end
