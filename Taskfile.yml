@@ -1,0 +1,46 @@
+version: '3'
+
+tasks:
+  pic-verify-lean:
+    silent: true
+    desc: Build the PIC Lean 4 formalization (a successful build means the kernel accepted all proofs)
+    dir: draft/0.1/pic-model-math/pic-lean
+    cmds:
+      - lake build
+      - lake exe pic_verification
+
+  pic-verify-tamarin:
+    desc: Prove all PIC Tamarin lemmas (fails on any falsified/incomplete lemma)
+    dir: draft/0.1/pic-model-math/pic-tamarin
+    cmds:
+      - |
+        out=$(tamarin-prover --prove PICContinuity.spthy 2>/dev/null)
+        echo "$out" | sed -n '/summary of summaries/,$p'
+        if echo "$out" | grep -qE "falsified|analysis incomplete|wellformedness check failed"; then
+          echo "PIC TAMARIN VERIFICATION FAILED"; exit 1
+        fi
+        echo "PIC TAMARIN VERIFICATION OK"
+    silent: true 
+
+  pic-verify-proverif:
+    desc: Run all PIC ProVerif queries (fails unless every query has its expected result)
+    dir: draft/0.1/pic-model-math/pic-proverif
+    cmds:
+      - |
+        out=$(proverif pic_continuity.pv)
+        echo "$out" | grep "^RESULT"
+        true_count=$(echo "$out" | grep -c "^RESULT.*is true")
+        if [ "$true_count" -ne 2 ]; then echo "PIC PROVERIF VERIFICATION FAILED"; exit 1; fi
+        if ! echo "$out" | grep -q "^RESULT not event(Settled(l_1,s(s(zero)),no,no)) is false"; then
+          echo "PIC PROVERIF VERIFICATION FAILED (sanity trace not reachable)"; exit 1
+        fi
+        echo "PIC PROVERIF VERIFICATION OK"
+    silent: true 
+
+  pic-verify:
+    desc: Run the full PIC formal verification suite (Lean + Tamarin + ProVerif)
+    cmds:
+      - task: pic-verify-lean
+      - task: pic-verify-tamarin
+      - task: pic-verify-proverif
+    silent: true 
