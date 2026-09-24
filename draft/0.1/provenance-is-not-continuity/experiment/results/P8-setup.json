@@ -1,0 +1,26 @@
+{
+  "run": "P8-setup",
+  "mechanism": "PIC-X",
+  "move": "Fresh pair of lineages for the receiver-policy runs (as in P0)",
+  "expected": "Both lineages settled",
+  "observed": "lineage A p-_kDaddkz4UIduziM_NuA: ['InvariantTuple(\"storage:save\", \"save\", \"storage\", \"*\")']; lineage B b5LaF8eg4hq4axYADA3OjQ: ['InvariantTuple(\"documents:read:document-42\", \"read\", \"documents\", \"document-42\")']",
+  "accepted": true,
+  "started": "2026-09-05T11:08:23.369709+00:00",
+  "events": [
+    {
+      "note": "lineage A attenuation hop: settlement answered 200 in 5.4 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    },
+    {
+      "note": "lineage B attenuation hop: settlement answered 200 in 4.3 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    }
+  ],
+  "finished": "2026-09-05T11:08:23.872685+00:00"
+}

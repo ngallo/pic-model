@@ -1,0 +1,14 @@
+{
+  "recorded": "2026-09-05T11:08:23.115082+00:00",
+  "cpu": "Apple M4 Max",
+  "cores": "16",
+  "os": "macOS 26.6.2 (arm64)",
+  "python": "3.14.7",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "docker": "29.7.2",
+  "keycloak_image": "quay.io/keycloak/keycloak:26.7.0",
+  "pic_x_commit": "1b485cd479228b21f06989f293254ed4beb7282b",
+  "pic_x_version": "0.2.2",
+  "pic_protocol_crate": "pic-protocol 0.2.3 (crates.io)",
+  "cryptography": "50.0.1"
+}

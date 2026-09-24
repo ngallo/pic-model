@@ -1,0 +1,20 @@
+{
+  "run": "P5-carol-wrong-department",
+  "mechanism": "PIC-X",
+  "move": "Same move with an attestation disclosing department=marketing against a contract requiring department=sensitive-documents",
+  "expected": "Rejected; the verifier names the conformance conjunct",
+  "observed": "400: the candidate was rejected: executor evidence / execution-contract conformance rejected",
+  "accepted": false,
+  "started": "2026-09-05T10:03:22.948177+00:00",
+  "events": [
+    {
+      "note": "carol advancement (marketing): settlement answered 400 in 2.0 ms",
+      "status": 400,
+      "response": {
+        "error": "invalid_grant",
+        "error_description": "the candidate was rejected: executor evidence / execution-contract conformance rejected"
+      }
+    }
+  ],
+  "finished": "2026-09-05T10:03:22.957986+00:00"
+}

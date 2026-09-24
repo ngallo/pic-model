@@ -1,0 +1,20 @@
+{
+  "run": "P2-mix-challenge",
+  "mechanism": "PIC-X",
+  "move": "Candidate on lineage A whose transition answers lineage B's challenge",
+  "expected": "Rejected; the verifier names the challenge-continuity conjunct",
+  "observed": "400: the candidate was rejected: previous_challenge does not match the checkpoint next_challenge",
+  "accepted": false,
+  "started": "2026-09-05T10:03:22.919529+00:00",
+  "events": [
+    {
+      "note": "settlement answered 400 in 1.6 ms",
+      "status": 400,
+      "response": {
+        "error": "invalid_grant",
+        "error_description": "the candidate was rejected: previous_challenge does not match the checkpoint next_challenge"
+      }
+    }
+  ],
+  "finished": "2026-09-05T10:03:22.923953+00:00"
+}

@@ -1,0 +1,84 @@
+{
+  "run": "R9-performance",
+  "mechanism": "both",
+  "move": "HTTP round-trip latency of each exchange type (N=100) plus in-process receiver-side verification cost, all on one machine",
+  "expected": "Report the numbers",
+  "observed": "recorded",
+  "accepted": null,
+  "started": "2026-09-05T10:05:09.672327+00:00",
+  "events": [],
+  "results": {
+    "keycloak_password_grant": {
+      "n": 100,
+      "median_ms": 19.85,
+      "p95_ms": 21.67,
+      "mean_ms": 20.07,
+      "min_ms": 18.53,
+      "max_ms": 25.0
+    },
+    "keycloak_rfc8693_exchange": {
+      "n": 100,
+      "median_ms": 3.85,
+      "p95_ms": 4.69,
+      "mean_ms": 3.96,
+      "min_ms": 3.25,
+      "max_ms": 6.91
+    },
+    "pic_x_initial_exchange": {
+      "n": 100,
+      "median_ms": 1.21,
+      "p95_ms": 1.74,
+      "mean_ms": 1.31,
+      "min_ms": 0.98,
+      "max_ms": 4.43
+    },
+    "pic_x_advancement": {
+      "n": 100,
+      "median_ms": 2.03,
+      "p95_ms": 2.38,
+      "mean_ms": 2.08,
+      "min_ms": 1.76,
+      "max_ms": 3.09
+    },
+    "client_candidate_build_subprocess": {
+      "n": 100,
+      "median_ms": 2.28,
+      "p95_ms": 2.69,
+      "mean_ms": 2.33,
+      "min_ms": 1.91,
+      "max_ms": 2.98
+    },
+    "client_credential_issuance": {
+      "n": 100,
+      "median_ms": 0.91,
+      "p95_ms": 1.11,
+      "mean_ms": 0.92,
+      "min_ms": 0.71,
+      "max_ms": 1.6
+    },
+    "sizes_bytes": {
+      "oauth_access_token": 1246,
+      "pic_token_0": 2024,
+      "candidate_token": 3964,
+      "pic_token_settled": 1964,
+      "pic_token_final": 1965
+    },
+    "final_position": 100,
+    "bench_verify_settled_us": {
+      "mean_us": 489.104771,
+      "n": 2000,
+      "operation": "verify_settled"
+    },
+    "bench_jwt_rs256_verify_us": {
+      "mean_us": 10.836416499999999,
+      "n": 2000,
+      "operation": "jwt_rs256_verify"
+    },
+    "bench_dpop_es256_verify_us": {
+      "mean_us": 27.840104500000002,
+      "n": 2000,
+      "operation": "dpop_es256_verify"
+    }
+  },
+  "finished": "2026-09-05T10:05:14.374076+00:00"
+}

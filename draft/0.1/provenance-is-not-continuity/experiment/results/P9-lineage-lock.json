@@ -1,0 +1,11 @@
+{
+  "run": "P9-lineage-lock",
+  "mechanism": "PIC-X",
+  "move": "Same two presentations; the receiver binds the workflow to the lineage of its first presentation and rejects continuations of other lineages",
+  "expected": "Read accepted and binds the workflow to lineage B; the save under lineage A is rejected by the lineage policy",
+  "observed": "read accepted: True (workflow bound to lineage b5LaF8eg4hq4axYADA3OjQ); save under lineage p-_kDaddkz4UIduziM_NuA accepted: False",
+  "accepted": true,
+  "started": "2026-09-05T11:08:23.896271+00:00",
+  "events": [],
+  "finished": "2026-09-05T11:08:23.917388+00:00"
+}

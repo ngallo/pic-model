@@ -1,0 +1,11 @@
+{
+  "run": "P7-revocation",
+  "mechanism": "PIC-X",
+  "move": "Lineage and executor revocation",
+  "expected": "Omitted: not implemented",
+  "observed": "Omitted. PIC-X wires NoRevocationConfigured (crates/pic-x-realm/src/checkpoints.rs) at commit 1b485cd: is_revoked always answers false. The PIC Revocation Specification exists as Draft 0.2; the realm does not implement it.",
+  "accepted": null,
+  "started": "2026-09-05T10:03:22.985796+00:00",
+  "events": [],
+  "finished": "2026-09-05T10:03:22.985801+00:00"
+}

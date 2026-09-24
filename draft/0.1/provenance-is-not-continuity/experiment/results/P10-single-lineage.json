@@ -1,0 +1,19 @@
+{
+  "run": "P10-single-lineage",
+  "mechanism": "PIC-X",
+  "move": "One initial exchange only; the executor serves both application requests (read and save) under the one lineage, which carries both invariants",
+  "expected": "Both accepted as continuations of the single occurrence: occurrence individuation happened at origination and was the executor's choice",
+  "observed": "read accepted: True; save accepted: True; both under lineage KU6Qi5QVMpoq1gS9jr96tg - the receiver cannot separate what origination did not separate",
+  "accepted": true,
+  "started": "2026-09-05T11:08:23.917683+00:00",
+  "events": [
+    {
+      "note": "one valid continuation: settlement answered 200 in 3.0 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    }
+  ],
+  "finished": "2026-09-05T11:08:23.952173+00:00"
+}

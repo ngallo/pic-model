@@ -1,0 +1,20 @@
+{
+  "run": "P3-forge-union",
+  "mechanism": "PIC-X",
+  "move": "Workload-signed checkpoint carrying the union of both lineages' invariants, wrapped in an otherwise well-formed candidate",
+  "expected": "Rejected; the checkpoint is not one the realm issued",
+  "observed": "settlement 400: the candidate was rejected: root.pca is not the currently trusted checkpoint; downstream verifier: rejected (candidate is malformed: PIC Token JWT alg must be ES256, got EdDSA)",
+  "accepted": false,
+  "started": "2026-09-05T10:03:22.924141+00:00",
+  "events": [
+    {
+      "note": "settlement answered 400 in 1.6 ms",
+      "status": 400,
+      "response": {
+        "error": "invalid_grant",
+        "error_description": "the candidate was rejected: root.pca is not the currently trusted checkpoint"
+      }
+    }
+  ],
+  "finished": "2026-09-05T10:03:22.935276+00:00"
+}

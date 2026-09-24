@@ -1,0 +1,68 @@
+{
+  "run": "P0-setup",
+  "mechanism": "PIC-X",
+  "move": "Two occurrences of one grant, attenuated to write-only (A) and read-only (B); one further valid continuation of each",
+  "expected": "All four advancements accepted",
+  "observed": "lineage A: ['InvariantTuple(\"storage:save\", \"save\", \"storage\", \"*\")']; lineage B: ['InvariantTuple(\"documents:read:document-42\", \"read\", \"documents\", \"document-42\")']; valid continuations answered 200 and 200",
+  "accepted": true,
+  "started": "2026-09-05T10:03:22.810878+00:00",
+  "events": [
+    {
+      "note": "lineage A attenuation hop: settlement answered 200 in 2.9 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    },
+    {
+      "note": "lineage B attenuation hop: settlement answered 200 in 2.6 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    },
+    {
+      "note": "valid continuation of A: settlement answered 200 in 2.8 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    },
+    {
+      "note": "valid continuation of B: settlement answered 200 in 2.5 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    }
+  ],
+  "lineage_a": {
+    "execution_contract": [
+      "(\"corporation\", Text(\"ACME\"))",
+      "(\"department\", Text(\"sensitive-documents\"))"
+    ],
+    "expires_at": 1788606202,
+    "invariants": [
+      "InvariantTuple(\"storage:save\", \"save\", \"storage\", \"*\")"
+    ],
+    "lineage_id": "Pl5FEJXdKTmBVeUamMMNkg",
+    "pca": "hFgxogEmBFgrdjJ0dmhiMWJhWEFCTkZBX0tPaDU5dUQ1bjdabnRBNjhMTlpZZXUtWDFjY6BZAeCmZ3Byb2ZpbGV4JWh0dHBzOi8vcGljLXByb3RvY29sLm9yZy9wcm9maWxlcy8wLjJqbGluZWFnZV9pZHZQbDVGRUpYZEtUbUJWZVVhbU1NTmtnamV4cGlyZXNfYXQaapv2-mhwb3NpdGlvbgF0Y29udGV4dF9vZl9hdXRob3JpdHmjcGlkZW50aXR5X2NvbnRleHSmAIJiaWR4JDdmMDY2ZTg0LTliNTItNGQwNy05NjRlLTFkOWMxYWI2Yzg0NwGCeCByb2xlczpkb2N1bWVudHM6cmVhZDpkb2N1bWVudC00MvUCgnJyb2xlczpleGFtcGxlLXVzZXL1A4Jycm9sZXM6c3RvcmFnZTpzYXZl9QSCbnNlY3VyaXR5RG9tYWluZGFjbWUFgmR0eXBlZHVzZXJqaW52YXJpYW50c6EAhGxzdG9yYWdlOnNhdmVkc2F2ZWdzdG9yYWdlYSpyZXhlY3V0aW9uX2NvbnRyYWN0ogCCa2NvcnBvcmF0aW9uZEFDTUUBgmpkZXBhcnRtZW50c3NlbnNpdGl2ZS1kb2N1bWVudHNpY2hhbGxlbmdloW5uZXh0X2NoYWxsZW5nZVggqzTkNLGcs4dRSS79q_GW4lpLNYsOCEFDBP02OcR1LSJYQJq6-8gXSAgK3mzrF5vyYRcSXrHz_v_CmkBZDILTV9STTacgdQUWAXgHfH4FFbHn6gujBEmkpkuZa8wZdN-5yIs",
+    "pca_bytes": 602,
+    "position": 1
+  },
+  "lineage_b": {
+    "execution_contract": [
+      "(\"corporation\", Text(\"ACME\"))",
+      "(\"department\", Text(\"sensitive-documents\"))"
+    ],
+    "expires_at": 1788606202,
+    "invariants": [
+      "InvariantTuple(\"documents:read:document-42\", \"read\", \"documents\", \"document-42\")"
+    ],
+    "lineage_id": "DgI9u5j0qrhhPgYh9aS8Gg",
+    "pca": "hFgxogEmBFgrdjJ0dmhiMWJhWEFCTkZBX0tPaDU5dUQ1bjdabnRBNjhMTlpZZXUtWDFjY6BZAfumZ3Byb2ZpbGV4JWh0dHBzOi8vcGljLXByb3RvY29sLm9yZy9wcm9maWxlcy8wLjJqbGluZWFnZV9pZHZEZ0k5dTVqMHFyaGhQZ1loOWFTOEdnamV4cGlyZXNfYXQaapv2-mhwb3NpdGlvbgF0Y29udGV4dF9vZl9hdXRob3JpdHmjcGlkZW50aXR5X2NvbnRleHSmAIJiaWR4JDdmMDY2ZTg0LTliNTItNGQwNy05NjRlLTFkOWMxYWI2Yzg0NwGCeCByb2xlczpkb2N1bWVudHM6cmVhZDpkb2N1bWVudC00MvUCgnJyb2xlczpleGFtcGxlLXVzZXL1A4Jycm9sZXM6c3RvcmFnZTpzYXZl9QSCbnNlY3VyaXR5RG9tYWluZGFjbWUFgmR0eXBlZHVzZXJqaW52YXJpYW50c6EAhHgaZG9jdW1lbnRzOnJlYWQ6ZG9jdW1lbnQtNDJkcmVhZGlkb2N1bWVudHNrZG9jdW1lbnQtNDJyZXhlY3V0aW9uX2NvbnRyYWN0ogCCa2NvcnBvcmF0aW9uZEFDTUUBgmpkZXBhcnRtZW50c3NlbnNpdGl2ZS1kb2N1bWVudHNpY2hhbGxlbmdloW5uZXh0X2NoYWxsZW5nZVggMpHYq2Pz_gsc1104pMrdEtSri1wIS-hGdc0Wg1Y9Im9YQKOsVm_IzASSoltsXObpIPXK2sV44bCc4reEVSrddwR4cnfc0DAc-TtAuaIqvdEf6s5qLQZFepRu9TOEs0F-mFk",
+    "pca_bytes": 629,
+    "position": 1
+  },
+  "finished": "2026-09-05T10:03:22.911412+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "run": "P4-carol-joins",
+  "mechanism": "PIC-X",
+  "move": "A workload key created after origination advances lineage B with an attestation satisfying the execution contract",
+  "expected": "Accepted",
+  "observed": "200: settled to position 2",
+  "accepted": true,
+  "started": "2026-09-05T10:03:22.935570+00:00",
+  "events": [
+    {
+      "note": "carol advancement: settlement answered 200 in 2.1 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    }
+  ],
+  "finished": "2026-09-05T10:03:22.947899+00:00"
+}

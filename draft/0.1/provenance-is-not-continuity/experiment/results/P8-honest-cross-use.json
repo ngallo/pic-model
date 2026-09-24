@@ -1,0 +1,11 @@
+{
+  "run": "P8-honest-cross-use",
+  "mechanism": "PIC-X",
+  "move": "While serving the workflow started by X_B (read), the executor presents the settled token of lineage A (write) for a save; the receiver applies ordinary verification and authority coverage, no lineage policy",
+  "expected": "Accepted as a continuation of X_A: the presentation is a valid continuation of its own occurrence (Def. 5); non-mixing attributes the write, it does not prevent it",
+  "observed": "read accepted: True; save accepted: True - the save is accepted as a continuation of lineage p-_kDaddkz4UIduziM_NuA (X_A), and the acceptance names that occurrence",
+  "accepted": true,
+  "started": "2026-09-05T11:08:23.873156+00:00",
+  "events": [],
+  "finished": "2026-09-05T11:08:23.895917+00:00"
+}

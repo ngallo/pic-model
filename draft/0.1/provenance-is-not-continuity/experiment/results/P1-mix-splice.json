@@ -1,0 +1,20 @@
+{
+  "run": "P1-mix-splice",
+  "mechanism": "PIC-X",
+  "move": "Candidate presents lineage A's checkpoint (write) while predecessor.hash and previous_challenge answer lineage B's checkpoint (read)",
+  "expected": "Rejected; the verifier names the predecessor-binding conjunct",
+  "observed": "400: the candidate was rejected: predecessor.hash does not match the trusted checkpoint bytes",
+  "accepted": false,
+  "started": "2026-09-05T10:03:22.915012+00:00",
+  "events": [
+    {
+      "note": "settlement answered 400 in 1.8 ms",
+      "status": 400,
+      "response": {
+        "error": "invalid_grant",
+        "error_description": "the candidate was rejected: predecessor.hash does not match the trusted checkpoint bytes"
+      }
+    }
+  ],
+  "finished": "2026-09-05T10:03:22.919300+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "run": "P6-duplicate-delivery",
+  "mechanism": "PIC-X",
+  "move": "The same checkpoint PCA_B1 is advanced twice, by two workload keys (at-least-once delivery)",
+  "expected": "Both accepted: P holds for each; uniqueness of continuation (U) is not established by the invariant",
+  "observed": "first: accepted, position 2, lineage DgI9u5j0qrhhPgYh9aS8Gg; second: accepted, position 2, lineage DgI9u5j0qrhhPgYh9aS8Gg",
+  "accepted": true,
+  "started": "2026-09-05T10:03:22.958228+00:00",
+  "events": [
+    {
+      "note": "first consumer: settlement answered 200 in 2.4 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    },
+    {
+      "note": "second consumer: settlement answered 200 in 2.8 ms",
+      "status": 200,
+      "response": {
+        "issued": true
+      }
+    }
+  ],
+  "finished": "2026-09-05T10:03:22.985516+00:00"
+}

@@ -1,0 +1,29 @@
+# Copyright (c) 2026 Nitro Agility S.r.l.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Fault-injection harness for the experimental section of
+# "Provenance Is Not Continuity". It builds valid and deliberately mixed
+# Profile 0.2 candidate advancements against a running PIC-X realm, using the
+# same published protocol crate PIC-X itself uses (pic-protocol 0.2.3).
+
+[package]
+name = "pic-mixer"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+pic-protocol = { version = "=0.2.3", features = ["p256", "p384"] }
+ed25519-dalek = "2"
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+base64 = "0.22"
+ring = "0.17"
+ciborium = "0.2"
+
+[[bin]]
+name = "pic-mixer"
+path = "src/main.rs"
+
+[profile.release]
+debug = false

@@ -1,0 +1,104 @@
+{
+  "run": "B1-mix",
+  "mechanism": "OAuth 2.0 + DPoP baseline",
+  "move": "While processing the request of X_B (read workflow), the executor presents tau_A \u2014 issued for X_A \u2014 with a fresh valid DPoP proof, for a write",
+  "expected": "Accepted; every AS and RS check passes (Theorem 1)",
+  "observed": "200; failed checks: 0",
+  "accepted": true,
+  "started": "2026-09-05T10:04:57.028489+00:00",
+  "events": [],
+  "checks": [
+    {
+      "check": "authorization scheme is DPoP (RFC 9449 \u00a77.1)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "token kid resolves to an AS-published key",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "token signature verifies (RS256, AS JWKS)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "iss == http://localhost:18080/realms/acme-idp",
+      "result": "pass",
+      "detail": "http://localhost:18080/realms/acme-idp"
+    },
+    {
+      "check": "exp in the future (RFC 7519 \u00a74.1.4)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "aud contains baseline-rs (RFC 8707)",
+      "result": "pass",
+      "detail": "['baseline-rs']"
+    },
+    {
+      "check": "scope covers the operation (storage.write)",
+      "result": "pass",
+      "detail": "['storage.write', 'profile', 'email']"
+    },
+    {
+      "check": "token carries cnf.jkt (DPoP-bound, RFC 9449 \u00a76.1)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "DPoP header present (RFC 9449 \u00a74.1)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "proof typ == dpop+jwt and alg == ES256",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "proof key thumbprint == cnf.jkt (RFC 9449 \u00a74.3 step 12)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "proof signature verifies under its own key",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "htm == request method (RFC 9449 \u00a74.3 step 8)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "htu == request URI (RFC 9449 \u00a74.3 step 9)",
+      "result": "pass",
+      "detail": "http://127.0.0.1:9401/storage"
+    },
+    {
+      "check": "iat within acceptance window (RFC 9449 \u00a74.3 step 10)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "jti fresh (RFC 9449 \u00a711.1 replay store)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "ath == SHA-256(access token) (RFC 9449 \u00a74.3 step 12)",
+      "result": "pass",
+      "detail": ""
+    },
+    {
+      "check": "ALL CHECKS PASSED \u2014 request authorized",
+      "result": "pass",
+      "detail": ""
+    }
+  ],
+  "note": "The write was performed inside workflow X_B, which was authorized only documents.read. No receiver input distinguishes the two occurrences.",
+  "finished": "2026-09-05T10:04:57.029674+00:00"
+}
