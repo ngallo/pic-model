@@ -132,7 +132,7 @@ permitted to exercise it in the current causal history. Bare possession does
 not determine \(\operatorname{Lineage}(e)\) or
 \(\PoR(s_i,s_{i+1})\).
 
-This paper answers that question by introducing a relational space for
+To answer the question above, this paper introduces a relational space for
 executors. Let \(X\) be the set of executor instances. An
 authorization-relevant equivalence relation \(\sim_j\) partitions \(X\) into
 classes of executors that are indistinguishable with respect to one relational
@@ -1434,15 +1434,12 @@ applies to it and gives \(C_i\subseteq C_0\). Hence \((o,r)\in C_0\).
 \end{proof}
 
 \paragraph{Interpretation: no in-lineage authority mixing.}
-Even if \(\exec(s_i)=D\) and
-\(\operatorname{IndependentAuthority}(D,(o,r))\) holds, possession does not
-inject \((o,r)\) into \(C_i\). The model neither identifies \(C_i\) with
-\(\operatorname{Priv}(\exec(s_i))\) nor supplies an update rule
-\[
-C_i\leftarrow C_{i-1}\cup\operatorname{Priv}(\exec(s_i)).
-\]
-Such an update would be an authority expansion unless the added privileges
-were already in \(C_{i-1}\), whereas validity requires
+Even if \(\exec(s_i)=D\) and \(D\) independently holds authority for \((o,r)\)
+from a source outside the lineage, that fact does not inject \((o,r)\) into
+\(C_i\). The model neither identifies \(C_i\) with all authority held by
+\(\exec(s_i)\) nor supplies an update rule that adds independently held
+privileges to \(C_{i-1}\). Such an update would be an authority expansion unless
+the added privileges were already in \(C_{i-1}\), whereas validity requires
 \(C_i\subseteq C_{i-1}\). Thus independent authority may exist while remaining
 semantically external to the current lineage:
 \[
@@ -1459,10 +1456,10 @@ This conclusion is independent of executor identity. Different steps may be
 realized by different executors, but authority follows the execution lineage,
 not the union of their ambient privilege sets.
 
-For example, let \(C_0(req)=\{\operatorname{read}(A)\}\), while deputy \(D\)
-independently holds \(\operatorname{write}(B)\). Even if
+For example, let \(C_0(req)=\{(\operatorname{read},A)\}\), while deputy \(D\)
+independently holds \((\operatorname{write},B)\). Even if
 \(\exec(s_i)=D\), validity gives \(C_i\subseteq C_0(req)\), hence
-\(\operatorname{write}(B)\notin C_i\). The deputy possesses the authority; the
+\((\operatorname{write},B)\notin C_i\). The deputy possesses the authority; the
 execution does not. This is the precise sense in which
 \[
 \boxed{
@@ -2073,9 +2070,7 @@ which holds iff \(\kappa_{i+1}\) verifies, its payload's first component is
 &=h(s_{i+1}).
 \end{aligned}
 \]
-The consumption-register check for \(\kappa_i\) must also have succeeded when
-\(\kappa_{i+1}\) was issued. This
-constructed predicate is distinct from the semantic \(\PoR(s_i,s_{i+1})\), which
+This constructed predicate is distinct from the semantic \(\PoR(s_i,s_{i+1})\), which
 holds iff \(s_{i+1}\) is a valid causal continuation of \(s_i\). What must be
 shown is that \(\PoR_\kappa\) implies \(\PoR\).
 
@@ -2175,7 +2170,8 @@ to a different valid checkpoint, and \(\kappa_{i+1}\) is bound to the values in
 \(\PoR_\kappa\), together with collision resistance of \(h\), bind those
 checkpoints to the named arguments \(s_i,s_{i+1}\) except with negligible
 probability. For a chain rooted at \(\kappa_0\), root validity supplies the
-corresponding base bindings and sound origin payload. By protocol compliance,
+corresponding base bindings and sound origin payload. By induction on \(i\), the
+predecessor values in \(\kappa_i\) are correct. By protocol compliance,
 \(B_{i+1}\) performed checks 1--5 before
 issuing. Check~3 together with handoff observation gives
 \(\operatorname{ObservedHandoff}(s_i,s_{i+1})\), and handoff adequacy gives
@@ -2532,8 +2528,9 @@ The following departures affect no theorem, but they bound what PIC-X
 \begin{itemize}
     \item \emph{Successor-side possession.} PIC-X authenticates the successor
     with a key it holds. This is the layered route of
-    Proposition~\ref{prop:layers}: possession sits in the authentication layer
-    and does not enter the decision. The conditional no-successor-PoP
+    Proposition~\ref{prop:layers}: possession enters two evidence layers,
+    authentication and continuation evidence, but not the decision rule. The
+    conditional no-successor-PoP
     realization of Theorem~\ref{thm:possession-independence} is the construction
     of Section~\ref{sec:witness}, not PIC-X.
     \item \emph{Fan-out.} PIC-X admits sibling branches from one checkpoint,
@@ -2994,6 +2991,9 @@ become a valid exercise of the current lineage merely because the deputy
 executes one of its steps. Confused-deputy authority mixing is excluded by
 construction within a valid lineage; global exclusion of request-caused effects
 additionally depends on complete mediation and causal attribution.
+This is a semantic claim, not an exclusivity claim: other authorization
+mechanisms can obtain the same no-mixing result by adopting an admission rule
+that preserves the same lineage-local authority and relational constraints.
 
 Most importantly, the logical authorization rule contains no necessary
 successor-side possession premise. If PoR and relational-profile facts are
