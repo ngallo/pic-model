@@ -1441,6 +1441,11 @@ which the effect occurs after name resolution, aliasing, redirection and other
 designation processing. Checking only an input string, pathname or logical
 designation is insufficient if it may resolve to a different resource. Complete
 mediation requires the verifier to authorize the realized pair \((o,r)\).
+Predecessor binding and destination binding are therefore separate: the
+checkpoint binds a continuation to its predecessor and carried state, while the
+complete mediator binds authorization to the operation and resource actually
+realized. The checkpoint alone does not make an unresolved designation an
+authorized destination.
 
 \begin{assumption}[Complete mediation]\label{ass:mediation}
 Every occurring effect is accepted under its attributed lineage:
