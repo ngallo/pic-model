@@ -1,9 +1,12 @@
-\documentclass[11pt]{article}
+\documentclass[10pt,twocolumn]{article}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{booktabs}
+\usepackage[letterpaper,margin=0.72in]{geometry}
+\setlength{\columnsep}{0.24in}
 \emergencystretch=3em
+\raggedbottom
 
 % Remove end-of-proof square
 \renewcommand{\qedsymbol}{}
@@ -164,7 +167,10 @@ restricts relational admissibility. The lineage prefix itself moves in the
 opposite direction: causal history accumulates. Hence continuity has a simple
 structural form:
 \[
-\text{history grows, while authority and relational freedom shrink.}
+\begin{gathered}
+\text{history grows, while authority}\\
+\text{and relational freedom shrink.}
+\end{gathered}
 \]
 
 The paper makes six contributions:
@@ -509,9 +515,12 @@ irrelevant concrete differences.
 
 This gives the intended reading:
 \[
+\begin{gathered}
 X/{\sim_j}
-=
-\text{``\(X\) viewed at the resolution determined by \(\sim_j\)''.}
+=\\
+\text{``\(X\) viewed at the resolution}\\
+\text{determined by \(\sim_j\)''.}
+\end{gathered}
 \]
 
 \section{Multiple Relational Views}
@@ -1305,7 +1314,12 @@ The origin therefore bounds both:
 \]
 and
 \[
-\boxed{\text{through which executor relationships they may continue}.}
+\boxed{
+\begin{gathered}
+\text{through which executor relationships}\\
+\text{they may continue}
+\end{gathered}
+}.
 \]
 
 \section{Causal History Grows While Authorization Freedom Shrinks}
@@ -1351,7 +1365,10 @@ dimensions.
 This yields the structural principle:
 \[
 \boxed{
-\text{causal evidence accumulates while authorization freedom attenuates.}
+\begin{gathered}
+\text{causal evidence accumulates while}\\
+\text{authorization freedom attenuates.}
+\end{gathered}
 }
 \]
 
@@ -1430,9 +1447,12 @@ were already in \(C_{i-1}\), whereas validity requires
 semantically external to the current lineage:
 \[
 \boxed{
-(o,r)\notin C_0
-\Longrightarrow
-(o,r)\text{ cannot be a valid in-lineage exercise}.
+\begin{gathered}
+(o,r)\notin C_0\\
+\Longrightarrow\\
+(o,r)\text{ cannot be a valid}\\
+\text{in-lineage exercise}.
+\end{gathered}
 }
 \]
 This conclusion is independent of executor identity. Different steps may be
@@ -1446,9 +1466,12 @@ independently holds \(\operatorname{write}(B)\). Even if
 execution does not. This is the precise sense in which
 \[
 \boxed{
-\text{PIC validity}
-\Longrightarrow
-\text{no in-lineage confused-deputy authority mixing}.
+\begin{gathered}
+\text{PIC validity}\\
+\Longrightarrow\\
+\text{no in-lineage confused-deputy}\\
+\text{authority mixing}.
+\end{gathered}
 }
 \]
 The result is internal to the PIC semantics and uses neither
@@ -1575,10 +1598,12 @@ No path to the affected resource bypasses the verifier.
 Every effect causally triggered by a request is presented as a step of that
 request's lineage:
 \[
-\forall e\in\mathsf{Eff}\;\forall req\in\mathsf{Req},\qquad
-\operatorname{CausedBy}(e,req)
+\begin{aligned}
+&\forall e\in\mathsf{Eff}\;\forall req\in\mathsf{Req},\\
+&\operatorname{CausedBy}(e,req)
 \Longrightarrow
 \operatorname{Lineage}(e)=\widehat{\ell}_{req}.
+\end{aligned}
 \]
 \end{assumption}
 
@@ -1603,11 +1628,13 @@ authority-attenuation clause \(C_{i+1}\subseteq C_i\) built into relational
 validity, for every
 \(req\in\mathsf{Req}\), \(e\in\mathsf{Eff}\), and \((o,r)\in O\times R\),
 \[
-\operatorname{CausedBy}(e,req)
+\begin{aligned}
+&\operatorname{CausedBy}(e,req)
 \land
-\operatorname{realize}(e)=(o,r)
-\Longrightarrow
+\operatorname{realize}(e)=(o,r)\\
+&\hspace{2em}\Longrightarrow
 (o,r)\in C_0(req).
+\end{aligned}
 \]
 \end{theorem}
 
@@ -1730,21 +1757,22 @@ following counterfactual decision template for fixed
 \(s_i,C_i,\rho_i,s_{i+1},C_{i+1},\rho_{i+1}\):
 \(V:X\times X\rightarrow\{0,1\}\) by
 \[
+\begin{aligned}
 V(x,x')
-:=
+:={}&
 \PoR(s_i,s_{i+1})
-\land
-C_{i+1}\subseteq C_i
-\land
-\rho_i\big(q_J(x),q_J(x')\big)
-\land
-(\rho_{i+1}\Rightarrow\rho_i),
+\land C_{i+1}\subseteq C_i\\
+&{}\land\rho_i\big(q_J(x),q_J(x')\big)\\
+&{}\land(\rho_{i+1}\Rightarrow\rho_i),
+\end{aligned}
 \]
 so that
 \[
-\ValidR(s_i,C_i,\rho_i,s_{i+1},C_{i+1},\rho_{i+1})
-=
-V(x_i,x_{i+1}).
+\begin{aligned}
+&\ValidR(s_i,C_i,\rho_i,\\
+&\qquad s_{i+1},C_{i+1},\rho_{i+1})\\
+&\hspace{3em}=V(x_i,x_{i+1}).
+\end{aligned}
 \]
 \(\PoR\) is a condition on the fixed steps, not on the two arguments of this
 template. Thus \(V\) is used only to expose factorization of the relational
@@ -1783,12 +1811,14 @@ corresponding, and still deliberately limited, mechanism claim explicitly.
 
 For the fixed occurrence and authorization data used above, define
 \[
-D(u,v):=
+\begin{aligned}
+D(u,v):={}&
 \PoR(s_i,s_{i+1})
-\land C_{i+1}\subseteq C_i
-\land \rho_i(u,v)
-\land(\rho_{i+1}\Rightarrow\rho_i),
-\qquad (u,v)\in\Transitions_J.
+\land C_{i+1}\subseteq C_i\\
+&{}\land\rho_i(u,v)
+\land(\rho_{i+1}\Rightarrow\rho_i),\\
+&(u,v)\in\Transitions_J.
+\end{aligned}
 \]
 
 \begin{definition}[Sound profile-evidence mechanism]\label{def:profile-evidence}
@@ -1810,9 +1840,10 @@ atoms remains subject to its own soundness assumptions.
 \label{prop:mechanism-invariance}
 Let \(M\) and \(N\) be profile-evidence mechanisms. If
 \[
-\alpha_M(x,e)=\alpha_N(y,f)=u
-\quad\text{and}\quad
-\alpha_M(x',e')=\alpha_N(y',f')=v,
+\begin{aligned}
+\alpha_M(x,e)&=\alpha_N(y,f)=u,\\
+\alpha_M(x',e')&=\alpha_N(y',f')=v,
+\end{aligned}
 \]
 then both mechanisms induce the same authorization verdict \(D(u,v)\). In
 particular, two sound mechanisms defined for the same concrete executors
@@ -1977,10 +2008,12 @@ B_{i+1},m_{i+1},
 \[
 m_{i+1}
 :=
-\big(
-\operatorname{cid}(\kappa_i),\,h(s_{i+1}),\,\lambda,\,C_{i+1},\,\rho_{i+1},\,
-q_J(x_{i+1}),\,\nu_{i+1}
-\big),
+\left(
+\begin{gathered}
+\operatorname{cid}(\kappa_i),\,h(s_{i+1}),\,\lambda,\\
+C_{i+1},\,\rho_{i+1},\,q_J(x_{i+1}),\,\nu_{i+1}
+\end{gathered}
+\right),
 \]
 where \(\nu_{i+1}\) is a nonce generated by \(B_{i+1}\). The boundary
 \(B_{i+1}\) issues \(\kappa_{i+1}\) only after:
@@ -2005,9 +2038,12 @@ where \(\nu_{i+1}\) is a nonce generated by \(B_{i+1}\). The boundary
 The origin checkpoint uses the same payload with a distinguished origin marker
 \(\bot\) in place of \(\operatorname{cid}(\kappa_{-1})\):
 \[
-m_0=(\bot,h(s_0),\lambda,C_0,\rho_0,q_J(x_0),\nu_0),
-\qquad
-\kappa_0=\bigl(B_0,m_0,\sigma_{B_0}(\operatorname{enc}(m_0))\bigr).
+\begin{aligned}
+m_0={}&(\bot,h(s_0),\lambda,C_0,\\
+&\rho_0,q_J(x_0),\nu_0),\\
+\kappa_0={}&\bigl(B_0,m_0,\\
+&\sigma_{B_0}(\operatorname{enc}(m_0))\bigr).
+\end{aligned}
 \]
 Authority bootstrap and the decision to issue \(\kappa_0\) are out of scope as
 in~\cite{gallo2026poc}.
@@ -2030,9 +2066,12 @@ which holds iff \(\kappa_{i+1}\) verifies, its payload's first component is
 \(\operatorname{cid}(\kappa_i)\) for a verified \(\kappa_i\), and both carry
 \(\lambda\), with
 \[
-\operatorname{stepCommitment}(\kappa_i)=h(s_i),
-\qquad
-\operatorname{stepCommitment}(\kappa_{i+1})=h(s_{i+1}).
+\begin{aligned}
+\operatorname{stepCommitment}(\kappa_i)
+&=h(s_i),\\
+\operatorname{stepCommitment}(\kappa_{i+1})
+&=h(s_{i+1}).
+\end{aligned}
 \]
 The consumption-register check for \(\kappa_i\) must also have succeeded when
 \(\kappa_{i+1}\) was issued. This
@@ -2298,7 +2337,10 @@ PoP may still be useful for:
 The distinction is semantic:
 \[
 \boxed{
-\text{PoP may provide holder-binding or authentication evidence;}
+\begin{gathered}
+\text{PoP may provide holder-binding}\\
+\text{or authentication evidence;}
+\end{gathered}
 }
 \]
 whereas
@@ -2306,7 +2348,8 @@ whereas
 \boxed{
 \begin{array}{c}
 \text{PoR establishes causal continuation;}\\
-\text{\(C_i\) bounds authority and \(\rho_i\) bounds relational continuation.}
+\text{\(C_i\) bounds authority and \(\rho_i\) bounds}\\
+\text{relational continuation.}
 \end{array}
 }
 \]
@@ -2406,7 +2449,7 @@ conformance of the disclosed claims to the execution contract; non-expansion;
 revocation; and local policy. Only then does it issue the next checkpoint, signed
 by the realm.
 
-\begin{table}[htbp]
+\begin{table*}[t]
 \centering
 \small
 \begin{tabular}{@{}p{0.27\linewidth}p{0.67\linewidth}@{}}
@@ -2454,7 +2497,7 @@ is supported. There is no single-consumption register. \\
 \caption{Correspondence between the model and PIC-X \texttt{v0.2.2}, with
 \texttt{pic-protocol} \texttt{0.2.3}.}
 \label{tab:picx}
-\end{table}
+\end{table*}
 
 \paragraph{The execution contract as a unary envelope.}
 The execution contract is a restricted envelope. Its atoms depend only on the
@@ -2925,7 +2968,10 @@ At the same time, causal history accumulates:
 The resulting structure is:
 \[
 \boxed{
-\text{history grows while authority and relational freedom shrink.}
+\begin{gathered}
+\text{history grows while authority}\\
+\text{and relational freedom shrink.}
+\end{gathered}
 }
 \]
 
@@ -2961,17 +3007,23 @@ attribution.
 The distinction can be stated compactly:
 \[
 \boxed{
-\text{possession can evidence control; PoR establishes causal continuity.}
+\begin{gathered}
+\text{possession can evidence control;}\\
+\text{PoR establishes causal continuity.}
+\end{gathered}
 }
 \]
 Equivalently, in terms of the two layers:
 \[
 \boxed{
 \begin{array}{c}
-\text{sound evidence establishes executor profiles;}\\
+\text{sound evidence establishes}\\
+\text{executor profiles;}\\
 \text{PoR establishes causal continuation;}\\
-\text{authorization combines PoR, the profiles, \(C_i\), and \(\rho_i\)}\\
-\text{to decide what the occurrence may exercise in that history.}
+\text{authorization combines PoR,}\\
+\text{the profiles, \(C_i\), and \(\rho_i\) to decide}\\
+\text{what the occurrence may exercise}\\
+\text{in that history.}
 \end{array}
 }
 \]
@@ -2987,8 +3039,10 @@ Consequently,
 \[
 \boxed{
 \begin{array}{c}
-\text{possessing authority}\neq\text{being the occurrence permitted}\\
-\text{to exercise it in this causal history}
+\text{possessing authority}\\
+\neq\\
+\text{being the occurrence permitted to exercise it}\\
+\text{in this causal history}
 \end{array}
 }.
 \]
@@ -3024,9 +3078,11 @@ are decidable from the profiles.
 A request enters at \(s_0\), realized by \(x_0\) with profile
 \((\mathrm{acme},\mathrm{requester},\mathrm{alice})\), with
 \[
-C_0=\{(\mathrm{read},r),(\mathrm{write},r),(\mathrm{approve},p)\},
-\qquad
-\rho_0=\mathrm{SameOrg}.
+\begin{aligned}
+C_0={}&\{(\mathrm{read},r),(\mathrm{write},r),\\
+&(\mathrm{approve},p)\},\\
+\rho_0={}&\mathrm{SameOrg}.
+\end{aligned}
 \]
 Step \(s_1\) is realized by \(x_1\) with profile
 \((\mathrm{acme},\mathrm{approver},\mathrm{bob})\). The hop from \(s_0\) is
