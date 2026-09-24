@@ -38,50 +38,44 @@ A Relational Theory of Authority}
 \maketitle
 
 \begin{abstract}
-Proof-of-Possession (PoP) establishes control of an artifact such as a key,
-token, credential, or capability. Previous work on Provenance Identity
-Continuity (PIC) and Proof-of-Continuity (PoC) showed that authority can instead
-be propagated through a discrete causal execution by requiring, at every hop,
-a verifiable Proof of Relationship (PoR) to the predecessor together with
-non-expansive authority propagation. In that model, authority decreases
-monotonically along a causal chain, so an in-lineage exercise beyond the origin
-context cannot be represented as valid behavior. The effect-level
-confused-deputy result developed here additionally assumes complete mediation
-and causal attribution.
+Proof-of-Possession (PoP) establishes evidence that an executor controls an
+artifact such as a key, token, credential, or capability. It may support holder
+binding, authentication, profile evidence, or a concrete continuation
+protocol, but control of an artifact alone determines neither the executor's
+relational profile nor the causal history of an execution occurrence. We
+separate PoP from Proof of Relationship (PoR), the semantic property that one
+execution occurrence validly continues another, and from authorization.
+Authorization is occurrence-sensitive: a transition is evaluated from PoR,
+non-expansion of its authority context, satisfaction and refinement of its
+relational envelope, and soundly established executor profiles.
 
-This paper develops the relational consequence of that result. We distinguish
-execution steps from the executors that realize them and classify executors by
-authorization-relevant equivalence relations. Each equivalence relation induces
-a quotient space in which physically different executors are identified when
-they are indistinguishable with respect to the relevant relational
-characteristic. Multiple quotient views may coexist for the same executor.
-Predicates over these relational views may be composed with conjunction and
-disjunction, producing a distributive lattice ordered by logical implication.
+Building on Provenance Identity Continuity (PIC) and Proof-of-Continuity (PoC),
+we distinguish execution steps from the executors that realize them and
+classify executors by authorization-relevant equivalence relations. Their
+quotients form relational profile spaces, while positive predicates over
+profile transitions form a distributive lattice ordered by implication. This
+adds relational attenuation to authority attenuation: along one valid causal
+history, \(C_{i+1}\subseteq C_i\) and
+\(\rho_{i+1}\Rightarrow\rho_i\). Causal history grows by prefix extension
+while authority and relational freedom shrink. We prove dual monotonicity,
+combined closure, and origin relational closure.
 
-This exposes a second monotonicity in continuous authorization. Authority
-contexts attenuate by set inclusion, while relational admissibility attenuates
-by predicate refinement. Both are indexed by the same causal chain established
-by PoR. Causal history grows by prefix extension, while authority and relational
-freedom can only decrease. We define a product authorization state containing
-both dimensions and prove dual monotonicity and relational closure: no valid
-descendant can introduce either a privilege or a relationally admissible
-transition excluded by the origin context.
+Because authorization is defined over occurrences situated in causal
+histories, two occurrences of the same authenticated executor, with the same
+profile and possession evidence, need not be authorization-equivalent. Within
+a valid PIC lineage, independent authority held by a deputy cannot be imported
+as a valid exercise outside the origin context. Excluding request-caused
+effects presented outside that lineage additionally requires complete
+mediation and causal attribution.
 
-Finally, we separate possession from authorization. Proof-of-Possession can
-contribute holder-binding or authentication evidence. Control of an artifact
-alone does not establish an executor's profile attributes: that step requires a
-trusted binding from the artifact or credential to the executor and its
-classes. Authorization consumes authenticated profile facts together with PoR,
-the authority context \(C_i\), and the relational envelope \(\rho_i\). We prove
-that the executor-dependent decision factors through the relational profile, so
-a sound mechanism that establishes the same profile does not change that
-decision. In the model developed here, successor-side PoP is therefore one
-possible evidence mechanism, not a necessary premise of the authorization
-semantics. We further exhibit a boundary-witnessed construction in which the
-successor proves possession of nothing, conditional on explicit Witness
-Assumptions; in that checkpoint mechanism, the cryptographic possession resides
-in the signing keys of the boundary witnesses that attest the relationship.
-The construction does not independently prove those environmental assumptions.
+Finally, we prove that the executor-dependent decision factors through the
+relational profile and is invariant under sound mechanisms that establish the
+same profile. Successor-side PoP is therefore a possible evidence mechanism,
+not a necessary semantic premise of authorization. Conditional on explicit
+Witness Assumptions, a boundary-witnessed checkpoint construction realizes the
+premises without successor-side PoP. Boundary signatures provide checkpoint
+evidence, profile evidence may rely on additional trust roots, and the
+construction does not independently establish its environmental assumptions.
 \end{abstract}
 
 \section{Introduction}
@@ -118,6 +112,22 @@ That result leaves a further question open. If PoR is explicitly a
 does that relationship carry? More specifically, can authorization be expressed
 over relational characteristics of the execution rather than over possession by
 a particular holder?
+
+The foundational change is not a new credential format but a change in the
+domain over which authorization is defined: from a decision described only by
+holders and authority-bearing artifacts to one evaluated over execution
+occurrences situated in causal histories. Two occurrences of the same
+authenticated executor, presenting the same possession evidence, need not be
+authorization-equivalent when they occur in different histories. The same
+agent may present the same key, token and profile in two requests; a write may
+be admissible in the history whose origin context contains it and inadmissible
+in the history whose origin context does not. The difference is not the holder
+or artifact but the causal history of the occurrence.
+
+Thus possessing authority is not the same as being the execution occurrence
+permitted to exercise it in the current causal history. Bare possession does
+not determine \(\operatorname{Lineage}(e)\) or
+\(\PoR(s_i,s_{i+1})\).
 
 This paper answers that question by introducing a relational space for
 executors. Let \(X\) be the set of executor instances. An
@@ -168,8 +178,8 @@ The paper makes six contributions:
     \item it proves dual monotonicity and relational closure along a PoR-linked
     causal chain;
     \item it shows that the lineage-forgetting projection of the previous
-    paper is itself a relational quotient, so that its impossibility result for
-    possession-based policies is an instance of the factorization property
+    paper is itself a relational quotient, so that its lineage-invariance
+    result for possession-based policies is an instance of the factorization property
     developed here; and
     \item it proves that the executor-dependent component of authorization
     factors through the relational profile, formalizes invariance under sound
@@ -195,6 +205,12 @@ former. Authentication fixes executor/profile facts; PoR establishes causal
 continuation; and \(C_i\) together with \(\rho_i\) bounds the authorization
 envelope.
 
+As an intuition rather than a definition, PoP answers which artifact a
+presenter demonstrates control over; PoR answers which execution occurrence is
+being continued; and authorization answers what that occurrence may exercise
+in its causal history. PoR is not by itself the authorization decision, and a
+PoP transcript is not by itself a relational profile or a causal history.
+
 The picture is one of two layers. At admission, a sound evidence mechanism
 establishes facts about the executor and fixes its profile \(q_J(x)\). PoP may
 provide holder-binding evidence only when combined with a trusted binding from
@@ -206,8 +222,8 @@ relationships through which it may continue.
 Treating possession as the ground of authority collapses the two layers. The
 collapse is harmless at a single hop, where capabilities work precisely because
 designation and authority coincide. It becomes visible across hops, because a
-possession-based decision is invariant under the lineage
-(Remark~\ref{rem:instance}).
+lineage-invariant possession-based decision cannot distinguish occurrences
+that differ only in causal history (Remark~\ref{rem:instance}).
 
 \section{Background and Previous Result}
 
@@ -608,7 +624,8 @@ lies in what it unifies.
 
 \begin{remark}[The previous result as a quotient instance]\label{rem:instance}
 In~\cite{gallo2026poc}, an event is an occurrence
-\(e=(o,r,\ell)\in E:=O\times R\times\Lineages\), and the projection
+\(e=(o,r,\ell)\in E:=O\times R\times\mathcal L_{\mathrm{prev}}\), where
+\(\mathcal L_{\mathrm{prev}}\) is that paper's history space, and the projection
 \(p:E\rightarrow O\times R\) forgets the lineage. Let \(\sim_{(o,r)}\) be the
 kernel relation of \(p\),
 \[
@@ -627,10 +644,24 @@ exactly the policies invariant under \(\sim_{(o,r)}\). The result that
 lineage-invariant policies cannot individuate occurrences (Theorem~3
 of~\cite{gallo2026poc}) is Proposition~\ref{prop:factorization} applied to
 \(Y=E\) and \(\equiv\;=\;\sim_{(o,r)}\): two events in the same class receive the
-same verdict. The companion result that any resolution reintroduces continuity
-(Theorem~4 of~\cite{gallo2026poc}) is its contrapositive: a policy that
-separates two events of one class is not invariant under \(\sim_{(o,r)}\), and
-must read a finer relation, namely one that consults the lineage.
+same verdict. The companion result (Theorem~4 of~\cite{gallo2026poc})
+establishes that a policy separating two events collapsed by the
+lineage-forgetting projection must read finer, lineage-sensitive information.
+This identifies the need for a finer observation; it does not by itself
+establish the causal-continuity semantics developed here.
+
+More generally, for any policy of the form \(P=\bar P\circ\operatorname{Obs}\),
+\[
+\operatorname{Obs}(s)=\operatorname{Obs}(s')
+\Longrightarrow
+P(s)=P(s').
+\]
+Thus a lineage-invariant or artifact-local policy cannot distinguish two
+otherwise identical privilege uses solely by their different causal histories.
+A capability construction that verifies an equivalent lineage-sensitive
+continuation condition lies outside this invariant policy class; the
+factorization result does not claim that every capability system is
+lineage-invariant.
 
 The present construction therefore does not add a structure beside that of the
 previous paper; it contains it. The lineage-forgetting projection is one
@@ -645,9 +676,11 @@ language for stating which relational profiles, and which transitions between
 profiles, are admissible.
 
 The two layers have different jobs. An equivalence relation \(\sim_j\) must be
-reflexive, symmetric and transitive, and many security relations are none of
-these: delegation, acts-for, trust, parent and child, supervision, causal
-precedence. The quotients are therefore \emph{classification spaces}, not the
+reflexive, symmetric and transitive, while relations such as delegation,
+acts-for, trust, parent and child, supervision, and causal precedence lack at
+least one property required of an equivalence relation, although some may
+satisfy one or more of them. The quotients are therefore
+\emph{classification spaces}, not the
 authorization relation itself. The authorization-relevant relation between a
 predecessor and its successor is a predicate on
 \(\Profiles_J\times\Profiles_J\), which may be directional and need not be an
@@ -751,11 +784,14 @@ would let missing evidence cause admission.
 
 The positive fragment is therefore the conservative choice, safe for both kinds
 of atom. Negation is not excluded on mathematical grounds. With \(\lnot\)
-added, the implication order and every attenuation argument below are
-unchanged, and the lattice of Proposition~\ref{prop:lattice} becomes a Boolean
-algebra. A deployment may admit \(\lnot\) on atoms decidable at the boundary, or
-under a closed-world assumption. The validity conditions below are stated at the
-level of truth; a boundary discharges them through sound evidence.
+added and formulas still identified extensionally, semantic implication and
+the attenuation arguments can be retained, and the generated semantic algebra
+is Boolean. The positive-DNF containment criterion of
+Lemma~\ref{lem:dnf}, however, does not extend unchanged to formulas with
+negation. A deployment may admit \(\lnot\) on atoms decidable at the boundary,
+or under a closed-world assumption, but must use an appropriate implication
+check. The validity conditions below are stated at the level of truth; a
+boundary discharges them through sound evidence.
 
 Conjunction and disjunction have their ordinary set semantics:
 \[
@@ -938,9 +974,28 @@ Associate with every execution step \(s_i\) both:
 The relational envelope specifies the class of executor-profile transitions
 that remain admissible at that point in the lineage.
 
+\begin{definition}[Authorization-aware causal history]\label{def:lineage}
+Let \(\Lineages\) be the set of finite nonempty sequences
+\[
+\widehat{\ell}_i
+:=
+\langle
+(s_0,C_0,\rho_0),\ldots,(s_i,C_i,\rho_i)
+\rangle,
+\]
+where \(s_k\in S\), \(C_k\subseteq O\times R\), and
+\(\rho_k\in\Pred(\Transitions_J)\). These histories are
+\emph{authorization-aware}: their endpoint contains the state carried at that
+occurrence. Write
+\(\widehat{\ell}_i\preceq_L\widehat{\ell}_j\) when the former sequence is a
+prefix of the latter. The index records a position inside this particular
+history; it is not a global clock and does not identify an occurrence without
+the history.
+\end{definition}
+
 \subsection{Extended valid transition}
 
-\begin{definition}[Relationally valid transition]
+\begin{definition}[Relationally valid transition]\label{def:valid-transition}
 Let
 \[
 x_i=\exec(s_i),
@@ -1153,13 +1208,17 @@ relationally continuous lineage.
 The two monotone dimensions can be represented as one ordered state.
 
 \begin{definition}[Relational authorization state]
-Define
+For the history of Definition~\ref{def:lineage}, define
 \[
-\Gamma_i:=(C_i,\rho_i).
+\Gamma(\widehat{\ell}_i)
+:=
+(C_i,[\rho_i]_{\mathrm{sem}}),
 \]
-Here and below, the predicate coordinate is its semantic-equivalence class from
-Proposition~\ref{prop:lattice}. Thus replacing \(\rho_i\) by a predicate with
-the same extension does not change the state.
+and abbreviate it by \(\Gamma_i\). This is well-defined because the endpoint
+tuple of \(\widehat{\ell}_i\) contains \(C_i\) and \(\rho_i\). The predicate
+coordinate is its semantic-equivalence class from
+Proposition~\ref{prop:lattice}; replacing \(\rho_i\) by a predicate with the
+same extension does not change the state.
 \end{definition}
 
 \begin{definition}[Product attenuation order]
@@ -1219,7 +1278,8 @@ Hence:
 \]
 
 \begin{lemma}[Combined Closure]
-For every valid descendant state \(\Gamma_i=(C_i,\rho_i)\),
+For every valid descendant state
+\(\Gamma_i=(C_i,[\rho_i]_{\mathrm{sem}})\),
 \[
 C_i\subseteq C_0
 \]
@@ -1250,27 +1310,16 @@ and
 
 \section{Causal History Grows While Authorization Freedom Shrinks}
 
-The lineage itself is not one of the shrinking objects. Let
+The lineage itself is not one of the shrinking objects. Under the prefix order
+of Definition~\ref{def:lineage},
 \[
-\ell_i
-:=
-\langle s_0,\ldots,s_i\rangle
-\]
-be the causal prefix ending at step \(s_i\).
-
-Define prefix order
-\[
-\ell_i\preceq_L\ell_{i+1}
-\]
-when \(\ell_i\) is a prefix of \(\ell_{i+1}\). Then:
-\[
-\ell_0
+\widehat{\ell}_0
 \preceq_L
-\ell_1
+\widehat{\ell}_1
 \preceq_L
 \cdots
 \preceq_L
-\ell_n.
+\widehat{\ell}_n.
 \]
 
 Thus the three dimensions move together but not identically:
@@ -1279,7 +1328,8 @@ Thus the three dimensions move together but not identically:
 s_0 &\rightarrow& s_1&\rightarrow&s_2&\rightarrow&\cdots s_n\\[3pt]
 C_0&\supseteq&C_1&\supseteq&C_2&\supseteq&\cdots C_n\\[3pt]
 \rho_0&\Leftarrow&\rho_1&\Leftarrow&\rho_2&\Leftarrow&\cdots\rho_n\\[3pt]
-\ell_0&\preceq_L&\ell_1&\preceq_L&\ell_2&\preceq_L&\cdots\ell_n
+\widehat{\ell}_0&\preceq_L&\widehat{\ell}_1&\preceq_L&
+\widehat{\ell}_2&\preceq_L&\cdots\widehat{\ell}_n
 \end{array}
 \]
 where
@@ -1287,7 +1337,13 @@ where
 \rho_{i+1}\Rightarrow\rho_i.
 \]
 
-The precise statement is therefore not that the lineage \(\Lineages\) itself
+More generally, if \(\widehat{\ell}_i\preceq_L\widehat{\ell}_j\) and every
+intervening transition is relationally valid, Dual Monotonicity gives
+\[
+\Gamma(\widehat{\ell}_j)\preceq
+\Gamma(\widehat{\ell}_i).
+\]
+The precise statement is therefore not that a lineage in \(\Lineages\) itself
 decreases. Rather, causal history grows by prefix extension while the
 authorization contexts \emph{carried along that history} attenuate in two
 dimensions.
@@ -1360,24 +1416,79 @@ whose adjacent transitions are all relationally valid, so Combined Closure
 applies to it and gives \(C_i\subseteq C_0\). Hence \((o,r)\in C_0\).
 \end{proof}
 
-Independent authority held by an executor does not modify \(C_i\), so it cannot
-be imported into the request lineage without violating the authority
-attenuation condition. Proposition~\ref{prop:inlineage}, however, only
-constrains steps \emph{of} the lineage. It does not yet exclude a deputy that
-performs the action \emph{outside} the lineage, by opening a lineage of its own
-rooted in its own privileges on the target the request designated. This is
-Hardy's compiler, which writes the billing file with its own authority as if it
-were housekeeping~\cite{hardy1988confused}. The previous paper identifies this
-gap explicitly as lineage origination and leaves it to future
-work~\cite{gallo2026poc}. Closing it requires further premises, which we now state
-explicitly and separately.
+\paragraph{Interpretation: no in-lineage authority mixing.}
+Even if \(\exec(s_i)=D\) and
+\(\operatorname{IndependentAuthority}(D,(o,r))\) holds, possession does not
+inject \((o,r)\) into \(C_i\). The model neither identifies \(C_i\) with
+\(\operatorname{Priv}(\exec(s_i))\) nor supplies an update rule
+\[
+C_i\leftarrow C_{i-1}\cup\operatorname{Priv}(\exec(s_i)).
+\]
+Such an update would be an authority expansion unless the added privileges
+were already in \(C_{i-1}\), whereas validity requires
+\(C_i\subseteq C_{i-1}\). Thus independent authority may exist while remaining
+semantically external to the current lineage:
+\[
+\boxed{
+(o,r)\notin C_0
+\Longrightarrow
+(o,r)\text{ cannot be a valid in-lineage exercise}.
+}
+\]
+This conclusion is independent of executor identity. Different steps may be
+realized by different executors, but authority follows the execution lineage,
+not the union of their ambient privilege sets.
+
+For example, let \(C_0(req)=\{\operatorname{read}(A)\}\), while deputy \(D\)
+independently holds \(\operatorname{write}(B)\). Even if
+\(\exec(s_i)=D\), validity gives \(C_i\subseteq C_0(req)\), hence
+\(\operatorname{write}(B)\notin C_i\). The deputy possesses the authority; the
+execution does not. This is the precise sense in which
+\[
+\boxed{
+\text{PIC validity}
+\Longrightarrow
+\text{no in-lineage confused-deputy authority mixing}.
+}
+\]
+The result is internal to the PIC semantics and uses neither
+\(\operatorname{Priv}(\exec(s_i))\), Complete Mediation, nor Causal
+Attribution.
+
+Proposition~\ref{prop:inlineage}, however, only constrains steps \emph{of} the
+lineage. It does not by itself establish that every real-world effect caused by
+a request is presented in that lineage. In particular, a deputy may perform an
+action outside it by opening a lineage of its own, rooted in its own privileges
+on the target the request designated. This is Hardy's compiler, which writes
+the billing file with its own authority as if it were
+housekeeping~\cite{hardy1988confused}. The previous paper identifies this gap
+as lineage origination and leaves it to future work~\cite{gallo2026poc}.
+Closing it requires the additional premises stated below. In compact form, the
+global result has the stronger premise:
+\[
+\boxed{
+\begin{gathered}
+\text{PIC validity + Complete Mediation}\\
+\text{+ Causal Attribution}\\
+\Downarrow\\
+\text{no request-caused accepted effect}\\
+\text{outside the origin context}.
+\end{gathered}
+}
+\]
 
 \subsection{Exclusion of the confused deputy}
 
 We first make the objects used by the result explicit. Let \(\mathsf{Req}\) be
 the set of requests and \(\mathsf{Eff}\) the set of effects that occur. Every
-request \(req\) has a lineage \(\ell_{req}\) and an origin context
-\(C_0(req)\). Let
+request has an authorization-aware lineage through a map
+\[
+\operatorname{ReqLineage}:\mathsf{Req}\rightarrow\Lineages,
+\qquad
+req\longmapsto\widehat{\ell}_{req},
+\]
+and \(C_0(req)\) is the authority context in the first tuple of
+\(\widehat{\ell}_{req}\). Let
 \[
 \operatorname{step}:\mathsf{Eff}\rightarrow S,
 \qquad
@@ -1418,22 +1529,24 @@ A confused deputy occurs iff there exist
 \]
 \end{definition}
 
-The previous paper states condition~1 as \((o,r)\notin Priv(U)\) for the
-originating principal \(U\). Since \(C_0\subseteq Priv(U)\), the condition
-\((o,r)\notin Priv(U)\) implies \((o,r)\notin C_0\). Every confused deputy in the
-sense of~\cite{gallo2026poc} is therefore one in the sense of
-Definition~\ref{def:cd}, and excluding the lineage form also excludes the
-original one. The lineage form is the stronger target: it also covers
-privileges that the originating principal holds but deliberately left out of
-\(C_0\).
+The previous paper states its privilege-exclusion condition as
+\((o,r)\notin Priv(U)\) for the originating principal \(U\). If the origin gate
+selects \(C_0(req)\subseteq Priv(U)\), then that condition implies
+\((o,r)\notin C_0(req)\). Under this explicit origin-selection premise, every
+confused deputy in the sense of~\cite{gallo2026poc} is therefore one in the
+sense of Definition~\ref{def:cd}. This comparison is not used by the theorem
+below, whose abstract initial context is simply \(C_0(req)\). The lineage form
+is the stronger target when the premise holds: it also covers privileges that
+the originating principal holds but deliberately left out of \(C_0(req)\).
 
 \begin{definition}[Accepted effect]\label{def:accepted}
-An effect \(e\) is \emph{accepted} in lineage \(\ell\) for \((o,r)\), written
-\(\operatorname{Accepted}(e,\ell,(o,r))\), iff
+For \(\widehat{\ell}\in\Lineages\), an effect \(e\) is \emph{accepted} in
+\(\widehat{\ell}\) for \((o,r)\), written
+\(\operatorname{Accepted}(e,\widehat{\ell},(o,r))\), iff
 \(\operatorname{realize}(e)=(o,r)\),
-\(\operatorname{step}(e)=s_k\) for some step \(s_k\) of \(\ell\), every
-transition of \(\ell\) up to \(s_k\) has been verified relationally valid, and
-\(s_k\) validly exercises \((o,r)\).
+\(\operatorname{step}(e)=s_k\) for some tuple \((s_k,C_k,\rho_k)\) of
+\(\widehat{\ell}\), every transition in the prefix ending at that tuple is
+relationally valid, and \(s_k\) validly exercises \((o,r)\).
 \end{definition}
 
 Here \(\operatorname{realize}(e)\) denotes the operation and actual resource on
@@ -1465,7 +1578,7 @@ request's lineage:
 \forall e\in\mathsf{Eff}\;\forall req\in\mathsf{Req},\qquad
 \operatorname{CausedBy}(e,req)
 \Longrightarrow
-\operatorname{Lineage}(e)=\ell_{req}.
+\operatorname{Lineage}(e)=\widehat{\ell}_{req}.
 \]
 \end{assumption}
 
@@ -1501,12 +1614,13 @@ validity, for every
 \begin{proof}
 Suppose an effect \(e\) caused by \(req\) realizes \((o,r)\). By
 Assumption~\ref{ass:attribution}, \(e\) is presented as a step \(s_k\) of
-\(\ell_{req}\). By Assumption~\ref{ass:mediation},
-\(\operatorname{Accepted}(e,\ell_{req},(o,r))\) holds, so every transition of
-\(\ell_{req}\) up to \(s_k\) is relationally valid and \(s_k\) validly
+\(\widehat{\ell}_{req}\). By Assumption~\ref{ass:mediation},
+\(\operatorname{Accepted}(e,\widehat{\ell}_{req},(o,r))\) holds, so every
+transition of \(\widehat{\ell}_{req}\) up to \(s_k\) is relationally valid and \(s_k\) validly
 exercises \((o,r)\). Applying Proposition~\ref{prop:inlineage} to the
-verified prefix of \(\ell_{req}\) ending at \(s_k\) gives \((o,r)\in C_0\).
-Here \(C_0=C_0(req)\), the origin context of \(\ell_{req}\).
+prefix of \(\widehat{\ell}_{req}\) ending at \(s_k\) gives \((o,r)\in C_0\).
+Here \(C_0=C_0(req)\), the origin context of
+\(\widehat{\ell}_{req}\).
 \end{proof}
 
 \begin{corollary}[Exclusion of the confused deputy]\label{thm:cd}
@@ -1531,6 +1645,8 @@ The result does not say that a deputy cannot contain a logic error or attempt an
 operation outside \(C_0(req)\). It says that, under complete mediation and
 causal attribution, such an error cannot produce an \emph{accepted}
 request-caused effect exercising authority outside that context.
+The deputy may possess the independent authority; possession does not make that
+authority admissible in the request's causal history.
 
 \paragraph{What the construction realizes, and what it does not.}
 The boundary-witnessed construction of Section~\ref{sec:witness} can discharge
@@ -1561,6 +1677,17 @@ example that executors retain no state across requests. The attribution itself
 therefore belongs to the trusted computing base of the enforcement
 architecture. Corollary~\ref{thm:cd} follows deductively from its two premises;
 the construction discharges attribution for mediated handoffs, and not beyond.
+
+The canonical Hardy case falls precisely within this limitation when a
+request-supplied designation influences an effect through the deputy's
+independent authority without appearing as an explicit mediated handoff. The
+effect is semantically request-caused, but the witness construction alone may
+not attribute it to the request history. Exclusion of that case therefore
+remains conditional on Causal Attribution and Complete Mediation; this is a
+limit of the construction, not of the conditional theorem.
+PIC eliminates the authority-mixing step once an effect is inside the request's
+valid lineage. The remaining deployment problem is ensuring that
+request-caused effects cannot escape attribution to that lineage.
 
 \paragraph{Exclusive mediated ingress.}
 A strongly confined deployment may impose the sufficient operational condition
@@ -1745,6 +1872,12 @@ the asserted class attributes. Conversely, a sound profile-evidence mechanism
 may identify and classify the executor by boundary-local observation without
 requiring successor-side PoP.
 
+Nor does possession determine causal history. Two occurrences may have the
+same executor, key, credential, authenticated profile and possession evidence
+while belonging to different authorization-aware histories. Neither
+\(\operatorname{Lineage}(e)=\widehat{\ell}\) nor
+\(\PoR(s_i,s_{i+1})\) follows from \(\operatorname{Possess}(x,k)\).
+
 A Proof of Relationship establishes something categorically different:
 \[
 \PoR(s_i,s_{i+1}),
@@ -1880,6 +2013,9 @@ Authority bootstrap and the decision to issue \(\kappa_0\) are out of scope as
 in~\cite{gallo2026poc}.
 \end{definition}
 
+Write \(\operatorname{stepCommitment}(\kappa_i)\) for the second component of
+the checkpoint payload, namely \(h(s_i)\).
+
 The nonce plays no challenge-response role: no successor answers it. It
 distinguishes checkpoints issued by the same boundary for otherwise identical
 steps. Since the identifier also covers the issuing boundary \(B_i\), entries in
@@ -1892,7 +2028,14 @@ The construction yields a predicate
 \]
 which holds iff \(\kappa_{i+1}\) verifies, its payload's first component is
 \(\operatorname{cid}(\kappa_i)\) for a verified \(\kappa_i\), and both carry
-\(\lambda\). This
+\(\lambda\), with
+\[
+\operatorname{stepCommitment}(\kappa_i)=h(s_i),
+\qquad
+\operatorname{stepCommitment}(\kappa_{i+1})=h(s_{i+1}).
+\]
+The consumption-register check for \(\kappa_i\) must also have succeeded when
+\(\kappa_{i+1}\) was issued. This
 constructed predicate is distinct from the semantic \(\PoR(s_i,s_{i+1})\), which
 holds iff \(s_{i+1}\) is a valid causal continuation of \(s_i\). What must be
 shown is that \(\PoR_\kappa\) implies \(\PoR\).
@@ -1910,7 +2053,7 @@ probability negligible in the security parameter \(\eta\). Statements about
 uniqueness below therefore hold except with negligible probability, not
 absolutely.
 
-The construction rests on six separate assumptions.
+The construction rests on seven separate assumptions.
 
 \begin{assumption}[Witness assumptions]\label{ass:witness}
 \leavevmode
@@ -1949,6 +2092,16 @@ The construction rests on six separate assumptions.
     consumption register on which acceptance and marking are atomic, shared by
     the boundaries that may receive a given continuation, or a continuation
     that designates a single verifier with an atomic local register.
+    \item \emph{Root validity.} The origin gate issues \(\kappa_0\) only with
+    \[
+    \operatorname{stepCommitment}(\kappa_0)=h(s_0),
+    \]
+    a fresh lineage
+    identifier and nonce, the origin contexts \(C_0,\rho_0\) selected by the
+    bootstrap policy, and a sound profile \(q_J(x_0)\) for the executor of
+    \(s_0\). The root tuple is canonically encoded and signed by an authenticated
+    origin boundary. This assumes the truth of the root payload; a valid
+    signature alone does not establish it.
 \end{enumerate}
 ``By its own means'' means without relying on credentials presented by the
 executor; the paragraph after the proof explains why this matters.
@@ -1979,7 +2132,12 @@ execution of the system that produced one would yield an efficient collision
 finder, so this happens with negligible probability. Except with
 negligible probability, the predecessor binding therefore cannot be redirected
 to a different valid checkpoint, and \(\kappa_{i+1}\) is bound to the values in
-\(\kappa_i\). By protocol compliance, \(B_{i+1}\) performed checks 1--5 before
+\(\kappa_i\). The two step-commitment equalities in the definition of
+\(\PoR_\kappa\), together with collision resistance of \(h\), bind those
+checkpoints to the named arguments \(s_i,s_{i+1}\) except with negligible
+probability. For a chain rooted at \(\kappa_0\), root validity supplies the
+corresponding base bindings and sound origin payload. By protocol compliance,
+\(B_{i+1}\) performed checks 1--5 before
 issuing. Check~3 together with handoff observation gives
 \(\operatorname{ObservedHandoff}(s_i,s_{i+1})\), and handoff adequacy gives
 \(\PoR(s_i,s_{i+1})\). Check~2 together with anti-replay gives that
@@ -2070,8 +2228,8 @@ Then relational authorization can be decided by a possession-independent rule in
 the sense of Definition~\ref{def:possindep}. Moreover, conditional on
 Assumption~\ref{ass:witness}, the checkpoint construction realizes these
 premises without requiring any successor executor to prove possession of an
-artifact; the cryptographic possession used by that mechanism resides in the
-boundary witnesses' signing keys. This second conclusion is relative to the
+artifact. Boundary signing keys provide the checkpoint evidence; external
+profile evidence may rely on additional trust roots. This second conclusion is relative to the
 Witness Assumptions, not an unconditional proof that every required
 environmental observation can be realized in every deployment.
 \end{theorem}
@@ -2113,7 +2271,7 @@ may choose to use PoP as one mechanism for establishing some of the premises.
 The launch-and-measure and co-located patterns above are architectural examples,
 not a formal witness model proving the joint satisfiability of
 Assumption~\ref{ass:witness}. Accordingly, the checkpoint argument is a proof
-sketch in the computational model whose soundness is conditional on the six
+sketch in the computational model whose soundness is conditional on the seven
 listed assumptions.
 
 Theorem~\ref{thm:possession-independence} concerns admission of a transition by
@@ -2222,7 +2380,11 @@ crate, version \texttt{0.2.3}.
 PIC-X takes the layered route of Proposition~\ref{prop:layers}, not the witness
 route of Section~\ref{sec:witness}. The successor authenticates with
 possession, and each checkpoint is signed by the realm that settles the
-transition.
+transition. Possession-based signatures have two evidence-producing roles:
+they support workload/profile authentication through the attester binding, and
+they demonstrate control of the bytes used to advance a continuation artifact.
+The predicate \(\operatorname{Possess}\) itself is not a primitive of the
+abstract relational authorization decision.
 
 \paragraph{A difference in terminology.}
 PIC-X uses the name ``Proof of Relationship'' for the evidence that
@@ -2230,8 +2392,8 @@ authenticates the workload: an SD-JWT~\cite{sdjwt} issued by an attester that
 the realm trusts, which binds the workload's public key through its
 confirmation claim. In the terms of this paper, that evidence belongs to the
 authentication layer. The causal relationship that this paper calls \(\PoR\) is
-realized in PIC-X by the transition, which references the exact predecessor
-checkpoint.
+only partially evidenced in PIC-X by the transition, which references the exact
+predecessor checkpoint; this does not establish an observed handoff.
 
 \paragraph{Settlement.}
 The workload submits a candidate transition and signs it, together with the
@@ -2244,7 +2406,7 @@ conformance of the disclosed claims to the execution contract; non-expansion;
 revocation; and local policy. Only then does it issue the next checkpoint, signed
 by the realm.
 
-\begin{table}[ht]
+\begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{@{}p{0.27\linewidth}p{0.67\linewidth}@{}}
@@ -2346,10 +2508,11 @@ The following departures affect no theorem, but they bound what PIC-X
     conforms to the execution contract and obtains the settled token can
     therefore advance the lineage, whether or not the token was handed to it.
     The damage is bounded by the checkpoint's authority and by the contract,
-    but the relationship reduces to possession of a continuation artifact. With
-    an unknown successor, nothing placed in the checkpoint at emission time can
-    close this gap statelessly; observing the handoff at consumption, as in the
-    construction of Section~\ref{sec:witness}, is left to a separate component.
+    but the relationship reduces to possession of a continuation artifact. The
+    present stateless construction does not close this gap. In the models
+    considered here, closing it requires trusted handoff observation, additional
+    state, or an equivalent mechanism; the construction of
+    Section~\ref{sec:witness} leaves that observation to a separate component.
     \item \emph{No request binding.} The protocol crate offers a
     request-binding hook, but PIC-X leaves it at its default, which accepts
     every transition. A checkpoint is therefore not tied to the request it
@@ -2382,6 +2545,25 @@ Theorem~\ref{thm:causal-bound}.
 \section{Related Work}
 \label{sec:related}
 
+Capability-, caveat-, and logic-based authorization systems can encode or
+consume contextual and history-sensitive facts, including expiry, lineage or
+predecessor identifiers, delegation ancestry, ambient facts, and externally
+attested continuation evidence. The distinction claimed here is therefore not
+raw policy-language expressiveness. This model makes causal history a primitive
+dimension of the authorization domain and proves authority and relational
+closure along authorization-aware histories.
+
+An artifact-centered system can reproduce the same decision when supplied with
+equivalent trusted causal facts. Doing so requires more than adding a lineage
+field: at each hop it must establish an equivalent valid continuation, satisfy
+the relevant evidence-soundness obligations, bind the predecessor and history,
+enforce the protocol's replay rule, check \(C_{i+1}\subseteq C_i\), check
+\(\rho_{i+1}\Rightarrow\rho_i\), and evaluate \(\rho_i(\tau_i)\). Bare
+artifact possession supplies none of those facts by itself. Both such
+realizations and the witness construction require trusted evidence for causal
+facts; the witness assumption
+\(\operatorname{ObservedHandoff}\Rightarrow\PoR\) does not create causal truth.
+
 \paragraph{Capabilities.}
 Capabilities fuse designation and authority at invocation and thereby prevent
 the classical confused deputy when authority is exercised through the supplied
@@ -2395,6 +2577,11 @@ may be one way to establish a relational predicate, and an attenuated,
 context-bound capability may carry both authority and relational information.
 The distinction is not where the evidence is encoded but whether the
 authorization decision is invariant under changes in causal occurrence.
+An extended capability system that verifies a lineage-sensitive continuation
+condition can therefore enforce the same in-lineage non-mixing property. Claims
+about request-caused effects outside the represented lineage still require an
+equivalent of Complete Mediation and Causal Attribution; encoding the check in
+a capability does not supply those premises by itself.
 
 \paragraph{Macaroons and caveated tokens.}
 Macaroons attenuate a bearer credential by appending caveats, and caveats can
@@ -2528,8 +2715,9 @@ The relational envelope constrains which executors may act along a lineage, not
 only which authority they carry. It therefore expresses constraints between
 executors that authority attenuation alone cannot state.
 
-Let \(\sim_a\) classify executors by role, and let \(A\subseteq\Rel_a\) be the
-approver classes. For a relation \(\sim_j\) and profiles \((u,v)\in\Transitions_J\),
+Let \(a,j\in J\). Let \(\sim_a\) classify executors by role, and let
+\(A\subseteq\Rel_a\) be the approver classes. For the relation \(\sim_j\) and
+profiles \((u,v)\in\Transitions_J\),
 with \(u_j\) the \(j\)-th component of \(u\), define the atom
 \[
 \mathrm{SoD}_j(u,v)
@@ -2595,7 +2783,7 @@ Thus the model has three inseparable components:
 
 Previous work represented an authority occurrence as
 \[
-(o,r,\ell)\in O\times R\times\Lineages,
+(o,r,\ell)\in O\times R\times\mathcal L_{\mathrm{prev}},
 \]
 where \(\ell\) identifies the causal lineage. The present model does not replace
 that axis.
@@ -2603,11 +2791,11 @@ that axis.
 Instead, it refines the structure carried \emph{along} a lineage. The lineage
 prefix
 \[
-\ell_i
+\widehat{\ell}_i
 \]
 grows, while the attached state
 \[
-(C_i,\rho_i)
+\Gamma(\widehat{\ell}_i)=(C_i,[\rho_i]_{\mathrm{sem}})
 \]
 shrinks in the product attenuation order.
 
@@ -2639,6 +2827,17 @@ construction, which lets a checkpoint precede at most one step, excludes
 fan-out by construction and is consistent with this linear scope. A DAG
 generalization must replace it with a rule stating how one checkpoint may be
 consumed by several successors.
+
+The same linearity excludes multiple-cause effects across distinct histories.
+Because \(\operatorname{Lineage}\) is functional, Causal Attribution cannot
+hold simultaneously for
+\(\operatorname{CausedBy}(e,req_1)\) and
+\(\operatorname{CausedBy}(e,req_2)\) when
+\(\widehat{\ell}_{req_1}\neq\widehat{\ell}_{req_2}\). Jointly caused effects
+require both a DAG or fan-in causal semantics and an explicit composition rule
+for the participating origin contexts and relational envelopes. Intersection
+of origin contexts is one possible conservative design, not a result of the
+present model; no composition rule is chosen here.
 
 Fourth, PoR remains largely abstract. The paper proves properties conditional
 on sound verification of the causal relationship. The boundary-witnessed
@@ -2720,7 +2919,7 @@ and
 
 At the same time, causal history accumulates:
 \[
-\ell_i\preceq_L\ell_{i+1}.
+\widehat{\ell}_i\preceq_L\widehat{\ell}_{i+1}.
 \]
 
 The resulting structure is:
@@ -2743,6 +2942,13 @@ explicit handoffs under its Witness Assumptions, and not for arbitrary state,
 covert or side channels. The authorization model is at the same time
 strengthened with relational closure.
 
+PIC therefore separates authority possession from authority admissibility. A
+deputy may hold authority from unrelated sources, but that authority cannot
+become a valid exercise of the current lineage merely because the deputy
+executes one of its steps. Confused-deputy authority mixing is excluded by
+construction within a valid lineage; global exclusion of request-caused effects
+additionally depends on complete mediation and causal attribution.
+
 Most importantly, the logical authorization rule contains no necessary
 successor-side possession premise. If PoR and relational-profile facts are
 soundly verifiable, PoP may supply holder-binding evidence or be used by one
@@ -2763,14 +2969,29 @@ Equivalently, in terms of the two layers:
 \boxed{
 \begin{array}{c}
 \text{sound evidence establishes executor profiles;}\\
-\text{PoR identifies the causal continuation;}\\
-\text{\(C_i\) bounds authority and \(\rho_i\) bounds relational continuation.}
+\text{PoR establishes causal continuation;}\\
+\text{authorization combines PoR, the profiles, \(C_i\), and \(\rho_i\)}\\
+\text{to decide what the occurrence may exercise in that history.}
 \end{array}
 }
 \]
 
 This moves authority from a model centered on what an executor possesses to a
 model centered on which causal and relational continuations remain valid.
+Evidence used to establish PoR is not the semantic relationship itself, just as
+evidence used to establish a profile is not the authorization decision.
+It does not eliminate capabilities, credentials, caveats or PoP as evidence
+mechanisms. It changes the domain in which their evidence is consumed:
+authorization applies to execution occurrences situated in causal histories.
+Consequently,
+\[
+\boxed{
+\begin{array}{c}
+\text{possessing authority}\neq\text{being the occurrence permitted}\\
+\text{to exercise it in this causal history}
+\end{array}
+}.
+\]
 
 \section*{Acknowledgment of Prior Model}
 
@@ -2829,7 +3050,7 @@ organizations agree. The successor is an approver, and its principal differs fro
 the predecessor's, since \(\mathrm{bob}\neq\mathrm{carol}\). Both conjuncts
 hold. The boundary also checks \(C_2=\{(\mathrm{approve},p)\}\subseteq C_1\)
 and \(\rho_2=\rho_1\), a trivial refinement. The hop is accepted. By
-Proposition~\ref{prop:layers}, any executor with the profile of \(x_2\), for
+Proposition~\ref{prop:mechanism-invariance}, any executor with the profile of \(x_2\), for
 instance another process acting for carol, would receive the same verdict,
 however it had authenticated.
 
@@ -2875,7 +3096,7 @@ PIC Protocol.
 \bibitem{picx}
 PIC Protocol project.
 \newblock PIC-X.
-\newblock Source code, version \texttt{v0.2.2} (commit \texttt{33b9990}), built
+\newblock Source code, version \texttt{v0.2.2} (commit \texttt{d39c82c}), built
 on the \texttt{pic-protocol} crate, version \texttt{0.2.3}.
 \newblock \url{https://github.com/pic-protocol/pic-x}.
 \newblock Accessed 24 September 2026.
