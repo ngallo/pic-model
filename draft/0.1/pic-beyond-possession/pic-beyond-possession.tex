@@ -48,9 +48,10 @@ protocol, but control of an artifact alone determines neither the executor's
 relational profile nor the causal history of an execution occurrence. We
 separate PoP from Proof of Relationship (PoR), the semantic property that one
 execution occurrence validly continues another, and from authorization.
-Authorization is occurrence-sensitive: a transition is evaluated from PoR,
-non-expansion of its authority context, satisfaction and refinement of its
-relational envelope, and soundly established executor profiles.
+Authorization is occurrence-sensitive and indexed by the occurrence's causal
+history: a transition is evaluated from PoR, non-expansion of its authority
+context, satisfaction and refinement of its relational envelope, and soundly
+established executor profiles.
 
 Building on Provenance Identity Continuity (PIC) and Proof-of-Continuity (PoC),
 we distinguish execution steps from the executors that realize them and
@@ -131,6 +132,9 @@ Thus possessing authority is not the same as being the execution occurrence
 permitted to exercise it in the current causal history. Bare possession does
 not determine \(\operatorname{Lineage}(e)\) or
 \(\PoR(s_i,s_{i+1})\).
+Authority is exercisable not merely because an executor possesses it, but
+because the current occurrence is an admitted continuation of a history in
+which that authority remains valid.
 
 To answer the question above, this paper introduces a relational space for
 executors. Let \(X\) be the set of executor instances. An
@@ -211,11 +215,11 @@ former. Authentication fixes executor/profile facts; PoR establishes causal
 continuation; and \(C_i\) together with \(\rho_i\) bounds the authorization
 envelope.
 
-As an intuition rather than a definition, PoP answers which artifact a
-presenter demonstrates control over; PoR answers which execution occurrence is
+As an intuition rather than a definition, PoP answers what artifact or key an
+entity demonstrates control over; PoR answers what execution occurrence is
 being continued; and authorization answers what that occurrence may exercise
-in its causal history. PoR is not by itself the authorization decision, and a
-PoP transcript is not by itself a relational profile or a causal history.
+here, in its causal history. PoR is not by itself the authorization decision,
+and a PoP transcript is not by itself a relational profile or a causal history.
 
 The picture is one of two layers. At admission, a sound evidence mechanism
 establishes facts about the executor and fixes its profile \(q_J(x)\). PoP may
@@ -1054,6 +1058,28 @@ The four conjuncts have different roles:
     \item \(\rho_{i+1}\Rightarrow\rho_i\) prevents relational expansion.
 \end{enumerate}
 
+\begin{definition}[PIC-compatible realization]
+\label{def:pic-compatible}
+A concrete authorization system is \emph{PIC-compatible} with respect to an
+authorization-aware lineage model when every admitted non-origin transition
+\(s_i\to s_{i+1}\) is represented by endpoint states
+\((s_i,C_i,\rho_i)\) and \((s_{i+1},C_{i+1},\rho_{i+1})\), indexed by the
+corresponding causal-history prefixes, and the system:
+\begin{enumerate}
+    \item soundly establishes \(\PoR(s_i,s_{i+1})\);
+    \item enforces \(C_{i+1}\subseteq C_i\);
+    \item soundly establishes the profile facts used in
+    \(\tau_i=(q_J(x_i),q_J(x_{i+1}))\) and checks \(\rho_i(\tau_i)\); and
+    \item enforces \(\rho_{i+1}\Rightarrow\rho_i\).
+\end{enumerate}
+Thus the admitted transitions realize Definition~\ref{def:valid-transition},
+independently of which artifacts or policy engine carry and check its premises.
+This definition classifies transition admission only. It does not imply that
+every real-world effect is mediated or attributed to the correct lineage;
+those are the separate premises of Assumptions~\ref{ass:mediation}
+and~\ref{ass:attribution}.
+\end{definition}
+
 Two design points concern the third conjunct. First, hop \(i\) is governed by
 the predecessor's envelope \(\rho_i\), not by the successor's \(\rho_{i+1}\).
 The envelope carried at \(s_i\) constrains the transition that continues
@@ -1335,6 +1361,9 @@ of Definition~\ref{def:lineage},
 \preceq_L
 \widehat{\ell}_n.
 \]
+The temporal axis here is causal prefix order, not wall-clock time: timestamps,
+expiry and elapsed time may be evidence or policy inputs, but none determines
+the position \(\widehat{\ell}_i\) in the causal execution history.
 
 Thus the three dimensions move together but not identically:
 \[
@@ -2595,14 +2624,26 @@ closure along authorization-aware histories.
 
 An artifact-centered system can reproduce the same decision when supplied with
 equivalent trusted causal facts. Doing so requires more than adding a lineage
-field: at each hop it must establish an equivalent valid continuation, satisfy
-the relevant evidence-soundness obligations, bind the predecessor and history,
-enforce the protocol's replay rule, check \(C_{i+1}\subseteq C_i\), check
-\(\rho_{i+1}\Rightarrow\rho_i\), and evaluate \(\rho_i(\tau_i)\). Bare
-artifact possession supplies none of those facts by itself. Both such
-realizations and the witness construction require trusted evidence for causal
-facts; the witness assumption
+field: at each hop it must soundly establish an equivalent valid continuation
+and the profile facts used in \(\tau_i\), bind the state to the corresponding
+history, check \(C_{i+1}\subseteq C_i\), evaluate \(\rho_i(\tau_i)\), and check
+\(\rho_{i+1}\Rightarrow\rho_i\). These are exactly the obligations of
+Definition~\ref{def:pic-compatible}. Bare artifact possession supplies none of
+them by itself. Both such realizations and the witness construction require
+trusted evidence for causal facts; the witness assumption
 \(\operatorname{ObservedHandoff}\Rightarrow\PoR\) does not create causal truth.
+The anti-replay rule of Section~\ref{sec:witness} supports that construction's
+additional single-consumption claim; it is not an extra conjunct of the core
+transition semantics.
+
+A logic-based artifact can therefore consume an externally established
+\texttt{valid\_continuation} fact. The remaining questions are what semantics
+makes that fact a sound witness of \(\PoR\), and whether admission enforces the
+two monotone obligations and relational admissibility. When those conditions
+hold, the artifact remains a capability carrier or policy engine, while the
+resulting authorization system is a capability-based PIC-compatible
+realization. This is a claim about the semantic structure of admission, not
+about greater raw expressiveness of one policy language over another.
 
 \paragraph{Capabilities.}
 Capabilities fuse designation and authority at invocation and thereby prevent
@@ -2622,6 +2663,8 @@ condition can therefore enforce the same in-lineage non-mixing property. Claims
 about request-caused effects outside the represented lineage still require an
 equivalent of Complete Mediation and Causal Attribution; encoding the check in
 a capability does not supply those premises by itself.
+Capability mechanisms therefore remain valid as representations and carriers
+of authority inside the broader causal-history authorization model.
 
 \paragraph{Macaroons and caveated tokens.}
 Macaroons attenuate a bearer credential by appending caveats, and caveats can
@@ -2839,6 +2882,13 @@ grows, while the attached state
 \]
 shrinks in the product attenuation order.
 
+At the modeling level, this may be read as an ontological shift in what bears
+authorization state: the relevant object is not merely an executor or artifact,
+but an execution occurrence embedded in causal history. This is an
+interpretation, not an additional theorem; its mathematical content is the
+history-indexed state \(\Gamma(\widehat{\ell}_i)\) and the transition rule of
+Definition~\ref{def:valid-transition}.
+
 It is therefore mathematically more precise to say:
 \begin{quote}
 continuity is monotone in the authorization state carried along the lineage,
@@ -2994,6 +3044,7 @@ additionally depends on complete mediation and causal attribution.
 This is a semantic claim, not an exclusivity claim: other authorization
 mechanisms can obtain the same no-mixing result by adopting an admission rule
 that preserves the same lineage-local authority and relational constraints.
+Definition~\ref{def:pic-compatible} makes this criterion explicit.
 
 Most importantly, the logical authorization rule contains no necessary
 successor-side possession premise. If PoR and relational-profile facts are
@@ -3028,13 +3079,29 @@ Equivalently, in terms of the two layers:
 }
 \]
 
-This moves authority from a model centered on what an executor possesses to a
-model centered on which causal and relational continuations remain valid.
-Evidence used to establish PoR is not the semantic relationship itself, just as
-evidence used to establish a profile is not the authorization decision.
-It does not eliminate capabilities, credentials, caveats or PoP as evidence
-mechanisms. It changes the domain in which their evidence is consumed:
-authorization applies to execution occurrences situated in causal histories.
+The relevant authorization subject is therefore an execution occurrence in
+causal history, not a holder or artifact alone. PIC does not replace capability
+mechanisms as representations or carriers of authority; it changes the
+semantic space in which carried authority may be exercised. A capability may
+carry authority, but admission additionally asks whether the present occurrence
+belongs to a causal continuation in which that authority and its relational
+envelope remain admissible. Evidence used to establish PoR is not the semantic
+relationship itself, just as evidence used to establish a profile is not the
+authorization decision.
+
+Under Definition~\ref{def:pic-compatible}, systems built from capabilities,
+Macaroons, Biscuit, UCAN or similar artifacts are PIC-compatible when they
+soundly establish equivalent causal-continuation and profile facts and enforce
+the same monotone lineage obligations. The artifact remains their authority
+carrier or policy engine; the semantics governing its exercise is
+PIC-compatible. This is why such a construction is a realization of the
+broader causal-history authorization semantics rather than a counterexample to
+it.
+
+PIC therefore accommodates capabilities, credentials, caveats and PoP as
+evidence mechanisms without reducing authorization to their possession. It
+changes the domain in which their evidence is consumed: authorization applies
+to execution occurrences situated in causal histories.
 Consequently,
 \[
 \boxed{
