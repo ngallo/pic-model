@@ -27,7 +27,7 @@
 \title{Beyond Proof of Possession:\\
 A Relational Theory of Authority}
 \author{Nicola Gallo}
-\date{24 September 2026}
+\date{25 September 2026}
 
 \newtheorem{definition}{Definition}
 \newtheorem{lemma}{Lemma}
@@ -52,6 +52,9 @@ Authorization is occurrence-sensitive and indexed by the occurrence's causal
 history: a transition is evaluated from PoR, non-expansion of its authority
 context, satisfaction and refinement of its relational envelope, and soundly
 established executor profiles.
+The foundational change is a change in the semantic domain of authorization:
+from holders and authority-bearing artifacts alone to execution occurrences
+situated in causal histories.
 
 Building on Provenance Identity Continuity (PIC) and Proof-of-Continuity (PoC),
 we distinguish execution steps from the executors that realize them and
@@ -304,7 +307,8 @@ authority that does not belong to the request's authority context. Capabilities
 address the classical single-invocation form by fusing designation and
 authority~\cite{hardy1988confused,miller2003capability}. In a distributed or
 multi-step execution, however, an executor may hold several unrelated authority
-sources simultaneously.
+sources simultaneously. The PIC project's N+1 Invalid State problem statement
+documents this authority-mixing motivation~\cite{picAuthorityMixing}.
 
 Let a request originate with authority context \(C_0\). If an executor later
 uses a privilege
@@ -1093,7 +1097,9 @@ condition \(\rho_i(\tau_i)\) is therefore evaluated by the receiving side at
 acceptance time, not by the predecessor at emission time. This is the temporal
 gap that Proof-of-Continuity addresses for authority~\cite{gallo2026poc},
 applied to the envelope: the predecessor fixes the envelope, and any successor
-that later appears is admitted only if it falls inside it.
+that later appears is admitted only if it falls inside it. The PIC project
+documents the corresponding engineering motivation as the N+1 unknown-executor
+problem~\cite{picNPlus1Executor}.
 
 PoR supplies the causal spine. The authority and relational contexts are the two
 monotone payloads propagated along that spine.
@@ -1979,9 +1985,25 @@ or
 \]
 \end{definition}
 
-The requirement that PoR and relational-profile facts be soundly verifiable is
-not part of the definition; it appears as a hypothesis of
-Theorem~\ref{thm:possession-independence}.
+\begin{proposition}[Semantic possession-independence]
+\label{prop:semantic-possession-independence}
+Once \(\PoR(s_i,s_{i+1})\), the executor profiles, the relational predicate
+verdict and the two monotonicity conditions are given, the relational
+authorization rule of Definition~\ref{def:valid-transition} is
+possession-independent in the sense of Definition~\ref{def:possindep}.
+\end{proposition}
+
+\begin{proof}
+The rule's premises are exactly
+\(\PoR(s_i,s_{i+1})\), \(C_{i+1}\subseteq C_i\),
+\(\rho_i(\tau_i)\), and \(\rho_{i+1}\Rightarrow\rho_i\). None is a predicate
+of the form \(\operatorname{Possess}(x,k)\) or \(\PoP(x,k)\).
+\end{proof}
+
+This proposition records an immediate semantic fact about the abstract rule;
+it does not show that its premises can be soundly realized without
+successor-side PoP. That separate, substantive question is addressed by the
+conditional construction below.
 
 Proposition~\ref{prop:layers} places successor-side possession, where it is
 used, in the authentication layer. The construction below shows that even that
@@ -2081,8 +2103,8 @@ the checkpoint payload, namely \(h(s_i)\).
 The nonce plays no challenge-response role: no successor answers it. It
 distinguishes checkpoints issued by the same boundary for otherwise identical
 steps. Since the identifier also covers the issuing boundary \(B_i\), entries in
-the consumption register of the anti-replay assumption below are unambiguous
-across boundaries as well.
+the consumption register of the single-consumption/anti-replay assumption below
+are unambiguous across boundaries as well.
 
 The construction yields a predicate
 \[
@@ -2150,11 +2172,12 @@ The construction rests on seven separate assumptions.
     admitted envelope, the boundary either computes the atom from verified
     profiles or obtains sound, monotone evidence for its truth in the sense of
     Section~\ref{sec:relpred}.
-    \item \emph{Anti-replay.} A checkpoint identifier is accepted as the
-    predecessor of at most one step, and no boundary reuses a nonce. This requires state: a
-    consumption register on which acceptance and marking are atomic, shared by
-    the boundaries that may receive a given continuation, or a continuation
-    that designates a single verifier with an atomic local register.
+    \item \emph{Single-consumption / anti-replay.} A checkpoint identifier is
+    accepted as the predecessor of at most one step, and no boundary reuses a
+    nonce. This requires state: a consumption register on which acceptance and
+    marking are atomic, shared by the boundaries that may receive a given
+    continuation, or a continuation that designates a single verifier with an
+    atomic local register.
     \item \emph{Root validity.} The origin gate issues \(\kappa_0\) only with
     \[
     \operatorname{stepCommitment}(\kappa_0)=h(s_0),
@@ -2170,12 +2193,44 @@ The construction rests on seven separate assumptions.
 executor; the paragraph after the proof explains why this matters.
 \end{assumption}
 
+A continuation may designate a receiving verifier without designating the
+future executor: the verifier is an enforcement component, whereas
+\(x_{i+1}\) may remain unknown until the continuation is presented for
+admission.
+
+The single-consumption clause is stronger than the core PIC transition
+semantics. Definition~\ref{def:valid-transition} does not prescribe one
+successor per checkpoint. The present witness construction adds the property
+that a predecessor checkpoint has at most one accepted successor.
+
+This is a transition-admission property, not a message-delivery semantic.
+Duplicate or at-least-once delivery is compatible with the same
+guarantee of at most one accepted successor when repeated presentations of the
+same predecessor are deduplicated by the atomic consumption decision.
+Conversely, a realization may deliberately admit several successors, as in
+fan-out; such a
+realization does not provide the witness construction's property that the
+checkpoint has at most one accepted successor.
+
+In every case, each accepted continuation must independently satisfy the four
+PIC transition obligations.
+
+Single consumption does not require the predecessor to know the concrete
+successor in advance. In the N+1 case, \(x_{i+1}\) may not yet exist, be
+selected, or be provisioned when \(s_i\) emits its continuation. The uniqueness
+decision is therefore made at admission: a valid candidate continuation is
+evaluated by the receiving boundary and, in a single-consumption realization,
+acceptance atomically consumes the predecessor. A realization that instead
+required \(s_i\) to pre-bind the continuation to the future successor's
+identity, workload key, holder identity, or communication channel would not
+cover the unknown-successor case considered by the model.
+
 \begin{proposition}[Relationship without successor-side possession]
 \label{prop:witness}
 Under Assumption~\ref{ass:witness}, and except with probability negligible in
 \(\eta\), \(\PoR_\kappa(s_i,s_{i+1})\) implies
 \(\PoR(s_i,s_{i+1})\). Moreover, if \(\kappa_{i+1}\) verifies, then \(\kappa_i\)
-continues into no other accepted step, \(q_J(x_{i+1})\) is the profile of the
+has at most one accepted successor, \(q_J(x_{i+1})\) is the profile of the
 executor that realized \(s_{i+1}\), and the conditions \(C_{i+1}\subseteq C_i\),
 \(\rho_i(\tau_i)\) and \(\rho_{i+1}\Rightarrow\rho_i\) hold. Verifying
 \(\kappa_{i+1}\) involves no predicate \(\operatorname{Possess}(x_{i+1},k)\) for
@@ -2204,8 +2259,9 @@ predecessor values in \(\kappa_i\) are correct. By protocol compliance,
 \(B_{i+1}\) performed checks 1--5 before
 issuing. Check~3 together with handoff observation gives
 \(\operatorname{ObservedHandoff}(s_i,s_{i+1})\), and handoff adequacy gives
-\(\PoR(s_i,s_{i+1})\). Check~2 together with anti-replay gives that
-\(\kappa_i\) was consumed by no other accepted step. Check~4 together with
+\(\PoR(s_i,s_{i+1})\). Check~2 together with
+single-consumption/anti-replay gives that \(\kappa_i\) has at most one accepted
+successor. Check~4 together with
 non-PoP profile observation gives that \(q_J(x_{i+1})\) is correct. Check~5
 gives \(C_{i+1}\subseteq C_i\) directly and \(\rho_{i+1}\Rightarrow\rho_i\) by
 soundness of the syntactic criterion. For \(\rho_i(\tau_i)\), relational
@@ -2278,58 +2334,31 @@ images, the hardware root of the launching platform, or the organizational
 authority that assigns classes, may depend on additional trust roots. The
 non-PoP profile observation assumption absorbs them.
 
-\begin{theorem}[PoP Independence of the Authorization Rule]
+\begin{theorem}[Conditional realization without successor-side possession]
 \label{thm:possession-independence}
-Assume:
-\begin{enumerate}
-    \item \(\PoR(s_i,s_{i+1})\) is soundly verifiable;
-    \item quotient-profile membership \(q_J(x)\) is soundly verifiable;
-    \item relational predicates are soundly evaluable; and
-    \item authority and relational contexts satisfy their respective
-    monotonicity conditions.
-\end{enumerate}
-Then relational authorization can be decided by a possession-independent rule in
-the sense of Definition~\ref{def:possindep}. Moreover, conditional on
-Assumption~\ref{ass:witness}, the checkpoint construction realizes these
-premises without requiring any successor executor to prove possession of an
-artifact. Boundary signing keys provide the checkpoint evidence; external
-profile evidence may rely on additional trust roots. This second conclusion is relative to the
-Witness Assumptions, not an unconditional proof that every required
-environmental observation can be realized in every deployment.
+Under Assumption~\ref{ass:witness}, and except with probability negligible in
+\(\eta\), the boundary-witnessed checkpoint construction realizes the premises
+of Proposition~\ref{prop:semantic-possession-independence} for every transition
+it admits, without requiring any successor executor to prove possession of an
+artifact. Its admitted transitions therefore form a PIC-compatible realization
+in the sense of Definition~\ref{def:pic-compatible}. Boundary signing keys
+provide checkpoint evidence; external profile evidence may rely on additional
+trust roots. This conclusion is relative to the Witness Assumptions, not an
+unconditional proof that every required environmental observation can be
+realized in every deployment.
 \end{theorem}
 
 \begin{proof}
-Under the assumptions, a transition is accepted exactly when
-\[
-\PoR(s_i,s_{i+1}),
-\]
-\[
-C_{i+1}\subseteq C_i,
-\]
-\[
-\rho_i(\tau_i),
-\]
-and
-\[
-\rho_{i+1}\Rightarrow\rho_i
-\]
-all hold.
-
-No possession predicate occurs in this decision rule. This first conclusion is
-therefore immediate from the definition of the rule once assumptions 1--4 are
-granted. For the conditional realization,
 Proposition~\ref{prop:witness} gives, under Assumption~\ref{ass:witness}, a
-construction in which \(\PoR_\kappa\) soundly witnesses \(\PoR\) and which
-establishes assumptions (1), (2) and (4) at the boundary. Assumption (3) holds
-by relational evidence soundness: the boundary computes each atom from the
-verified profiles or holds sound evidence for it, and soundness lifts to every
-positive predicate. For this conditional construction, it suffices to restrict
-envelopes to atoms decidable from the profiles, such as equality and inequality
-of profile components. Handoff observation by the boundary's own means and
-non-PoP profile observation are hypotheses, so no successor proves possession
-of anything within the construction. Therefore possession is not logically
-necessary to the authorization semantics, even though a concrete implementation
-may choose to use PoP as one mechanism for establishing some of the premises.
+construction in which \(\PoR_\kappa\) soundly witnesses \(\PoR\), the successor
+profile is sound, and \(C_{i+1}\subseteq C_i\), \(\rho_i(\tau_i)\), and
+\(\rho_{i+1}\Rightarrow\rho_i\) hold. Relational evidence soundness lifts the
+verified atomic facts to the admitted positive predicate. These are exactly the
+requirements of Definition~\ref{def:pic-compatible}. Handoff observation by
+the boundary's own means and non-PoP profile observation are hypotheses, so no
+successor proves possession of anything within the construction. The resulting
+admission rule is possession-independent by
+Proposition~\ref{prop:semantic-possession-independence}.
 \end{proof}
 
 The launch-and-measure and co-located patterns above are architectural examples,
@@ -2346,8 +2375,10 @@ Theorem~\ref{thm:causal-bound}.
 
 \subsection{What the result does and does not claim}
 
-The theorem is a non-necessity result, not a claim that PoP has no security
-role.
+Proposition~\ref{prop:semantic-possession-independence} records the semantic
+non-necessity of PoP in the abstract rule. Theorem~\ref{thm:possession-independence}
+is the separate, conditional realization result. Neither claims that PoP has no
+security role.
 
 PoP may still be useful for:
 \begin{itemize}
@@ -2441,9 +2472,11 @@ The results of this paper are stated over abstract predicates and do not depend
 on any implementation. This section records how one open-source implementation,
 PIC-X~\cite{picx}, part of the PIC protocol~\cite{picprotocol}, discharges the
 restricted subset of premises identified below. Its purpose is an engineering
-illustration, not a proof or a complete witness of the model. The description was checked against the
-PIC-X source at tag \texttt{v0.2.2}, which builds on the \texttt{pic-protocol}
-crate, version \texttt{0.2.3}.
+illustration, not a proof or a complete witness of the model. The description was checked on
+25 September 2026 against the PIC-X source prepared for release
+\texttt{v0.2.3}, which builds on the \texttt{pic-protocol} crate, version
+\texttt{0.2.3}. The PIC-X release tag is an implementation snapshot, not an
+assumption of any theorem in this paper.
 
 PIC-X takes the layered route of Proposition~\ref{prop:layers}, not the witness
 route of Section~\ref{sec:witness}. The successor authenticates with
@@ -2462,6 +2495,9 @@ confirmation claim. In the terms of this paper, that evidence belongs to the
 authentication layer. The causal relationship that this paper calls \(\PoR\) is
 only partially evidenced in PIC-X by the transition, which references the exact
 predecessor checkpoint; this does not establish an observed handoff.
+PIC-X therefore describes this implementation level as \emph{artifact-linked}:
+the label records the strength of the available evidence and is not a new
+semantic definition of \(\PoR\).
 
 \paragraph{Settlement.}
 The workload submits a candidate transition and signs it, together with the
@@ -2471,15 +2507,15 @@ workload's three signatures; that the predecessor checkpoint verifies under the
 realm's own key; the hash of the exact predecessor bytes, the position
 progression, the challenge chain, the lineage identifier and the expiry; the
 conformance of the disclosed claims to the execution contract; non-expansion;
-revocation; and local policy. Only then does it issue the next checkpoint, signed
-by the realm.
+the configured revocation hook, which is currently a no-op; and local policy.
+Only then does it issue the next checkpoint, signed by the realm.
 
 \begin{table*}[t]
 \centering
 \small
 \begin{tabular}{@{}p{0.27\linewidth}p{0.67\linewidth}@{}}
 \toprule
-Model element & PIC-X \texttt{v0.2.2} \\
+Model element & PIC-X \texttt{v0.2.3} \\
 \midrule
 Profile \(q_J(x)\) &
 Claims disclosed in the attester-issued SD-JWT presentation, verified at
@@ -2510,16 +2546,18 @@ Checkpoint signing &
 Each checkpoint is a COSE object signed by the realm; accepting a predecessor is
 a signature check under the realm's published keys. \\
 Freshness &
-SD-JWT validity claims, with bounded clock skew. A checkpoint stays advanceable
-while the realm key that signed it is published. The protocol crate provides a
-revocation hook at settlement, but PIC-X \texttt{v0.2.2} configures none. No
-credential status list in this version. \\
+SD-JWT validity claims, with bounded clock skew. The absolute lineage expiry is
+fixed in the initial checkpoint and preserved across advancement. A checkpoint
+is advanceable only before that expiry and while the realm key that signed it
+is published. The protocol crate provides a revocation hook at settlement, but
+PIC-X \texttt{v0.2.3} configures none. No credential status list in this
+version. \\
 Linearity and replay &
 Stateless: a checkpoint is not retired when a successor is issued, so fan-out
 is supported. There is no single-consumption register. \\
 \bottomrule
 \end{tabular}
-\caption{Correspondence between the model and PIC-X \texttt{v0.2.2}, with
+\caption{Correspondence between the model and PIC-X \texttt{v0.2.3}, with
 \texttt{pic-protocol} \texttt{0.2.3}.}
 \label{tab:picx}
 \end{table*}
@@ -2553,7 +2591,7 @@ and undisclosed components can only prevent admission.
 
 \paragraph{Where the realization departs from the model.}
 The following departures affect no theorem, but they bound what PIC-X
-\texttt{v0.2.2} realizes.
+\texttt{v0.2.3} realizes.
 \begin{itemize}
     \item \emph{Successor-side possession.} PIC-X authenticates the successor
     with a key it holds. This is the layered route of
@@ -2566,9 +2604,10 @@ The following departures affect no theorem, but they bound what PIC-X
     while this paper models linear chains. Every root-to-leaf path is a linear
     chain, and every result of this paper applies along it. No branch can import
     authority from another, because each successor is attenuated from its own
-    predecessor. The anti-replay assumption of the witness construction does not
-    hold in PIC-X, and is needed only for the claim that a checkpoint continues
-    into no other accepted step, which PIC-X deliberately does not provide.
+    predecessor. The single-consumption/anti-replay assumption of the witness
+    construction does not hold in PIC-X, and is needed only for the claim that
+    a checkpoint has at most one accepted successor, which PIC-X deliberately
+    does not provide.
     \item \emph{Relationship as possession of the checkpoint.} PIC-X does not
     observe a handoff. The relationship is evidenced by the workload's signature
     over a transition that references the exact predecessor bytes and continues
@@ -2583,8 +2622,9 @@ The following departures affect no theorem, but they bound what PIC-X
     state, or an equivalent mechanism; the construction of
     Section~\ref{sec:witness} leaves that observation to a separate component.
     \item \emph{No request binding.} The protocol crate offers a
-    request-binding hook, but PIC-X leaves it at its default, which accepts
-    every transition. A checkpoint is therefore not tied to the request it
+    request-binding hook, but PIC-X's artifact-linked policy explicitly accepts
+    this check because no trusted request or transport occurrence is available
+    at that boundary. A checkpoint is therefore not tied to the request it
     continues.
     \item \emph{Unconstrained settled token.} The settled token carries no
     audience and no key binding. With an unknown successor this is
@@ -2601,11 +2641,39 @@ The following departures affect no theorem, but they bound what PIC-X
     asynchronous work, covert channels or side channels.
 \end{itemize}
 
+\paragraph{Planned implementation boundary as of 25 September 2026.}
+These omissions are separated deliberately from the guarantees of
+\texttt{v0.2.3}. The planned next implementation phase introduces trusted
+Execution Contexts at the consumption boundary. Because a message publisher
+may not know whether zero, one or many executors will consume a message, and a
+successor key may not yet exist, the design does not pre-bind a checkpoint to a
+future successor identity or key. Once a consumer is selected, an Execution
+Context can observe the concrete handoff and issue a signed receipt, or
+equivalent evidence, committing to the predecessor or candidate digest, a
+fresh occurrence identifier, the consumed request or message, and the locally
+authenticated executor profile. Authenticated channel facts may be included
+where the deployment can soundly observe them.
+
+Such evidence is intended to strengthen artifact linkage into observed-handoff
+evidence, provide request binding, and support causal attribution for explicit
+mediated handoffs. Complete mediation additionally requires the protected
+resource and execution boundaries to reject effects not admitted through that
+path; PIC-X alone cannot establish it for hidden state, covert channels, or
+side channels. Optional replay protection, if introduced, must be scoped to an
+observed occurrence or delivery rather than globally retiring the predecessor,
+so that intentional fan-out remains possible. Revocation remains a separate
+mechanism, with explicit state and availability semantics. Per-claim attester
+trust, rather than the current issuer-wide trust, is independent hardening.
+None of these planned mechanisms is assumed to exist in \texttt{v0.2.3}, and
+none is used by the paper's theorems.
+
 \paragraph{What the realization does not change.}
 No theorem of this paper depends on PIC-X. PIC-X realizes authority
 attenuation, a unary conjunctive envelope, and profile soundness resting on the
-attesters trusted for each claim; the linear results apply per path. It does
-not realize handoff observation and adequacy, anti-replay, request binding, or
+configured attesters (issuer-wide in this version); the linear results apply
+per path. It does
+not realize handoff observation and adequacy, the witness's
+single-consumption/anti-replay property, request binding, or
 revocation, binary relational atoms, disjunction, complete mediation, or
 side-channel attribution, so it does not discharge the Witness Assumptions of
 Section~\ref{sec:witness} nor, by itself, the premises of
@@ -2622,6 +2690,13 @@ raw policy-language expressiveness. This model makes causal history a primitive
 dimension of the authorization domain and proves authority and relational
 closure along authorization-aware histories.
 
+A mechanism does not already have PIC semantics merely because it can encode
+the facts that PIC requires. It is a PIC-compatible realization only when those
+facts are soundly established and the corresponding causal-history,
+authority-attenuation, relational-admissibility, and refinement obligations
+are enforced at admission. Representability of PIC premises is therefore not
+equivalent to PIC semantics.
+
 An artifact-centered system can reproduce the same decision when supplied with
 equivalent trusted causal facts. Doing so requires more than adding a lineage
 field: at each hop it must soundly establish an equivalent valid continuation
@@ -2632,9 +2707,10 @@ Definition~\ref{def:pic-compatible}. Bare artifact possession supplies none of
 them by itself. Both such realizations and the witness construction require
 trusted evidence for causal facts; the witness assumption
 \(\operatorname{ObservedHandoff}\Rightarrow\PoR\) does not create causal truth.
-The anti-replay rule of Section~\ref{sec:witness} supports that construction's
-additional single-consumption claim; it is not an extra conjunct of the core
-transition semantics.
+The single-consumption/anti-replay rule of Section~\ref{sec:witness} supports
+that construction's additional claim that a checkpoint has at most one
+accepted successor; it is not an extra conjunct of the core transition
+semantics.
 
 A logic-based artifact can therefore consume an externally established
 \texttt{valid\_continuation} fact. The remaining questions are what semantics
@@ -2910,13 +2986,18 @@ general treatment would require sound translations between quotient spaces,
 analogous to authority translation between heterogeneous operation/resource
 spaces.
 
-Third, the model is linear. Forks, joins, fan-out, fan-in, and DAG-shaped
-executions require a partial-order generalization of both authority attenuation
-and relational refinement. The anti-replay assumption of the witness
-construction, which lets a checkpoint precede at most one step, excludes
-fan-out by construction and is consistent with this linear scope. A DAG
-generalization must replace it with a rule stating how one checkpoint may be
-consumed by several successors.
+Third, the formal histories and proofs are linear. The core transition rule,
+however, does not prescribe single consumption: its obligations can be checked
+independently on each root-to-leaf path of a fan-out. The present witness adds
+at most one accepted successor per checkpoint and therefore excludes fan-out.
+Repeated delivery or presentation is compatible with this property when the
+atomic consumption decision deduplicates attempts. A fan-out realization
+instead deliberately admits several successors; each branch must independently
+satisfy the valid-transition obligations, but the realization does not provide
+the witness construction's property that the checkpoint has at most one
+accepted successor. A unified treatment of forks, joins, fan-in and DAG-shaped
+executions still requires a partial-order generalization of both authority
+attenuation and relational refinement.
 
 The same linearity excludes multiple-cause effects across distinct histories.
 Because \(\operatorname{Lineage}\) is functional, Causal Attribution cannot
@@ -2954,16 +3035,57 @@ not a violation of the continuity invariant.
 
 The witness construction also separates assumptions that deployments must
 realize independently: handoff observation, non-PoP profile observation,
-whose evidence may rest on further trust roots, and anti-replay, which requires
-shared state among the boundaries that may receive a continuation. Dynamic
-separation of duty between non-adjacent steps requires the state extension
-sketched in Section~\ref{sec:sod}.
+whose evidence may rest on further trust roots, and
+single-consumption/anti-replay.
 
-Sixth, the possession-independence result is semantic. A deployment may still
-choose PoP for engineering reasons, including authentication, key confirmation,
-replay resistance, or evidence transport. The result is only that PoP is not a
-necessary logical premise once the required relationship facts are available by
-some sound means.
+A deployment that requires at most one accepted successor for a checkpoint
+needs an atomic consumption decision or equivalent coordination. When the
+consumption register is shared across boundaries, a globally unique acceptance
+decision requires consistent coordination; under a network partition,
+preserving that safety property may require delaying or rejecting admission
+rather than allowing two boundaries to accept the same predecessor
+independently. This is a realization-level distributed
+consistency/availability trade-off, not a theorem of the abstract PIC
+semantics.
+
+Delivery semantics are separate from transition-admission semantics. An
+at-least-once transport may present the same continuation multiple times while
+an atomic consumption register deduplicates those attempts and still yields at
+most one accepted successor. Conversely, a realization may deliberately
+support fan-out and admit multiple valid successors. Such a realization retains
+the PIC obligations on each admitted branch but does not provide the witness
+construction's property that the checkpoint has at most one accepted
+successor.
+
+The N+1 unknown-executor property is orthogonal to this choice. The concrete
+successor need not be known when the predecessor acts; a single-consumption
+realization is compatible with that model provided uniqueness is enforced at
+admission without requiring pre-identification or pre-binding of the future
+executor. A continuation may designate a verifier without designating that
+future executor.
+
+Dynamic separation of duty between non-adjacent steps requires the state
+extension sketched in Section~\ref{sec:sod}.
+
+Sixth, Proposition~\ref{prop:semantic-possession-independence} is the immediate
+semantic result: PoP is not a premise of the abstract authorization rule once
+the required relationship facts are given. Theorem~\ref{thm:possession-independence}
+is instead a conditional construction showing how those premises can be
+realized without successor-side PoP under the Witness Assumptions. A deployment
+may still choose PoP for engineering reasons, including authentication, key
+confirmation, replay resistance, or evidence transport.
+
+The present model orders authorization state along an already materializing
+causal execution. A fuller temporal treatment must also account for executors,
+facts, and outcomes that do not yet exist when an earlier authorization
+decision is made. The N+1 unknown-executor problem captures the case in which
+the concrete successor materializes only after the predecessor has acted,
+while the N+1 unknown-outcome problem captures the stronger case in which an
+authorization-relevant fact or concrete outcome itself becomes available only
+during execution~\cite{picNPlus1Executor,picNPlus1Outcome}. A future temporal
+authorization space may therefore need to represent admissible future
+occurrences or outcomes before their concrete witnesses materialize. We leave
+that extension to future work.
 
 Finally, the model does not claim that every authorization policy should be
 relational. It identifies a relational authorization structure for discrete
@@ -3046,14 +3168,15 @@ mechanisms can obtain the same no-mixing result by adopting an admission rule
 that preserves the same lineage-local authority and relational constraints.
 Definition~\ref{def:pic-compatible} makes this criterion explicit.
 
-Most importantly, the logical authorization rule contains no necessary
+Most importantly, Proposition~\ref{prop:semantic-possession-independence}
+records that the logical authorization rule contains no necessary
 successor-side possession premise. If PoR and relational-profile facts are
 soundly verifiable, PoP may supply holder-binding evidence or be used by one
 particular witness mechanism, but it is not required as the semantic basis of
-transition admission. The checkpoint construction supports a no-successor-PoP
-realization only relative to its explicit Witness Assumptions. Claims about
-resource effects additionally require complete mediation and causal
-attribution.
+transition admission. Theorem~\ref{thm:possession-independence} separately
+shows that the checkpoint construction supports a no-successor-PoP realization
+only relative to its explicit Witness Assumptions. Claims about resource effects
+additionally require complete mediation and causal attribution.
 
 The distinction can be stated compactly:
 \[
@@ -3082,12 +3205,11 @@ Equivalently, in terms of the two layers:
 The relevant authorization subject is therefore an execution occurrence in
 causal history, not a holder or artifact alone. PIC does not replace capability
 mechanisms as representations or carriers of authority; it changes the
-semantic space in which carried authority may be exercised. A capability may
-carry authority, but admission additionally asks whether the present occurrence
-belongs to a causal continuation in which that authority and its relational
-envelope remain admissible. Evidence used to establish PoR is not the semantic
-relationship itself, just as evidence used to establish a profile is not the
-authorization decision.
+semantic space in which carried authority may be exercised. Capabilities carry
+authority; PIC additionally governs whether this execution occurrence, in this
+causal history, may exercise that authority. Evidence used to establish PoR is
+not the semantic relationship itself, just as evidence used to establish a
+profile is not the authorization decision.
 
 Under Definition~\ref{def:pic-compatible}, systems built from capabilities,
 Macaroons, Biscuit, UCAN or similar artifacts are PIC-compatible when they
@@ -3197,7 +3319,7 @@ Four variants fail, each for a different reason.
 In none of these cases does holding a valid credential change the outcome: the
 decision is taken over the profile, the authority context and the lineage.
 
-In PIC-X \texttt{v0.2.2}, the fixed-value part of this policy can be written as
+In PIC-X \texttt{v0.2.3}, the fixed-value part of this policy can be written as
 an execution-contract entry such as \(\mathrm{org}=\mathrm{acme}\). The
 relational atoms \(\mathrm{SameOrg}\) and \(\mathrm{SoD}_{\mathrm{prin}}\),
 which relate predecessor and successor, need binary atoms, which that version
@@ -3214,20 +3336,39 @@ Distributed Systems and AI Agents.
 \bibitem{picprotocol}
 PIC Protocol.
 \newblock \url{https://pic-protocol.org/}.
-\newblock Accessed 24 September 2026.
+\newblock Accessed 25 September 2026.
+
+\bibitem{picNPlus1Executor}
+PIC Protocol project.
+\newblock The N+1 Unknown Executor Problem.
+\newblock
+\url{https://github.com/pic-protocol/pic-protocol.github.io/blob/main/docs/why-pic/n-plus-1-unknown-executor-problem.md}.
+
+\bibitem{picNPlus1Outcome}
+PIC Protocol project.
+\newblock The N+1 Outcome on Unknown Facts.
+\newblock
+\url{https://github.com/pic-protocol/pic-protocol.github.io/blob/main/docs/why-pic/n-plus-1-outcome-unknown-facts.md}.
+
+\bibitem{picAuthorityMixing}
+PIC Protocol project.
+\newblock The N+1 Invalid State Problem.
+\newblock
+\url{https://github.com/pic-protocol/pic-protocol.github.io/blob/main/docs/why-pic/authority-mixing.md}.
 
 \bibitem{picx}
 PIC Protocol project.
 \newblock PIC-X.
-\newblock Source code, version \texttt{v0.2.2} (commit \texttt{d39c82c}), built
+\newblock Source code, version \texttt{v0.2.3}, built
 on the \texttt{pic-protocol} crate, version \texttt{0.2.3}.
 \newblock \url{https://github.com/pic-protocol/pic-x}.
-\newblock Accessed 24 September 2026.
+\newblock Accessed 25 September 2026.
 
 \bibitem{sdjwt}
 D. Fett, K. Yasuda, and B. Campbell.
 \newblock Selective Disclosure for JSON Web Tokens.
 \newblock RFC 9901, IETF, November 2025.
+\newblock \url{https://www.rfc-editor.org/info/rfc9901}.
 
 \bibitem{hardy1988confused}
 N. Hardy.
@@ -3272,14 +3413,16 @@ UCAN Working Group.
 R. Asor.
 \newblock Verifiable Attenuated Delegation for AI Agent Chains.
 \newblock Internet-Draft draft-asor-wimse-agent-delegation-chain-01, IETF,
-September 2026. Work in progress.
+3 September 2026. Work in progress.
+\newblock \url{https://datatracker.ietf.org/doc/html/draft-asor-wimse-agent-delegation-chain-01}.
 
 \bibitem{atakora2026sadp}
 H. Atakora.
 \newblock Capability-Bound Delegation Chains with Scoped Context Disclosure for
 AI Agents.
 \newblock Internet-Draft draft-atakora-wimse-sadp-delegation-01, IETF,
-September 2026. Work in progress.
+20 September 2026. Work in progress.
+\newblock \url{https://datatracker.ietf.org/doc/html/draft-atakora-wimse-sadp-delegation-01}.
 
 \bibitem{hu2014abac}
 V. C. Hu, D. Ferraiolo, R. Kuhn, A. Schnitzer, K. Sandlin, R. Miller, and
