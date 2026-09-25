@@ -3,6 +3,7 @@
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{booktabs}
+\usepackage{array}
 \usepackage[letterpaper,margin=0.72in]{geometry}
 \setlength{\columnsep}{0.24in}
 \emergencystretch=3em
@@ -55,6 +56,11 @@ established executor profiles.
 The foundational change is a change in the semantic domain of authorization:
 from holders and authority-bearing artifacts alone to execution occurrences
 situated in causal histories.
+We make that distinction comparable across mechanism families by representing
+an authorization model as an observation of a common occurrence domain
+together with its transition invariants. Kernel inclusion then defines a
+partial order on observation-kernel classes through which concrete
+realizations can be compared, not a ranking of security.
 
 Building on Provenance Identity Continuity (PIC) and Proof-of-Continuity (PoC),
 we distinguish execution steps from the executors that realize them and
@@ -180,7 +186,7 @@ structural form:
 \end{gathered}
 \]
 
-The paper makes six contributions:
+The paper makes seven contributions:
 \begin{enumerate}
     \item it separates execution steps from executors and gives executor
     relations a quotient-space semantics;
@@ -193,7 +199,12 @@ The paper makes six contributions:
     \item it shows that the lineage-forgetting projection of the previous
     paper is itself a relational quotient, so that its lineage-invariance
     result for possession-based policies is an instance of the factorization property
-    developed here; and
+    developed here;
+    \item it places artifact-centered, sender-constrained, attenuating
+    delegation and PIC-compatible authorization in a common occurrence domain,
+    defines a refinement order on observation-kernel classes through which
+    such mechanisms can be compared, and separately classifies their
+    transition invariants; and
     \item it proves that the executor-dependent component of authorization
     factors through the relational profile, formalizes invariance under sound
     profile-evidence mechanisms that produce the same profile, and gives,
@@ -202,9 +213,11 @@ The paper makes six contributions:
 \end{enumerate}
 
 Monotone attenuation along a chain is not itself new; capability tokens and
-recent delegation-chain proposals for AI agents already provide it
-(Section~\ref{sec:related}). The novelty claimed here is monotone attenuation of
-an \emph{executor-relational admissibility space}, composed with authority
+delegation-chain systems already provide it (Section~\ref{sec:related}). Nor
+do the mechanism families considered here form a total order. The contribution
+is a common mathematical comparison that separates what a mechanism observes
+from the invariants it enforces, together with monotone attenuation of an
+\emph{executor-relational admissibility space} composed with authority
 attenuation and causal continuity. Section~\ref{sec:picx} maps a restricted
 subset of the premises onto an open-source implementation and states the gaps
 explicitly.
@@ -232,11 +245,11 @@ mechanism need not use successor-side PoP. Once the profile is established,
 PoR determines whether the occurrence is a causal continuation, \(C_i\) bounds
 which authority may continue, and \(\rho_i\) both tests and bounds the executor
 relationships through which it may continue.
-Treating possession as the ground of authority collapses the two layers. The
-collapse is harmless at a single hop, where capabilities work precisely because
-designation and authority coincide. It becomes visible across hops, because a
-lineage-invariant possession-based decision cannot distinguish occurrences
-that differ only in causal history (Remark~\ref{rem:instance}).
+Treating possession as the ground of authority collapses the two layers. A
+single-hop mechanism may deliberately identify designation and authority.
+Across hops, however, any decision that factors through a lineage-forgetting
+observation cannot distinguish occurrences that differ only in causal history
+(Remark~\ref{rem:instance}).
 
 \section{Background and Previous Result}
 
@@ -2430,40 +2443,245 @@ as properties of the execution; PoP is one possible property established by an
 evidence protocol.
 \end{remark}
 
-\section{From Possession to Relation}
+\section{Authorization Models over an Occurrence Domain}
+\label{sec:observation}
 
-A possession-centered authorization rule can be abstracted as
+The distinction between possession and relation can be stated without ordering
+protocols by name. A possession-centered rule may be abstracted as
 \[
 \operatorname{Possess}(x,a)
 \land
 \operatorname{Grants}(a,o,r)
 \Longrightarrow
-\operatorname{Authorized}(x,o,r).
+\operatorname{Authorized}(x,o,r),
 \]
-
-The relational model instead evaluates an execution occurrence:
+whereas the relational rule evaluates an occurrence through
+\(\PoR(s_i,s_{i+1})\) and the monotone evolution
+\(\Gamma_{i+1}\preceq\Gamma_i\). To compare these rules on one domain, let
+\(\mathcal E\) be the space of admission-relevant evidence and verifier
+context, and define
 \[
-\PoR(s_i,s_{i+1})
+\Omega
+:=
+\left\{
+(\widehat{\ell}_i,x_i,o_i,r_i,\eta_i)
+\ \middle|\
+\begin{array}{l}
+\widehat{\ell}_i\in\Lineages,\quad x_i=\exec(s_i),\\
+(o_i,r_i)\in O\times R,\quad \eta_i\in\mathcal E
+\end{array}
+\right\}.
 \]
-together with monotone state evolution
+An element of \(\Omega\) is a complete authorization occurrence for comparison
+purposes: its history prefix contains the endpoint state \((C_i,\rho_i)\), and
+the remaining coordinates record its executor, requested privilege, and the
+evidence, trusted observations and contextual facts available to the admission
+boundary. Thus \(\eta_i\) may include presented artifacts, verifier-local or
+infrastructure observations, externally retrieved facts, revocation state,
+authenticated-channel facts, policy and environment context, trusted time, or
+boundary-local state. It records inputs to admission, not semantic truth:
+\(\PoR\) and the other semantic premises remain distinct from evidence used to
+establish them. This auxiliary domain does not alter
+Definition~\ref{def:valid-transition}; it makes explicit which coordinates a
+decision procedure retains or forgets.
+
+\begin{definition}[Observation model]
+For an authorization model \(M\), an \emph{observation map} is a surjection
 \[
-\Gamma_{i+1}\preceq\Gamma_i.
+\operatorname{Obs}_M:\Omega\longrightarrow Y_M,
+\]
+where, without loss of generality, \(Y_M=\operatorname{Obs}_M(\Omega)\). Its
+kernel equivalence is
+\[
+\omega\sim_M\omega'
+\quad\Longleftrightarrow\quad
+\operatorname{Obs}_M(\omega)=\operatorname{Obs}_M(\omega').
+\]
+A Boolean admission policy based on this observation has the form
+\[
+P_M=\bar P_M\circ\operatorname{Obs}_M
+\]
+for some \(\bar P_M:Y_M\to\{0,1\}\).
+\end{definition}
+
+Thus an observation does not describe everything a protocol message can encode.
+It describes the distinctions on \(\Omega\) that a particular admission rule
+actually preserves.
+
+\begin{definition}[Observation refinement]
+Write
+\[
+M\preceq_{\mathrm{obs}}N
+\]
+when there is a map \(f:Y_N\to Y_M\) such that
+\[
+\operatorname{Obs}_M=f\circ\operatorname{Obs}_N.
+\]
+Then \(M\) is observationally no finer than \(N\): every distinction retained
+by \(M\) is available to \(N\), although \(N\) need not use it in its policy.
+\end{definition}
+
+\begin{proposition}[Observation factorization and refinement]
+\label{prop:observation-refinement}
+Let \(M\) and \(N\) be observation models on \(\Omega\). Then:
+\begin{enumerate}
+    \item if \(P_M=\bar P_M\circ\operatorname{Obs}_M\), then
+    \[
+    \omega\sim_M\omega'\Longrightarrow P_M(\omega)=P_M(\omega');
+    \]
+    \item
+    \[
+    M\preceq_{\mathrm{obs}}N
+    \quad\Longleftrightarrow\quad
+    \ker(\operatorname{Obs}_N)
+    \subseteq
+    \ker(\operatorname{Obs}_M);
+    \]
+    \item if \(M\preceq_{\mathrm{obs}}N\), every policy that factors through
+    \(\operatorname{Obs}_M\) also factors through
+    \(\operatorname{Obs}_N\).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The first statement is Proposition~\ref{prop:factorization} applied to the
+kernel quotient of \(\operatorname{Obs}_M\). If
+\(\operatorname{Obs}_M=f\circ\operatorname{Obs}_N\), equality under
+\(\operatorname{Obs}_N\) implies equality under \(\operatorname{Obs}_M\),
+which proves the forward kernel inclusion. Conversely, suppose the kernel
+inclusion holds. Define
+\[
+f(\operatorname{Obs}_N(\omega)):=\operatorname{Obs}_M(\omega).
+\]
+The inclusion makes \(f\) well-defined, and surjectivity onto the chosen images
+gives \(\operatorname{Obs}_M=f\circ\operatorname{Obs}_N\). Finally,
+\(P_M=\bar P_M\circ f\circ\operatorname{Obs}_N\), proving the third statement.
+\end{proof}
+
+The order \(\preceq_{\mathrm{obs}}\) compares information resolution only. It
+does not say that \(N\) is more secure than \(M\), that its evidence is sounder,
+or that its admitted transitions satisfy stronger invariants.
+It is a preorder on observation maps. Identifying maps whose kernels are equal
+makes the induced relation a partial order on observation-kernel classes.
+
+Because \(\eta_i\) may itself expose causal history, dropping only
+\(\widehat{\ell}_i\) would not in general forget lineage. Fix a
+history-erasure observation
+\[
+\epsilon_{\neg L}:\mathcal E\longrightarrow\mathcal E_{\neg L}
+\]
+that, for the comparison being made, removes or abstracts away evidence whose
+semantic purpose is to distinguish causal histories. Such evidence includes
+lineage or predecessor identifiers, checkpoint hashes, continuation receipts,
+PoR evidence, handoff evidence, and equivalent causal-history facts. There need
+not be one canonical erasure for every evidence representation; the projection
+is parameterized by the chosen \(\epsilon_{\neg L}\).
+
+Define the corresponding lineage-forgetting projection by
+\[
+\begin{aligned}
+\mathcal Z_{\neg L}:={}&
+X\times O\times R\times\mathcal E_{\neg L}\\
+&{}\times\mathcal P(O\times R)
+\times(\Pred(\Transitions_J)/{\equiv_{\mathrm{sem}}}),
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+\pi_{\neg L}:\Omega&\longrightarrow\mathcal Z_{\neg L},\\
+(\widehat{\ell}_i,x_i,o_i,r_i,\eta_i)
+&\longmapsto
+(x_i,o_i,r_i,\epsilon_{\neg L}(\eta_i),
+C_i,[\rho_i]_{\mathrm{sem}}).
+\end{aligned}
 \]
 
-The authorization question therefore changes from:
-\begin{quote}
-What authority does this actor possess?
-\end{quote}
-to:
-\begin{quote}
-Is this occurrence a valid continuation of an already authorized causal
-relation, under an authorization state that has not expanded?
-\end{quote}
+\begin{corollary}[Lineage-forgetting limitation]
+\label{cor:lineage-forgetting}
+If \(\operatorname{Obs}_M=g\circ\pi_{\neg L}\), then any policy factoring
+through \(\operatorname{Obs}_M\) gives the same verdict to occurrences that
+agree on the retained coordinates but differ in their explicit causal-history
+prefixes and in evidence erased by \(\epsilon_{\neg L}\). Consequently,
+separating occurrences solely by those causal-history differences requires an
+observation that does not factor through \(\pi_{\neg L}\).
+\end{corollary}
 
-This does not eliminate identity, credentials, or possession mechanisms.
-Rather, it relocates them. Identity and PoP may establish facts about the
-executor or the evidence; the authorization relation is evaluated over the
-causal and relational structure of the execution.
+\begin{proof}
+Equal values under \(\pi_{\neg L}\) imply equal values under
+\(\operatorname{Obs}_M\); the first part of
+Proposition~\ref{prop:observation-refinement} then gives equal policy verdicts.
+The final statement is the contrapositive.
+\end{proof}
+
+This corollary restates, on the common domain \(\Omega\), the quotient argument
+of Remark~\ref{rem:instance}. Both the explicit history coordinate and the
+evidence coordinates from which that history could be recovered are now
+forgotten by construction. It does not say that any named protocol family is
+necessarily lineage-forgetting: a realization can retain sound causal-history
+facts in its observation.
+
+Observation is only one axis. Let
+\[
+\operatorname{Trans}_M\subseteq\Omega\times\Omega
+\]
+denote the transitions that model \(M\) admits. We therefore classify a model
+by the pair
+\[
+\mathfrak M=(\operatorname{Obs}_M,\operatorname{Trans}_M).
+\]
+For
+\[
+\begin{aligned}
+\omega_i&=(\widehat{\ell}_i,x_i,o_i,r_i,\eta_i),\\
+\omega_{i+1}&=(\widehat{\ell}_{i+1},x_{i+1},o_{i+1},r_{i+1},\eta_{i+1}),
+\end{aligned}
+\]
+write
+\[
+\widehat{\ell}_i\prec_L^{\,1}\widehat{\ell}_{i+1}
+\quad\Longleftrightarrow\quad
+\widehat{\ell}_{i+1}
+=\widehat{\ell}_i\mathbin{\|}
+\langle(s_{i+1},C_{i+1},\rho_{i+1})\rangle,
+\]
+where \(\mathbin{\|}\) denotes sequence concatenation. Define the lifted PIC
+relation by
+\[
+\begin{aligned}
+&(\omega_i,\omega_{i+1})
+\in\operatorname{Trans}_{\mathrm{PIC}}\\
+&\quad\Longleftrightarrow\quad
+\widehat{\ell}_i\prec_L^{\,1}\widehat{\ell}_{i+1}\\
+&\qquad\land\;
+\ValidR(s_i,C_i,\rho_i,
+s_{i+1},C_{i+1},\rho_{i+1}),
+\end{aligned}
+\]
+The immediate-prefix condition requires the two elements of \(\Omega\) to be
+consecutive endpoints of the same authorization-aware history. The second
+condition is exactly the four-conjunct rule of
+Definition~\ref{def:valid-transition}:
+\[
+\PoR(s_i,s_{i+1}),\qquad
+C_{i+1}\subseteq C_i,\qquad
+\rho_i(\tau_i),\qquad
+\rho_{i+1}\Rightarrow\rho_i.
+\]
+Immediate-prefix compatibility is a well-formedness condition of the relation
+after it has been lifted to \(\Omega\times\Omega\); it is not a fifth PIC
+authorization conjunct and does not modify
+Definition~\ref{def:valid-transition}.
+The first axis asks which occurrences an admission rule can distinguish. The
+second asks which state changes it accepts. A model may be fine on one axis and
+weak or incomparable on the other; no total ranking follows.
+
+The authorization question can now be stated precisely: not only what
+authority an actor possesses, but whether the observed occurrence is a valid
+continuation under an authorization state that has not expanded. Identity,
+credentials, capabilities and PoP may contribute coordinates or evidence to
+\(\operatorname{Obs}_M\). They do not by their carrier type alone determine
+either the kernel of that observation or \(\operatorname{Trans}_M\).
 
 \section{A Realization of the Premises: PIC-X}
 \label{sec:picx}
@@ -2682,148 +2900,124 @@ Theorem~\ref{thm:causal-bound}.
 \section{Related Work}
 \label{sec:related}
 
-Capability-, caveat-, and logic-based authorization systems can encode or
-consume contextual and history-sensitive facts, including expiry, lineage or
-predecessor identifiers, delegation ancestry, ambient facts, and externally
-attested continuation evidence. The distinction claimed here is therefore not
-raw policy-language expressiveness. This model makes causal history a primitive
-dimension of the authorization domain and proves authority and relational
-closure along authorization-aware histories.
+Section~\ref{sec:observation} gives the comparison criterion: protocol names do
+not define semantic classes. A family is characterized by the kernel of the
+observation actually used for admission and by its admitted transition
+relation. No protocol family below is asserted to be a set-theoretic subset of
+PIC. The rows summarize mechanism profiles; they do not assign one canonical
+observation map to every named protocol or prove every pairwise kernel
+inclusion. The same carrier format may occur in different rows of
+Table~\ref{tab:families}, and the rows are not a security ranking.
 
-A mechanism does not already have PIC semantics merely because it can encode
-the facts that PIC requires. It is a PIC-compatible realization only when those
-facts are soundly established and the corresponding causal-history,
-authority-attenuation, relational-admissibility, and refinement obligations
-are enforced at admission. Representability of PIC premises is therefore not
-equivalent to PIC semantics.
+\begin{table*}[t]
+\centering
+\caption{Authorization families on the two comparison axes. Entries describe
+the stated profile, not every use of the named standards or artifacts.}
+\label{tab:families}
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}
+>{\raggedright\arraybackslash}p{0.23\textwidth}
+>{\raggedright\arraybackslash}p{0.14\textwidth}
+>{\raggedright\arraybackslash}p{0.16\textwidth}
+>{\raggedright\arraybackslash}p{0.16\textwidth}@{}}
+\toprule
+Family & Observation retained at admission & Holder binding & Compositional attenuation & Causal occurrence continuity \\
+\midrule
+Artifact-, token-, or assertion-centered
+& Artifact or assertion, claims, requested privilege and selected verifier context
+& Not intrinsic to bearer profiles
+& Profile-dependent
+& Not intrinsic when causal history is unobserved \\
+\addlinespace
+Sender-constrained or holder-bound
+& Artifact/claim observation plus holder- or key-binding evidence; some profiles bind a proof to request properties
+& Required by the stated holder-bound profile
+& Profile-dependent
+& Not implied by holder/key binding or local request binding \\
+\addlinespace
+Attenuating capability or delegation artifact
+& Artifact, restrictions and artifact ancestry exposed by the construction
+& Construction-dependent
+& Enforced when descendants can only preserve or restrict authority
+& Construction-dependent; artifact ancestry may or may not witness occurrence continuity \\
+\addlinespace
+PIC-compatible authorization
+& Sound occurrence, causal-history and executor-profile facts used by the admission rule
+& Optional evidence mechanism
+& \(C_{i+1}\subseteq C_i\) and \(\rho_{i+1}\Rightarrow\rho_i\)
+& \(\PoR(s_i,s_{i+1})\) is required \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-An artifact-centered system can reproduce the same decision when supplied with
-equivalent trusted causal facts. Doing so requires more than adding a lineage
-field: at each hop it must soundly establish an equivalent valid continuation
-and the profile facts used in \(\tau_i\), bind the state to the corresponding
-history, check \(C_{i+1}\subseteq C_i\), evaluate \(\rho_i(\tau_i)\), and check
-\(\rho_{i+1}\Rightarrow\rho_i\). These are exactly the obligations of
-Definition~\ref{def:pic-compatible}. Bare artifact possession supplies none of
-them by itself. Both such realizations and the witness construction require
-trusted evidence for causal facts; the witness assumption
-\(\operatorname{ObservedHandoff}\Rightarrow\PoR\) does not create causal truth.
-The single-consumption/anti-replay rule of Section~\ref{sec:witness} supports
-that construction's additional claim that a checkpoint has at most one
-accepted successor; it is not an extra conjunct of the core transition
-semantics.
+\paragraph{Artifact-, token-, and assertion-centered profiles.}
+This class includes OAuth bearer-token profiles~\cite{rfc6749,rfc6750}, JWT
+access artifacts when used as bearer credentials~\cite{rfc7519}, and SAML
+assertions used with bearer subject confirmation~\cite{samlcore}. The class is
+defined narrowly by an admission rule whose observation is artifact-local, not
+by all uses of OAuth, JWT or SAML. If that observation factors through
+\(\pi_{\neg L}\), Corollary~\ref{cor:lineage-forgetting} applies. The
+standards remain free to carry or reference additional evidence; a profile that
+soundly observes causal occurrence belongs to a finer or different class.
 
-A logic-based artifact can therefore consume an externally established
-\texttt{valid\_continuation} fact. The remaining questions are what semantics
-makes that fact a sound witness of \(\PoR\), and whether admission enforces the
-two monotone obligations and relational admissibility. When those conditions
-hold, the artifact remains a capability carrier or policy engine, while the
-resulting authorization system is a capability-based PIC-compatible
-realization. This is a claim about the semantic structure of admission, not
-about greater raw expressiveness of one policy language over another.
+\paragraph{Sender-constrained and holder-bound profiles.}
+DPoP is sender-constrained and binds each proof to HTTP request properties as
+specified by its profile~\cite{rfc9449}. SAML Holder-of-Key
+assertions~\cite{samlhok} and mutual-TLS certificate-bound
+credentials~\cite{rfc8705} establish holder or key binding without thereby
+establishing causal occurrence continuity. None of holder binding, key binding,
+or local request binding alone implies \(\PoR(s_i,s_{i+1})\). Holder binding
+therefore refines possession equivalence without necessarily recovering
+causal-history equivalence. A concrete profile may nevertheless add sound
+continuity evidence and, if it enforces the required transition obligations,
+become a PIC-compatible realization.
 
-\paragraph{Capabilities.}
-Capabilities fuse designation and authority at invocation and thereby prevent
-the classical confused deputy when authority is exercised through the supplied
-capability rather than through ambient authority
-\cite{dennis1966programming,miller2003capability}. In the terminology used
-here, such an invocation may realize a strong single-hop relationship between
-designation and authority.
+\paragraph{Attenuating capability and delegation artifacts.}
+Capabilities unite designation and authority and address the classical
+confused-deputy problem when invocation uses the designated authority rather
+than ambient authority~\cite{dennis1966programming,miller2003capability}.
+Macaroons append contextual caveats~\cite{birgisson2014macaroons}; Biscuit and
+UCAN provide attenuating delegation structures~\cite{biscuitspec,ucanspec};
+recent agent-delegation proposals likewise combine predecessor commitments
+with attenuated grants~\cite{asor2026delegation,atakora2026sadp}. These facts
+establish compositional restriction in their respective constructions; they do
+not place every construction in one observation class. An implementation that
+soundly identifies artifact ancestry with occurrence continuity and enforces
+all four obligations of Definition~\ref{def:pic-compatible} is a
+capability-based PIC-compatible realization. PIC does not replace its carrier
+or policy language.
 
-The present model is compatible with capability implementations. A capability
-may be one way to establish a relational predicate, and an attenuated,
-context-bound capability may carry both authority and relational information.
-The distinction is not where the evidence is encoded but whether the
-authorization decision is invariant under changes in causal occurrence.
-An extended capability system that verifies a lineage-sensitive continuation
-condition can therefore enforce the same in-lineage non-mixing property. Claims
-about request-caused effects outside the represented lineage still require an
-equivalent of Complete Mediation and Causal Attribution; encoding the check in
-a capability does not supply those premises by itself.
-Capability mechanisms therefore remain valid as representations and carriers
-of authority inside the broader causal-history authorization model.
+\paragraph{PIC-compatible authorization.}
+This is a semantic class, not a token format. Membership requires soundly
+established \(\PoR\) and profile facts, together with enforcement of
+\(C_{i+1}\subseteq C_i\), \(\rho_i(\tau_i)\), and
+\(\rho_{i+1}\Rightarrow\rho_i\) at admission. Merely encoding the relevant
+fields is insufficient, while any mechanism family can qualify when its
+admission semantics discharge those obligations. Complete Mediation and
+Causal Attribution remain separate premises for conclusions about effects, as
+Definition~\ref{def:pic-compatible} states. The witness construction's
+single-consumption rule is likewise a property of that realization, not a
+fifth PIC transition conjunct.
 
-\paragraph{Macaroons and caveated tokens.}
-Macaroons attenuate a bearer credential by appending caveats, and caveats can
-confine authority by context, including by which party may exercise
-it~\cite{birgisson2014macaroons}. Caveat chains are monotone in the same sense
-as \(C_i\) and \(\rho_i\): adding a caveat can only restrict. A macaroon whose
-caveats bind the lineage and the executor class would therefore carry both
-monotone dimensions inside one artifact. In the terms of this paper it is a
-possession-based encoding of the envelope. Its continuity guarantees hold
-exactly to the extent that its caveats are lineage-sensitive, which is the
-condition identified in~\cite{gallo2026poc}. The present model states that
-condition independently of the artifact that carries it.
+\paragraph{Adjacent formalisms.}
+ABAC classifies subjects, objects, operations and environments for policy
+evaluation~\cite{hu2014abac}; the maps \(q_J\) provide one such classification
+of executors, while PIC additionally propagates a refining relational envelope.
+Dynamic and history-based separation of duty constrain roles or prior
+participants~\cite{ferraiolo2001rbac,simon1997sod}, and history-based access
+control makes execution history a policy input~\cite{abadi2003history}.
+Proof-carrying and distributed authorization can prove premises used by an
+admission rule~\cite{appel1999pca,bauer2005distributed}. These formalisms are
+complementary: each can supply observations or checks, while the pair
+\((\operatorname{Obs}_M,\operatorname{Trans}_M)\) records which distinctions
+and transition invariants the resulting system actually uses.
 
-\paragraph{Attenuated delegation chains.}
-Monotone attenuation along a chain is not itself new. Biscuit tokens carry
-Datalog checks, and the holder may append blocks that only add checks,
-restricting the token's rights~\cite{biscuitspec}. UCAN delegation chains
-require each delegation to restate or attenuate the capabilities of its
-delegator~\cite{ucanspec}. Two recent individual Internet-Drafts apply the idea
-to AI agents. One profiles OAuth JWT access tokens so that each delegation
-attenuates scope and constraints, with parent and child linked by a hash
-commitment and verifiable offline~\cite{asor2026delegation}. The other binds
-attenuated capability grants to encrypted task capsules, attenuating decryption
-access together with authorization~\cite{atakora2026sadp}. Hash-linked
-predecessor binding, authority attenuation along a chain, monotone accumulation
-of restrictions and lineage verification are therefore shared with this line of
-work; the witness construction of Section~\ref{sec:witness} uses them and does
-not claim them as contributions. These systems attenuate delegated authority
-encoded in an artifact. The contribution here is a second ordered dimension,
-\(\rho_{i+1}\Rightarrow\rho_i\) over relational transition profiles of
-executors, separate from the carrier of authority and composed with authority
-attenuation and causal continuity, together with the semantic separation from
-successor-side PoP.
-
-\paragraph{Attribute-based access control.}
-ABAC authorizes an operation by evaluating attributes of the subject, the
-object, the operation and the environment against policy~\cite{hu2014abac}.
-The profile map \(q_J\) is an ABAC-style classification of executors, and atoms
-over \(\Transitions_J\) are attribute conditions over pairs of executors. What
-the model adds is not the classification but its propagation. An ABAC decision
-point evaluates the policy attached to the resource it guards, with no
-guarantee that a downstream decision point applies a policy no weaker than an
-upstream one. Here the envelope \(\rho_i\) is carried by the execution, bound
-to its lineage by PoR, and can only be refined along it. Relational closure is
-a property of the lineage, not of any single decision point.
-
-\paragraph{Separation of duty.}
-The NIST RBAC model standardizes dynamic separation of duty as a constraint on
-the roles a user may activate within a session~\cite{ferraiolo2001rbac}, and
-history-based formulations make separation of duty depend on which principals
-have already acted~\cite{simon1997sod}. The adjacent case of
-Section~\ref{sec:sod} is a lineage-scoped variant: the constraint is carried by
-the execution rather than attached to a session or an object, and no descendant
-can drop it. The non-adjacent case needs memory of earlier executors, which is
-the territory of the history-based formulations.
-
-\paragraph{History-based access control.}
-History-based access control likewise makes execution history relevant to
-authorization~\cite{abadi2003history}. The construction here differs in
-emphasis: it treats executor equivalence classes and relational predicates as a
-first-class authorization space, then propagates that space monotonically along
-a PoR-linked discrete execution.
-
-\paragraph{Proof-carrying and distributed authorization.}
-In proof-carrying authorization, a requester presents a proof, in an
-authorization logic over credentials, that it is entitled to access, and a
-reference monitor checks the proof~\cite{appel1999pca,bauer2005distributed}.
-The object of such a proof is the requester's authority, typically rooted in
-credentials it holds or can obtain. The object of PoR is different: a
-relationship between two execution occurrences. The two are complementary. A
-proof-carrying system could serve as the mechanism that verifies the premises of
-\(\ValidR\), and the lineage state \((C_i,\rho_i)\) could appear as a premise in
-such a logic.
-
-\paragraph{Scope of the quotient construction.}
-The quotient construction is also deliberately agnostic to the concrete
-meaning of each equivalence relation. One relation may encode trust-domain
-membership, another a hardware-attestation class, another a workload class,
-and another an organizational relationship. Properties that depend on
-occurrences rather than executors, such as an execution-specific continuation
-property, do not belong in an equivalence relation on \(X\); they live in
-\(\PoR\) or in the carried state. The authorization semantics depends only on the
-resulting quotient classes and relational predicates.
+The quotient construction remains agnostic to the meaning of each executor
+equivalence. Trust-domain, attestation, workload and organizational classes
+belong in relations on \(X\); occurrence-specific continuation belongs in
+\(\PoR\) or the carried history. What matters is not whether a carrier is
+called a token, assertion, capability or proof, but which distinctions its
+admission rule preserves and which state transitions it accepts.
 
 \section{Discussion}
 
@@ -2901,9 +3095,9 @@ expressed as a refinement of the relational envelope.
 
 Authority attenuation cannot state this constraint: proposer and approver may
 carry the same authority context, and the constraint concerns who exercises it.
-A pure bearer capability, without holder or context caveats, is monotone in
-authority and silent on the subject that exercises it, so the constraint is not
-a property of such a capability. Caveated tokens can express it, as discussed in
+An admission rule observing only a bearer artifact cannot evaluate the
+constraint unless the necessary subject relation is also soundly exposed to
+that rule. Mechanisms with such an observation can express it, as classified in
 Section~\ref{sec:related}. Here it is one refinement of \(\rho\).
 
 The atom relates adjacent executors, and the adjacent case lies within the
@@ -3203,27 +3397,27 @@ Equivalently, in terms of the two layers:
 \]
 
 The relevant authorization subject is therefore an execution occurrence in
-causal history, not a holder or artifact alone. PIC does not replace capability
-mechanisms as representations or carriers of authority; it changes the
-semantic space in which carried authority may be exercised. Capabilities carry
-authority; PIC additionally governs whether this execution occurrence, in this
-causal history, may exercise that authority. Evidence used to establish PoR is
-not the semantic relationship itself, just as evidence used to establish a
-profile is not the authorization decision.
+causal history, not a holder or artifact alone. The common-domain analysis of
+Section~\ref{sec:observation} makes the claim independent of carrier names. An
+observation map determines which occurrences a policy can distinguish, while a
+separate transition relation determines which state evolutions it admits.
+Observation refinement is only an information order and gives no total security
+ranking among bearer, sender-constrained, capability and PIC-compatible
+families. It provides a criterion for comparing concrete observations; it does
+not assert canonical observation maps or pairwise kernel inclusions for every
+named protocol family.
 
-Under Definition~\ref{def:pic-compatible}, systems built from capabilities,
-Macaroons, Biscuit, UCAN or similar artifacts are PIC-compatible when they
-soundly establish equivalent causal-continuation and profile facts and enforce
-the same monotone lineage obligations. The artifact remains their authority
-carrier or policy engine; the semantics governing its exercise is
-PIC-compatible. This is why such a construction is a realization of the
-broader causal-history authorization semantics rather than a counterexample to
-it.
+Capabilities, credentials, caveats, assertions and PoP may all supply evidence
+or carry authority. Any such construction is PIC-compatible precisely when its
+admission semantics soundly establish the required continuation and profile
+facts and enforce the four transition obligations of
+Definition~\ref{def:pic-compatible}. Evidence of PoR is not the relationship
+itself, just as profile evidence is not the authorization decision. The carrier
+therefore does not determine the semantic class; the preserved distinctions and
+transition invariants do.
 
-PIC therefore accommodates capabilities, credentials, caveats and PoP as
-evidence mechanisms without reducing authorization to their possession. It
-changes the domain in which their evidence is consumed: authorization applies
-to execution occurrences situated in causal histories.
+PIC changes the domain in which this evidence is consumed: authorization
+applies to execution occurrences situated in causal histories.
 Consequently,
 \[
 \boxed{
@@ -3242,9 +3436,10 @@ This paper extends the Proof-of-Continuity and Provenance Identity Continuity
 model developed in earlier work~\cite{gallo2026poc}. The new
 contribution is the executor quotient construction, the relational predicate
 order, dual monotonicity, relational closure, the reading of the earlier
-projection result as a quotient instance, and the possession-independence
-result together with a conditional construction that satisfies its premises
-without successor-side possession when the Witness Assumptions hold.
+projection result as a quotient instance, the occurrence-domain observation
+and refinement framework, and the possession-independence result together with
+a conditional construction that satisfies its premises without successor-side
+possession when the Witness Assumptions hold.
 
 \appendix
 \section{Worked Example}
@@ -3369,6 +3564,46 @@ D. Fett, K. Yasuda, and B. Campbell.
 \newblock Selective Disclosure for JSON Web Tokens.
 \newblock RFC 9901, IETF, November 2025.
 \newblock \url{https://www.rfc-editor.org/info/rfc9901}.
+
+\bibitem{rfc6749}
+D. Hardt, editor.
+\newblock The OAuth 2.0 Authorization Framework.
+\newblock RFC 6749, IETF, October 2012.
+
+\bibitem{rfc6750}
+M. Jones and D. Hardt.
+\newblock The OAuth 2.0 Authorization Framework: Bearer Token Usage.
+\newblock RFC 6750, IETF, October 2012.
+
+\bibitem{rfc7519}
+M. Jones, J. Bradley, and N. Sakimura.
+\newblock JSON Web Token (JWT).
+\newblock RFC 7519, IETF, May 2015.
+
+\bibitem{rfc8705}
+B. Campbell, J. Bradley, N. Sakimura, and T. Lodderstedt.
+\newblock OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound
+Access Tokens.
+\newblock RFC 8705, IETF, February 2020.
+
+\bibitem{rfc9449}
+D. Fett, B. Campbell, J. Bradley, T. Lodderstedt, M. Jones, and D. Waite.
+\newblock OAuth 2.0 Demonstrating Proof of Possession (DPoP).
+\newblock RFC 9449, IETF, September 2023.
+
+\bibitem{samlcore}
+OASIS Security Services Technical Committee.
+\newblock Assertions and Protocols for the OASIS Security Assertion Markup
+Language (SAML) V2.0.
+\newblock OASIS Standard, 15 March 2005.
+\newblock \url{https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf}.
+
+\bibitem{samlhok}
+T. Scavo, editor.
+\newblock SAML V2.0 Holder-of-Key Assertion Profile Version 1.0.
+\newblock OASIS Committee Specification 02, 23 January 2010.
+\newblock
+\url{https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml2-holder-of-key-cs-02.html}.
 
 \bibitem{hardy1988confused}
 N. Hardy.
