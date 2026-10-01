@@ -37,6 +37,16 @@
 \newcommand{\state}{\Sigma}
 \newcommand{\coord}{\sigma}
 \newcommand{\st}{\operatorname{st}}
+\newcommand{\FP}{\mathrm{FP}}
+\newcommand{\EP}{\mathrm{EP}}
+\newcommand{\CDAF}{\mathrm{CDAF\text{-}E}}
+\newcommand{\Influence}{\mathrel{\rightsquigarrow_{\!\FP}}}
+\newcommand{\CausedBy}{\operatorname{CausedBy}}
+\newcommand{\Realize}{\operatorname{realize}}
+\newcommand{\Exec}{\operatorname{exec}}
+\newcommand{\IndAuth}{\operatorname{IndependentAuthority}}
+\newcommand{\Accepted}{\operatorname{Accepted}}
+\newcommand{\hb}{\prec_{c}}
 
 \newtheorem{definition}{Definition}
 \newtheorem{theorem}{Theorem}
@@ -45,7 +55,9 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{remark}{Remark}
 
-\title{Causally Ordered Security-State Theory (COSS)}
+\title{Full Provenance on the COSS Causal Axis:\\
+An Event-Level Closure of Causal Attribution and\\
+Confused-Deputy Exclusion}
 \author{Nicola Gallo}
 \date{27 September 2026}
 
@@ -53,42 +65,43 @@
 \maketitle
 
 \begin{abstract}
-Security models are usually presented as separate mechanisms: capability and
-possession systems constrain authority, mandatory access-control and
-information-flow systems constrain propagation of information, relational
-authorization constrains which classes of executors may continue an operation,
-and provenance systems constrain which artifacts or production histories may
-participate in an execution.  Their state spaces and enforcement rules differ,
-and classical results can therefore appear to place these models in conflict.
+Provenance Identity Continuity (PIC) was developed to answer a question that
+possession-based authorization leaves open: not only which authority an actor
+holds, but which execution occurrence may exercise it. PIC binds authority to
+execution occurrences in a causal history, relates adjacent occurrences by
+Proof of Relationship (PoR), and requires the carried authority to be
+non-expansive along that history. This paper asks whether that structure can
+serve as a general theory of security-state continuity, and uses it as the
+reference frame from which existing security models are read.
 
-This paper proposes \ModelFull (\Model), a general continuity construction in
-which security systems contribute coordinates to a product security state carried
-by a causally ordered execution. PIC places authority in the event space
-$O\times R\times L$ of privileges exercised within causal lineages. \Model
-keeps the lineage axis and replaces $O\times R$ by the product $\mathcal{B}$
-of the behavior universes of the carried security systems: every carried
-security state, not only authority, is attached to and attenuated along causal
-history. Each coordinate retains its own refinement relation; ordinary
-continuation is valid only when the next execution occurrence is causally
-related to its predecessor and no coordinate becomes more permissive according
-to its own order. For lineages consisting of ordinary continuations, the
-resulting product order yields an origin-bounded continuity theorem by
-componentwise transitivity; explicitly authorized relaxation events restart
-that bound at an auditable causal point.
+We develop \ModelFull (\Model) as the generalization of PIC. An occurrence
+carries a product state $\state_i=(\coord_i^{(j)})_{j\in J}$; each coordinate
+keeps its own refinement order, while PoR remains the single causal axis.
+Product Continuity then follows componentwise: ordinary causal transport
+cannot make any carried security state more permissive. PIC is recovered as
+the authority-only instance and relational PIC as the two-coordinate instance;
+lattice information flow, typed capability transfer, and decentralized labels
+can be placed as further coordinates without altering their semantics.
 
-The construction generalizes Provenance Identity Continuity (PIC): the original
-PIC model is recovered when the product has a single authority coordinate
-ordered by set inclusion, while the relational extension of PIC is recovered
-as a two-coordinate product of authority and relational admissibility.  A
-projection/factorization theorem then shows more generally that a policy which
-observes only a projection of the product state cannot enforce a property that
-distinguishes states inside the same projection fiber.  This gives a precise
-way to reinterpret the historical sequence from Bell--LaPadula and Boebert
-through Miller, Yee, and Shapiro's capability analysis and Miller and
-Shapiro's access abstractions: the results need not be read as choosing one
-security model over another, but as reasoning over different observable
-security distinctions and the mechanisms that make those distinctions
-available to enforcement.
+We then read Rajani, Garg, and Rezk's 2016 formal study of confused-deputy
+attacks through this frame. Their full provenance semantics tracks explicit
+and implicit influence, and their Theorem~6 proves CDA-freedom with endorsement
+unconditionally for their region calculus. Within \Model, that influence is one
+instance of an influence relation on the same causal order used by PoR: we give
+a conservative event refinement whose erasure leaves their semantics
+unchanged, and we attribute to their work neither PoR, PoC, nor distributed
+lineage. The results of this paper rely only on three closure properties of the
+influence relation, of which full provenance is one realization.
+
+Once all security-relevant effects and influence edges of the modeled machine
+are represented as events, causal attribution is derived by reachability
+inside the model. Combined with PIC authority continuity and effect admission,
+this yields a request-bounded effect theorem: in a closed \Model execution,
+an effect caused by a request can exercise only authority present in that
+request's origin, or introduced by an explicit authorized composition or
+relaxation event on its causal path, and the lineage-form confused-deputy
+condition is unsatisfiable along ordinary continuation. Effects and physical
+channels absent from the formal event model are not claimed to be covered.
 \end{abstract}
 
 \section{Introduction}
@@ -144,28 +157,160 @@ The contribution is a minimal mathematical condition under which their states
 can be \emph{continued together without collapsing their distinct semantics}:
 causal linkage plus componentwise non-expansion.
 
+
+\paragraph{Positioning.}
+PIC was developed independently, starting from the propagation of authority
+across distributed services and AI agents, and not from the language-based
+information-flow or object-capability literature. Its primitives, execution
+occurrences, an explicit lineage axis, receiver-verifiable PoR, non-expansive
+carried authority, and a successor that need not exist when its predecessor
+acts, were introduced for that setting \cite{gallo_poc2026,gallo_relational2026}.
+The present paper takes those primitives as the foundation and asks a further
+question: can the same continuity structure serve as a general theory, inside
+which established security models can be placed and their results reread?
+The readings of Bell--LaPadula, Denning, Boebert, Miller--Yee--Shapiro and
+Rajani--Garg--Rezk that follow are therefore interpretations made from the
+PIC/\Model frame. They do not claim that those authors used this frame, and
+they do not make PIC a derivation of their work.
+
+The frame also covers settings outside the scope of those works: authority
+continuity across services and trust domains rather than within one program
+semantics, continuity that the receiving boundary can verify, successors that
+are unknown when a continuation is emitted, and a product of heterogeneous
+security coordinates carried along one causal history.
+
+A second objective is to close a boundary left explicit in the earlier PIC
+series: causal attribution of an effect beyond an immediately witnessed
+handoff. Within \Model, this requires an influence relation on execution
+occurrences that represents every in-scope explicit and implicit dependency
+and is contained in the causal order. Rajani, Garg, and Rezk (RGR) provide a
+natural language-level instance of such a relation. Their full provenance
+semantics (FPs) tracks all value influence represented by their calculus,
+including implicit influence through branch and loop control, and proves
+CDA-freedom for the entire calculus without the program and heap restrictions
+required by their capability or explicit-only provenance results
+\cite{rajani_garg_rezk2016}. We read that influence as one realization of the
+\Model influence relation and place it on the same causal axis as PoR. The
+purpose is not to replace RGR's theorem, but to show that, seen from PIC,
+full provenance and authority continuity are two views of one event structure
+and can therefore be composed into a single causal proof.
+
 \paragraph{Contributions.}
-This draft develops seven results.
+This paper develops ten results.
 \begin{enumerate}[leftmargin=*]
   \item An explicit lift of PIC's event space $O\times R\times L$ to a
         general security-event space $\mathcal{B}\times L$.
+  \item A single underlying causal event order on which authority, IFC,
+        provenance, relational state, and other security views are attached to
+        the same execution occurrences.
   \item A general ordered security-state coordinate and its product
         construction, with a joint product-admission semantics.
   \item A Product Continuity theorem showing that every ordinary descendant
         is origin-bounded in every coordinate and jointly in admitted behavior.
-  \item An application of the standard principal down-set embedding, showing
-        that arbitrary partial-order refinement can be represented faithfully
-        as inclusion of principal lower sets.
-  \item A projection/factorization theorem and lineage-forgetting corollary
-        showing that a policy blind to a coordinate cannot enforce distinctions
-        erased by that projection.
+  \item A per-coordinate continuity construction showing that PIC authority
+        continuity and IFC/provenance continuity share PoR as the same causal
+        basis; product continuity is their conjunction, not a second clock.
+  \item An application of the principal down-set embedding and a
+        projection/factorization theorem showing what is lost when a decision
+        omits a security coordinate or causal history.
   \item A translated-continuity theorem for heterogeneous security-state
-        spaces.
-  \item A segment-continuity theorem for lineages containing explicit
-        authorized relaxations, together with derivations of PIC, relational
-        PIC, capability authority, and an information-flow coordinate as
-        instances of the same causal transport construction.
+        spaces and a segment-continuity theorem for explicit authorized
+        relaxations.
+  \item A PIC-based reading of RGR's capability, explicit provenance, and
+        full provenance results, faithful to their original statements,
+        including their unconditional Theorem~6 for CDA-freedom with
+        endorsement.
+  \item A conservative event refinement showing that RGR's full-provenance
+        influence is one instance of a \Model influence relation, causally
+        ordered on the same occurrences as PoR; the derivation of causal
+        attribution inside a closed event model depends only on the closure
+        properties (E1)--(E3), not on RGR's calculus.
+  \item A request-bounded effect theorem and a model-level exclusion of
+        lineage-form confused-deputy states along ordinary continuation, with
+        endorsement, composition, or authority relaxation represented as
+        explicit authorized causal events.
 \end{enumerate}
+
+\section{Rajani--Garg--Rezk: Full Provenance and CDA Freedom}
+\label{sec:rgr}
+
+We summarize RGR's results because they give an independent, language-based
+treatment of the confused deputy that can be read inside the PIC/\Model frame.
+The summary is descriptive and follows their statements; the continuity and
+attribution results of this paper are stated over the \Model event structure
+and do not depend on their calculus.
+
+Rajani, Garg, and Rezk study access control, object-capability semantics, and
+confused-deputy attacks in a small imperative \emph{region calculus}
+\cite{rajani_garg_rezk2016}. Their formal language contains principals,
+mutable references, read and write capabilities $R_r$ and $W_r$, conditionals,
+loops, assignments, sequencing, and commands executed inside regions. A
+principal lattice supplies the write-integrity policy through an ownership map
+$O$ from references to principals.
+
+Their first comparison equips the same calculus with two operational semantics.
+Access-control semantics checks authority when a reference is written.
+Capability semantics implements Miller et al.'s Property~A, ``no designation
+without authority,'' by preventing a region from obtaining a write capability
+that it is not authorized to wield. RGR prove that the access-control semantics
+is strictly more permissive than this capability semantics, while both satisfy
+the write-integrity property they formulate.
+
+The paper's second contribution is an extensional characterization of
+confused-deputy freedom. An authority context $E_{\rho_A}$ contains a hole in
+an adversary region $\rho_A$, and an attacker-interest set $AIS$ identifies the
+references of concern. Informally, a reference is CDA-safe if either the
+adversary cannot control its final value or the adversary could have written
+that final value directly. Endorsed regions are then excluded from the attack
+condition because an endorsed principal explicitly chooses to act on lower
+integrity influence. RGR denote the resulting property by
+$\CDAF(E_{\rho_A},H,\to_{red})$.
+
+This definition lets RGR separate explicit from implicit designation. Their
+capability semantics blocks the classical case in which the attacker supplies
+the privileged reference itself, but it does not block all cases in which the
+deputy already possesses the privileged reference and the attacker instead
+controls the value written or the control path that determines the write.
+Their Theorem~4 therefore proves CDA-freedom for capability semantics only
+under strong restrictions on programs and the initial heap
+\cite{rajani_garg_rezk2016}.
+
+RGR then add provenance tracking to the access-control baseline. Their
+explicit-only provenance semantics (EPs) labels each computed value by a
+principal that lower-bounds the principals whose references have explicitly
+influenced the value. EPs deliberately ignores implicit control-flow
+influence, and their Theorem~5 still needs restrictions, although weaker ones
+than capability semantics.
+
+Their full provenance semantics (FPs) removes those remaining restrictions.
+Every computed value still carries a principal-valued provenance label. In
+addition, the semantic state carries a stack $PC$ of program-counter labels.
+On entry to an \texttt{if} or \texttt{while} body, the new program-counter
+label is the meet of the current $pc$ and the label of the condition; on exit,
+the old $pc$ is restored. The FPs assignment rule checks the provenance of the
+target, the value, and the current $pc$ against the owner of the reference being
+written. Thus explicit data influence and implicit control influence are both
+part of the enforcement semantics \cite{rajani_garg_rezk2016}.
+
+The key result is their Theorem~6:
+\begin{equation}
+  \CDAF(E_{\rho_A},H,\to_{\FP})
+  \quad\text{holds unconditionally.}
+  \label{eq:rgr-thm6}
+\end{equation}
+``Unconditionally'' here is relative to the complete RGR region calculus and
+FPs semantics: unlike their capability and EP results, no additional program or
+heap restrictions are assumed. The proof route is also explicit. FPs
+establishes a strong non-interference/information-flow-integrity property, and
+RGR's Theorem~7 proves that non-interference with endorsement implies
+CDA-freedom with endorsement \cite{rajani_garg_rezk2016}.
+
+Two boundaries matter for the present paper. First, RGR's FPs labels are
+\emph{principal-valued abstractions of influence}; their paper does not attach
+event identifiers to labels. Second, RGR do not define PoR, PoC, a distributed
+lineage protocol, or a Lamport-style event graph. The event construction below
+is therefore a new conservative refinement of the influence already represented
+by FPs, not a claim about terminology or machinery present in RGR.
 
 \section{Historical Motivation: Different Security Coordinates}
 
@@ -230,37 +375,56 @@ can all be correct under different observable state spaces.
 
 \section{Preliminaries}
 
-\subsection{Execution occurrences and causal continuity}
+\subsection{Execution occurrences and the common causal order}
 
-Let $S$ be a set of execution occurrences.  An occurrence is a concrete step of
-an execution, not merely the identity of the executor that realizes it.  Let
+Let $S$ be the set of concrete execution occurrences of one modeled run. The
+machine may be sequential, concurrent, or distributed. Let
 \begin{equation}
-  \PoR \subseteq S\times S
+  \to_c\;\subseteq S\times S
 \end{equation}
-be the immediate causal-continuation relation.  We write
-$\PoR(s_i,s_{i+1})$ when $s_{i+1}$ is in fact a valid causal continuation of
-$s_i$ within the modeled execution.
+be an acyclic immediate causal-predecessor relation, and let $\hb$ denote its
+transitive closure. In a sequential reduction trace, $\to_c$ is a chain. In a
+concurrent or distributed execution it is generally a DAG, in the sense of a
+causal happened-before style order rather than a requirement of one global
+clock \cite{lamport1978}. This causal order is the underlying order of the run;
+security mechanisms do not receive independent physical clocks merely because
+they use different state spaces. We require the semantic causal order to be
+\emph{dependency adequate}: whenever an occurrence consumes a value, message,
+or state produced by an earlier occurrence, or its reachability is
+control-dependent on a condition evaluated at an earlier occurrence, the
+producer/condition is an ancestor of the consumer/controlled occurrence under
+$\hb$. This is a local semantic condition on causal edges; it does not assume
+the request-to-effect Causal Attribution theorem proved later.
 
-A concrete enforcement mechanism may establish $\PoR$ from signatures,
-attestations, observed handoffs, trusted-runtime evidence, or another witness.
-Verification and the relation it establishes are distinct: the abstract theory
-assumes sound verification, meaning that every admitted transition for which
-the mechanism establishes $\PoR(s_i,s_{i+1})$ satisfies the modeled causal
-relation.
-
-A finite execution lineage is
+PoR is the receiver-verifiable immediate-continuation relation used by PIC and
+\Model. At the semantic level considered here, sound PoR satisfies
 \begin{equation}
-  \pi = \langle s_0,s_1,\ldots,s_n\rangle
+  \PoR(s,s')\Longrightarrow s\to_c s'.
+  \label{eq:por-sound}
+\end{equation}
+For a closed semantic execution, every immediate causal edge in the modeled
+security-relevant event graph is required to be represented by a PoR-witnessable
+transition. A concrete realization may establish this relation using signatures,
+attestations, observed handoffs, trusted-runtime evidence, or an
+information-flow/provenance witness. Evidence and the relation evidenced are
+kept distinct.
+
+A finite \emph{lineage path} is
+\begin{equation}
+  \pi=\langle s_0,s_1,\ldots,s_n\rangle
 \end{equation}
 with $\PoR(s_i,s_{i+1})$ at every adjacent step. Let $L$ denote the set of
-such finite causal histories. The concrete construction of PoR is orthogonal to
-the abstract results below; as in PIC, the theorems are conditional on sound
-causal verification \cite{gallo_poc2026,gallo_relational2026}.
+such finite causal paths. In a DAG, several lineage paths may share an origin
+or endpoint; the underlying occurrence $s\in S$ is unique even when it belongs
+to several paths. The path notation is retained because the basic continuity
+proof is transitivity along a causal path.
 
-\subsection{Occurrence coordinates versus security-state coordinates}
+\subsection{One occurrence, several security views}
 
-An occurrence may additionally be observed through coordinates that are not
-themselves attenuation coordinates, for example
+An occurrence $s_i$ may simultaneously carry authority, information-flow,
+provenance, identity, relational, geographic, or other security observations.
+These coordinates may inhabit unrelated mathematical spaces, but they are
+observations of the same event. For example,
 \begin{equation}
   \omega_i=(\ell_i,\iota_i,g_i,\state_i),
 \end{equation}
@@ -269,7 +433,7 @@ executor or identity observation, $g_i$ is a geographic or network location,
 and $\state_i$ is the security state carried by the occurrence.
 
 Lineage grows by causal extension rather than attenuation, while the current
-identity or location may vary from step to step.  If geography is a security
+identity or location may vary from step to step. If geography is a security
 restriction, the monotone object is instead an admissible set or predicate, e.g.
 \begin{equation}
   g_i\in G_i^{\mathrm{allow}},
@@ -278,6 +442,35 @@ restriction, the monotone object is instead an admissible set or predicate, e.g.
 \end{equation}
 This distinction prevents the causal coordinates of an occurrence from being
 confused with the policy state that constrains them.
+
+\subsection{Per-coordinate continuity over the same PoR}
+\label{sec:pocj}
+
+For a carried coordinate $j$, define its path-continuity property by
+\begin{equation}
+ \PoC_j(\pi)
+ \;\Longleftrightarrow\;
+ \bigwedge_{i=0}^{n-1}
+ \left(
+   \PoR(s_i,s_{i+1})\land
+   \coord_{i+1}^{(j)}\preceq_j\coord_i^{(j)}
+ \right).
+ \label{eq:pocj}
+\end{equation}
+The authority-only instance is the original PIC/PoC condition
+$C_{i+1}\subseteq C_i$. An IFC coordinate has its own refinement order, while
+full provenance contributes an influence relation on the same occurrences
+(Section~\ref{sec:fp-axis}). Product continuity is therefore not a product of
+independent times. It is the conjunction of several continuity disciplines all
+sharing the same PoR edges:
+\begin{equation}
+  \PoC_{\mathrm{prod}}(\pi)
+  \Longleftrightarrow
+  \bigwedge_{j\in J}\PoC_j(\pi).
+  \label{eq:pocprod}
+\end{equation}
+This formalizes the distinction between the common causal substrate and the
+coordinate-specific security invariants transported over it.
 
 \subsection{From \texorpdfstring{$O\times R\times L$}{O x R x L} to \texorpdfstring{$\mathcal{B}\times L$}{B x L}}
 \label{sec:leap}
@@ -483,6 +676,27 @@ $\state_n\preceq\state_0$.  Projection to coordinate $j$ gives
 The theorem states the general continuity invariant for lineages containing
 only ordinary continuations: causal transport cannot introduce a possibility
 forbidden by the origin state of any carried security system.
+
+
+\begin{theorem}[Pathwise Product Continuity on a causal DAG]
+\label{thm:dag-continuity}
+Let $q,e\in S$ with $q\hb e$. If every edge of a causal path from $q$ to $e$
+is an ordinary \Model transition, then
+\begin{equation}
+  \st(e)\preceq \st(q).
+\end{equation}
+If every immediate predecessor edge of a multi-parent ordinary join is required
+to satisfy the same componentwise non-expansion rule, the bound holds along
+every parent path.
+\end{theorem}
+
+\begin{proof}
+Choose a causal path
+$q=s_0\to_c s_1\to_c\cdots\to_c s_k=e$. Each ordinary edge gives
+$\st(s_{i+1})\preceq\st(s_i)$. Transitivity yields
+$\st(e)\preceq\st(q)$. The multi-parent statement follows because the same
+argument applies independently to every immediate-predecessor path.
+\end{proof}
 
 \begin{definition}[Product admission]\label{def:product-admission}
 The product state $\state=(\coord^{(j)})_{j\in J}$ admits
@@ -775,6 +989,15 @@ $X_{\mathrm{ifc}}$ and define $\preceq_{\mathrm{ifc}}$ directly from their
 semantic flow sets.  Equation \eqref{eq:ifc-subset} is therefore an example,
 not a claim that all IFC implementations literally store $F$.
 
+
+The policy state $F_i$ should be distinguished from the dynamic provenance of a
+particular run. The former answers which flows are admissible; the latter
+answers which earlier occurrences actually influenced a value or control
+decision in this execution. RGR's FPs supplies a formal influence abstraction
+through value labels and the program-counter stack. Section~\ref{sec:fp-axis}
+lifts that influence to event resolution without changing the original FPs
+accept/reject behavior.
+
 \subsection{Typed data and capability transfer}
 
 The distinction used by Miller, Yee, and Shapiro to revisit Boebert can itself
@@ -850,6 +1073,284 @@ occurrences.  Product identity is therefore not itself an invocation.  A future
 DAG extension can treat invocation as a causal join between an authority
 lineage and a product/provenance lineage while preserving the coordinates that
 justify each parent.
+
+\section{Full Provenance on the COSS Causal Axis}
+\label{sec:fp-axis}
+
+\Model needs an influence relation on execution occurrences: a relation that
+records which earlier occurrences influence the data or control of later ones.
+Any relation satisfying the closure properties (E1)--(E3) of
+Definition~\ref{def:event-complete} serves. RGR's full provenance semantics is a
+natural language-level instance, and this section shows how it fits.
+FPs labels values and the current control context with principal-valued
+integrity information, whereas \Model relates concrete execution occurrences and
+transports security state along them. The connection is obtained by refining
+an FPs reduction trace with ghost event dependencies and then erasing those
+dependencies back to the original FPs semantics.
+
+\subsection{Conservative event refinement of FPs}
+
+Consider an RGR FPs execution
+\begin{equation}
+  \Theta_0\to_{\FP}\Theta_1\to_{\FP}\cdots\to_{\FP}\Theta_n,
+  \label{eq:fp-trace}
+\end{equation}
+where each $\Theta_i$ contains the heap, the $PC$ stack, and the current
+program/command state as in RGR. Associate a distinct occurrence $e_i\in S$
+with each reduction step $\Theta_i\to_{\FP}\Theta_{i+1}$.
+
+\begin{definition}[Event-refined full-provenance influence]
+The relation $\Influence\subseteq S\times S$ is generated over a trace
+\eqref{eq:fp-trace} by the following dependencies.
+\begin{enumerate}[label=(F\arabic*),leftmargin=*]
+  \item \emph{Explicit data/designation influence.} If a value, reference,
+        target designation, or heap value produced or obtained at $e_i$ is a
+        semantic input to the computation performed at a later event $e_j$,
+        then $e_i\Influence e_j$.
+  \item \emph{Implicit control influence.} If the reachability of the command
+        executed at $e_j$ is control-dependent on a branch or loop condition
+        evaluated at $e_i$, then $e_i\Influence e_j$.
+\end{enumerate}
+Its transitive closure is written $\Influence^{+}$.
+\end{definition}
+
+The first generator exposes at event resolution the explicit influence that
+RGR propagate through expression provenance. The second exposes the implicit
+influence that RGR propagate through the $PC$ stack. Event identifiers are
+\emph{ghost annotations}: they do not occur in the premises of an RGR FPs
+reduction rule.
+
+\begin{proposition}[Conservative erasure]
+Erasing event identifiers and $\Influence$ edges from an event-refined FPs run
+yields exactly the underlying RGR FPs reduction trace, with the same
+principal-valued labels, the same $PC$ stack evolution, and the same accepted
+or blocked assignments.
+\end{proposition}
+
+\begin{proof}
+The refinement adds only ghost metadata to the already existing reduction
+steps. No original FPs premise reads that metadata. Erasure therefore commutes
+with one reduction step; induction over the length of \eqref{eq:fp-trace} gives
+the result.
+\end{proof}
+
+\begin{lemma}[Full-provenance influence is causally ordered]
+\label{lem:fp-causal}
+For every event-refined FPs run,
+\begin{equation}
+  e_i\Influence e_j\Longrightarrow e_i\hb e_j.
+  \label{eq:fp-suborder}
+\end{equation}
+Consequently $\Influence^{+}\subseteq\hb$.
+\end{lemma}
+
+\begin{proof}
+For explicit influence, the value/reference or state consumed at $e_j$ is
+produced or obtained at $e_i$. By dependency adequacy of the semantic causal
+order, producer/read events are ancestors of their consumers, hence
+$e_i\hb e_j$. For implicit influence, RGR lower the current $pc$ only after
+the branch or loop condition has been evaluated and execute the controlled
+command while that lowered $pc$ is on the stack. The reachability of the
+controlled event therefore depends on the condition event; dependency
+adequacy again gives $e_i\hb e_j$. These are exactly the two generators of
+$\Influence$. Transitivity of $\hb$ gives the closure statement.
+\end{proof}
+
+The reverse inclusion is neither needed nor generally true. Two commands may
+be ordered by execution without the earlier one contributing data or control
+influence to the later one. Full provenance therefore induces an influence
+suborder on one common execution order; it does not create a second time.
+
+\subsection{Event-complete provenance and derived causal attribution}
+
+The sequential RGR calculus already closes all of its reads, writes, and
+control constructs inside one operational semantics. For a general machine
+execution we state the corresponding closure property directly.
+
+\begin{definition}[Closed event-complete execution]
+\label{def:event-complete}
+A \Model execution is \emph{event-complete} for a stated threat model when:
+\begin{enumerate}[label=(E\arabic*),leftmargin=*]
+  \item every protected security-relevant effect is represented by an
+        occurrence in $S$;
+  \item every explicit data/designation dependency and every implicit control
+        dependency in scope is represented by $\Influence^{+}$; and
+  \item every generating influence edge is causally sound as in
+        Lemma~\ref{lem:fp-causal}.
+\end{enumerate}
+For a request-origin occurrence $q$ and an effect occurrence $e$, define
+\begin{equation}
+  \CausedBy(e,q)
+  \quad\Longleftrightarrow\quad
+  q\Influence^{+}e.
+  \label{eq:causedby-reach}
+\end{equation}
+\end{definition}
+
+This definition is event based, not stack based. Synchronous calls, shared
+state, a database, a queue, a timer, or an asynchronous callback do not require
+a different causal principle. When the later event consumes state or a message
+produced by the earlier event, the machine semantics contains the corresponding
+dependency, for example
+\begin{align}
+ \mathrm{write}_x &\;\Influence\; \mathrm{read}_x,\\
+ \mathrm{enqueue}_q &\;\Influence\; \mathrm{dequeue}_q,\\
+ \mathrm{setTimer} &\;\Influence\; \mathrm{fireTimer},\\
+ \mathrm{registerCallback} &\;\Influence\; \mathrm{invokeCallback}.
+\end{align}
+The wall-clock delay or disappearance of the original call stack does not erase
+causal ancestry. What matters is whether the modeled later occurrence depends
+on the earlier one.
+
+\begin{theorem}[Causal Attribution from full-provenance reachability]
+\label{thm:derived-ca}
+In a closed event-complete execution,
+\begin{equation}
+  \CausedBy(e,q)\Longrightarrow q\hb e.
+  \label{eq:ca-derived}
+\end{equation}
+Hence causal attribution is a theorem of the event semantics rather than an
+independent assumption.
+\end{theorem}
+
+\begin{proof}
+By Definition~\ref{def:event-complete}, $\CausedBy(e,q)$ is
+$q\Influence^{+}e$. Lemma~\ref{lem:fp-causal} gives
+$\Influence^{+}\subseteq\hb$. Therefore $q\hb e$.
+\end{proof}
+
+\subsection{Effect admission and authority continuity}
+
+Let the authority coordinate be $C(s)\subseteq O\times R$. An ordinary causal
+edge preserves PIC authority continuity:
+\begin{equation}
+  s\to_c s'\;\land\;\mathrm{Ord}(s,s')
+  \Longrightarrow C(s')\subseteq C(s).
+  \label{eq:authority-edge}
+\end{equation}
+At a multi-parent ordinary event the same rule is required for every immediate
+predecessor; equivalently, the new authority is contained in the intersection
+of the parent authority contexts. Any transition that legitimately broadens
+authority is not an ordinary continuation: it is an explicitly authorized
+origination, endorsement, composition, or relaxation event and starts a new
+authority bound, as in Section~\ref{sec:relaxation}.
+
+Let $Eff\subseteq S$ be the protected effect occurrences and let
+\begin{equation}
+  \Realize:Eff\to O\times R
+\end{equation}
+map an effect to the operation and actual resource it realizes. In the closed
+model, admission of a protected effect is part of the semantics:
+\begin{equation}
+\begin{aligned}
+  &e\in Eff\;\land\;\Realize(e)=(o,r)\;\land\;\Accepted(e)\\
+  &\hspace{2.2em}\Longrightarrow (o,r)\in C(e).
+\end{aligned}
+\label{eq:effect-admission}
+\end{equation}
+Thus complete mediation is internalized in the formal semantics: protected
+effects are precisely the events to which the admission rule applies.
+
+\begin{lemma}[Request-origin authority bound]
+\label{lem:req-bound}
+Let $q\hb e$ and suppose the causal path from $q$ to $e$ contains only ordinary
+authority-continuous edges. Then
+\begin{equation}
+  C(e)\subseteq C(q).
+  \label{eq:req-bound}
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Choose a causal path
+$q=s_0\to_c s_1\to_c\cdots\to_c s_k=e$. Equation
+\eqref{eq:authority-edge} gives
+$C(s_k)\subseteq C(s_{k-1})\subseteq\cdots\subseteq C(s_0)$. Transitivity of
+set inclusion yields the claim.
+\end{proof}
+
+\begin{theorem}[Request-bounded effect theorem]
+\label{thm:req-effect}
+Let $q$ be a request-origin occurrence and $e$ an accepted protected effect in
+the same ordinary authority segment. In a closed event-complete execution,
+\begin{equation}
+ \CausedBy(e,q)\land\Realize(e)=(o,r)
+ \Longrightarrow (o,r)\in C(q).
+ \label{eq:req-effect}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+$\CausedBy(e,q)$ implies $q\hb e$ by Theorem~\ref{thm:derived-ca}.
+Lemma~\ref{lem:req-bound} then gives $C(e)\subseteq C(q)$. Since $e$ is
+accepted and realizes $(o,r)$, Equation~\eqref{eq:effect-admission} gives
+$(o,r)\in C(e)$. Therefore $(o,r)\in C(q)$.
+\end{proof}
+
+\subsection{Total model-level exclusion of the confused deputy}
+
+\begin{definition}[Lineage-form confused deputy]
+A confused-deputy state exists when there are a request-origin occurrence $q$,
+an effect $e\in Eff$, an executor $D$, and a privilege $(o,r)$ such that
+\begin{align}
+  &\CausedBy(e,q),\\
+  &\Realize(e)=(o,r),\\
+  &\Exec(e)=D,\\
+  &(o,r)\notin C(q),\\
+  &\IndAuth(D,(o,r)).
+  \label{eq:cda-def}
+\end{align}
+The final conjunct records the classical deputy situation: $D$ independently
+possesses authority unavailable in the request context. It is not needed for
+the contradiction below.
+\end{definition}
+
+\begin{theorem}[Total confused-deputy exclusion in the closed \Model model]
+\label{thm:total-cda}
+Every closed event-complete \Model execution satisfying ordinary PIC authority
+continuity and protected-effect admission is free of lineage-form
+confused-deputy states on every ordinary authority segment.
+\end{theorem}
+
+\begin{proof}
+Assume a confused-deputy state satisfying \eqref{eq:cda-def}. By its first two
+conjuncts and Theorem~\ref{thm:req-effect}, $(o,r)\in C(q)$. The definition
+simultaneously requires $(o,r)\notin C(q)$, a contradiction. Independent
+authority held by $D$ cannot enter the request's valid authority state through
+an ordinary edge because \eqref{eq:authority-edge} forbids expansion.
+\end{proof}
+
+The result is ``total'' in the same formal sense in which RGR's Theorem~6 is
+unconditional for FPs: every execution admitted by the stated semantics
+satisfies the property. The two CDA definitions are not identified. RGR prove
+their extensional $\CDAF$ property for their calculus; Theorem
+\ref{thm:total-cda} proves the lineage-form origin-authority property for the
+closed \Model event semantics. An explicit authorized endorsement or authority
+relaxation is represented by a distinguished causal event and starts a new
+segment; it is not a silent confused-deputy import of authority. This mirrors
+RGR's treatment of endorsed regions as intentional, rather than confused, use
+of lower-integrity influence.
+
+The complete implication is
+\begin{equation}
+\boxed{
+\begin{gathered}
+\text{full-provenance influence on modeled events}\\
+\Downarrow\\
+\CausedBy(e,q)\Rightarrow q\hb e\\
+\Downarrow\\
+\text{PIC/COSS authority continuity}\\
+\Downarrow\\
+C(e)\subseteq C(q)\\
+\Downarrow\\
+\text{effect admission}\\
+\Downarrow\\
+\Realize(e)=(o,r)\Rightarrow(o,r)\in C(q)\\
+\Downarrow\\
+\neg\,\text{ConfusedDeputy}.
+\end{gathered}}
+\label{eq:full-cda-chain}
+\end{equation}
 
 \section{Re-reading the Capability/IFC Tension}
 
@@ -996,17 +1497,19 @@ of a more general factorization construction; its executor-profile quotients and
 \Model's coordinate projections are applications of the same mathematical
 principle, not literally the same projection map \cite{gallo_relational2026}.
 
-The confused-deputy results have the same scope boundary.  Hardy's classical
-example motivates the problem of a deputy exercising authority for the wrong
-request context \cite{hardy1988}.  The first PoC paper excludes authority import
-as valid behavior inside a valid lineage through origin-bounded attenuation.
-The relational paper separates that model-internal closure from a
-deployment-level claim about actual request-caused effects: the latter is
-conditional on Complete Mediation and Causal Attribution
-\cite{gallo_relational2026}.  \Model preserves exactly this distinction for
-its coordinates.  Product Continuity constrains states already represented on a
-lineage; it does not itself determine that an external effect was caused by, or
-belongs to, that lineage.
+The confused-deputy result is strengthened in the present paper. Hardy's
+classical example motivates the problem of a deputy exercising authority for
+the wrong request context \cite{hardy1988}. The first PoC paper excludes
+authority import as valid behavior inside a valid lineage through origin-bounded
+attenuation. The relational paper then isolates Complete Mediation and Causal
+Attribution as the premises needed to lift that closure to actual request-caused
+effects \cite{gallo_relational2026}. Section~\ref{sec:fp-axis} internalizes
+those premises in a closed event semantics: protected effects are modeled
+admission events, and RGR-style full-provenance reachability derives causal
+attribution on the same occurrence order as PoR. The resulting
+Theorem~\ref{thm:total-cda} excludes every lineage-form confused-deputy state
+along ordinary continuation in the closed model, while preserving explicit endorsement/authorized
+relaxation as a distinct causal transition class.
 
 \section{Heterogeneous Security-State Spaces}
 
@@ -1061,6 +1564,7 @@ deployment error rather than a failure of the order-theoretic continuity
 theorem.
 
 \section{Ordinary Continuation versus Authorized Relaxation}
+\label{sec:relaxation}
 
 Not every legitimate security transition is monotone.  Declassification may
 relax an IFC constraint; a new authority grant may enlarge an authority state;
@@ -1121,38 +1625,45 @@ by boundedness from the most recent explicitly authorized relaxation. A
 relaxation cannot be introduced by ordinary continuation; it can only
 restart the bound at an explicit, auditable point.
 
-\section{Composition and DAG-Shaped Causality}
+\section{Causal DAGs, Joins, and Multiple Causes}
 
-The present draft, like the existing PIC theory, states the core result first
-for a linear lineage.  Multiple-cause effects require a DAG-shaped causal model
-and an explicit composition rule \cite{gallo_relational2026}.
+The common causal substrate is a partial order, not inherently a linear call
+chain. Linear lineage notation denotes a path in that order. Fan-out, fan-in,
+shared state, asynchronous delivery, and multiple-cause effects are therefore
+represented by DAG structure before any security coordinate is considered.
 
-For a join with parents carrying states $\state^{(1)},\ldots,\state^{(k)}$, the
-critical requirement is that composition not erase the provenance of the
-coordinates being combined.  A future composition operator
+For an ordinary event $s$ with immediate predecessors
+$\mathrm{Pred}(s)=\{p_1,\ldots,p_k\}$, the conservative \Model rule is
 \begin{equation}
-  \kappa:
-  X^k\to X_{\kappa}
+  \st(s)\preceq \st(p_m)
+  \qquad\text{for every }m\in\{1,\ldots,k\}.
+  \label{eq:dag-join}
 \end{equation}
-must specify which jointly justified possibilities are admitted at the new
-execution node and must make any increase in the set of participating origins
-an explicit event rather than an ordinary continuation.
+For the authority coordinate this specializes to
+\begin{equation}
+  C(s)\subseteq\bigcap_{m=1}^{k}C(p_m).
+\end{equation}
+Equation~\eqref{eq:dag-join} is sufficient for Product Continuity along every
+parent path and for the request-bounded effect theorem even when an effect has
+several causes. In particular, if $q$ is any cause whose influence reaches
+$s$, then the authority exercised at $s$ remains bounded by $C(q)$ unless an
+explicit authorized relaxation/composition event intervenes.
 
-This is particularly important for product invocation.  A runtime invocation
-may depend jointly on an authority lineage and a product/provenance lineage.
-The invocation node should record both causes rather than retagging either
-parent state as if it originated in the join.
+A non-conservative composition policy may intentionally combine authority or
+other security states from several parents. Such a transition is not an
+ordinary continuation and is represented as an explicit authorized composition
+or relaxation event. Its policy semantics must state which origins justify the
+new state. This keeps the general theory honest without treating queues,
+databases, timers, callbacks, or fan-in as failures of causal attribution: those
+mechanisms contribute causal edges; only a genuine broadening of carried
+security state requires a separate authorization rule.
 
-A complete DAG theory is left for future work; no general join operator is
-claimed here.
-
-Miller and Shapiro use the phrase ``mutually suspicious composition'' for the
+Miller and Shapiro's ``mutually suspicious composition'' concerns the
 coexistence of independently motivated access abstractions over one capability
-graph \cite{miller_shapiro2003}.  That notion is related in spirit but is not
-identified here with \Model's future DAG composition: the latter concerns a
-causal join with multiple parent histories and requires an explicit rule for
-combining their carried security states.  Keeping the two notions distinct
-avoids importing a join semantics that the present draft has not proved.
+graph \cite{miller_shapiro2003}. The connection is conceptual rather than an
+identity of formal operators: \Model's DAG rule is an event-level condition on
+how the security states of multiple causal parents may continue or be
+explicitly recomposed.
 
 \section{Related Work}
 
@@ -1197,6 +1708,35 @@ restriction plus explicitly authorized relaxation.  \Model treats such an IFC
 state as one possible coordinate; it does not replace the label semantics,
 acts-for relation, or static flow analysis of that work.
 
+\paragraph{Rajani--Garg--Rezk full provenance.}
+RGR give the first language-based extensional characterization of CDA-freedom,
+show that capability semantics does not prevent all implicit-designation CDAs,
+and introduce explicit-only and full provenance semantics
+\cite{rajani_garg_rezk2016}. FPs augments value provenance with a
+program-counter label stack so that branch and loop conditions contribute to
+the integrity check on later writes. Their Theorem~6 proves CDA-freedom with
+endorsement unconditionally for their region calculus, via information-flow
+integrity and their Theorem~7. Read from \Model, FPs is a language-level
+instance of the influence relation required by Section~\ref{sec:fp-axis}.
+\Model does not reinterpret their theorem as a protocol result; the new step is
+a conservative event refinement that places FPs-style influence on the same
+execution occurrences as PoR and uses that common order to derive causal
+attribution for the lineage-form authority theorem.
+
+\paragraph{Unified authorization and dependency calculi.}
+Flow-limited authorization integrates authorization and information-flow
+reasoning for delegation and trust \cite{arden_liu_myers2015}; the Dependency
+Core Calculus gives one calculus in which several dependency analyses,
+including information flow, are instances \cite{abadi_dcc1999}; and
+operating-system DIFC designs track labels and privileges across processes
+\cite{asbestos2005,histar2006,flume2007}. These works unify security reasoning
+within a language semantics or an operating-system label model. \Model starts
+from a different object: authority bound to execution occurrences in a causal
+history that may span services and trust domains, with continuity verifiable
+at the receiving boundary. The approaches are complementary: a language-based
+or operating-system analysis can supply the influence relation, or a security
+coordinate, that \Model transports along PoR.
+
 \paragraph{Capability systems and access abstractions.}
 Miller, Yee, and Shapiro show that conclusions about capability systems depend
 on the capability model and on distinctions such as data transfer versus
@@ -1210,84 +1750,70 @@ event/state construction and a factorization result: whenever a target verdict
 depends on a distinction erased by an observation, a decision invariant under
 that observation cannot reproduce the target verdict.
 
-\section{Enforcement Assumptions}
+\section{Semantic Closure and Realization Assumptions}
 
-The mathematics constrains accepted transitions; it does not make causal
-attribution true by itself.  The existing PIC theory already separates the
-continuity invariant from complete mediation, sound PoR verification, and
-causal attribution \cite{gallo_relational2026}.  \Model inherits the same
-boundary.
+The closed formal model now contains the two facts that earlier PIC work left as
+separate deployment assumptions. First, every protected effect is itself a
+modeled occurrence to which product admission is applied. Second, every
+security-relevant explicit data/designation dependency and implicit control
+dependency in the stated threat model is represented by the full-provenance
+influence relation. Theorem~\ref{thm:derived-ca} then derives causal attribution
+from reachability.
 
-For a deployment-level claim that an actual effect satisfies all carried
-security systems, at least the following are required:
+This change is important for asynchronous systems. A queue, database, shared
+file, cache entry, timer, callback, or message broker does not break the causal
+chain merely because the original stack frame has ended. If the later event
+consumes state produced by the earlier event, the write/read, enqueue/dequeue,
+schedule/fire, or send/receive dependency is an edge of the same event DAG.
+The security state transported by \Model is therefore attached to causal
+occurrences rather than to synchronous call-stack lifetime.
+
+A concrete realization must still justify that its evidence faithfully
+implements the formal semantics. In particular:
 \begin{enumerate}[leftmargin=*]
-  \item every protected effect is mediated by an enforcement path that reads
-        the relevant product coordinates;
-  \item PoR soundly binds each accepted transition to its actual causal
-        predecessor;
-  \item each coordinate observation and translation is trustworthy enough for
-        the theorem being claimed; and
-  \item any relaxation or composition event is separately authorized under the
-        semantics of the coordinates it changes.
+  \item PoR evidence must be sound for the modeled immediate causal edges;
+  \item the runtime or analysis providing full provenance must conservatively
+        expose every influence class claimed by the threat model;
+  \item each security coordinate and heterogeneous translation must faithfully
+        represent the security meaning assigned to its refinement order; and
+  \item explicit endorsement, declassification, authority grant, or composition
+        events must be separately authorized and observable as such.
 \end{enumerate}
-
-Information that influences later behavior through unobserved mutable state,
-queues, caches, timers, covert channels, or other unmodeled causes remains
-outside the guarantee unless the execution model or information-flow tracking
-brings those causes into the mediated causal structure.
+These are realization obligations, not an additional Causal Attribution axiom.
+If a physical influence channel is omitted from the formal event semantics, no
+theorem about the model can silently cover that omitted channel.
 
 \section{Limitations and Open Questions}
 
-Several issues remain open.  In particular, the present results leave four
-mathematical tasks as an explicit research agenda:
-\begin{enumerate}[leftmargin=*]
-  \item a DAG composition theorem with a join operator that preserves
-        coordinate provenance and a stated non-expansion property;
-  \item a theory of causal attribution that states when an effect may be
-        assigned to a history beyond explicit mediated handoffs;
-  \item semantic correctness conditions for translations between heterogeneous
-        behavior and state spaces; and
-  \item an algebra of authorized relaxations, including their authority,
-        composition, and interaction with later continuity bounds.
-\end{enumerate}
-
-\paragraph{Choice of coordinates.}
-The theory does not decide which security systems must be included.  Omitting a
-coordinate is safe only for properties invariant under that omission; the
-projection theorem makes this requirement explicit.
-
-\paragraph{Order soundness.}
-The meaning of $\preceq_j$ is domain-specific.  A badly chosen order can be
-mathematically monotone while failing to represent the intended security
-semantics.
-
-\paragraph{Non-monotone security mechanisms.}
-Declassification, endorsement, privilege grant, revocation semantics, and
-administrative policy changes need explicit transition classes rather than
-being hidden inside ordinary continuation.
-
-\paragraph{DAG composition.}
-Fan-out, fan-in, joins, and multi-cause effects require a partial-order causal
-model and a sound composition algebra.
+The causal-attribution item present in the earlier draft is discharged for the
+closed event model of Section~\ref{sec:fp-axis}. The remaining research tasks
+are narrower.
 
 \paragraph{Semantic soundness of heterogeneous translations.}
 Translated Continuity proves preservation relative to the supplied ordered
 translation maps. Relating states and behaviors across different local
-vocabularies requires an additional cross-domain semantic relation and a
-soundness condition for each translation; those are left open here.
+vocabularies still requires a cross-domain semantic relation and a soundness
+condition for each translation.
 
-\paragraph{Authority for relaxation.}
-The theory treats authorization of a relaxation as a separate premise. A
-deployment may represent that authority as another carried coordinate, but doing
-so does not eliminate the need for an ultimate trust or policy assumption about
-who may relax that coordinate. \Model does not claim to solve this regress
-internally.
+\paragraph{Order soundness and coordinate choice.}
+The meaning of $\preceq_j$ is domain-specific. A mathematically monotone but
+semantically wrong order proves the wrong property. Likewise, omitting a
+coordinate is sound only for target properties invariant under that omission;
+the projection theorem makes this requirement explicit.
+
+\paragraph{Physical coverage.}
+The formal theorem is total over the events and influence channels represented
+by the model. A real system must establish that the threat model's relevant
+physical channels are represented by the execution/provenance semantics.
+Covert or side channels not represented as causal influence remain outside the
+formal domain rather than counterexamples to the theorem.
 
 \paragraph{Implementation evidence.}
-The theory is agnostic about whether evidence is carried in tokens,
-attestations, trusted-runtime state, gateways, proof-carrying objects, or other
-mechanisms.  Representation is secondary to whether the enforcement decision
-observes the coordinates required by the property being enforced.
+The theory remains agnostic about whether evidence is carried in tokens,
+attestations, trusted-runtime state, gateways, proof-carrying objects, dynamic
+information-flow tracking, or another mechanism. Representation is secondary
+to whether the mechanism soundly establishes the common causal order and the
+security coordinates needed by the property being claimed.
 
 \section{Discussion}
 
@@ -1301,9 +1827,12 @@ semantic and enforcement assumptions.  The order theory used here is
 elementary; the contribution claimed is the choice of authorization domain and
 the causal transport discipline, not a new result in order theory.
 
-The proposed shift is small syntactically but large semantically.  Instead of
+The proposed shift is small syntactically but large semantically. Instead of
 asking one security model to become universal, \Model treats each model as a
-coordinate over the same causal execution.
+coordinate or influence view over the same causal execution. The RGR
+integration makes the distinction concrete: the IFC policy state is one
+coordinate, while full provenance is an influence suborder on the same
+occurrences. Neither requires a second temporal axis.
 
 The general invariant is:
 \begin{quote}
@@ -1338,29 +1867,62 @@ actually observes and preserves along the causal execution.
 
 \section{Conclusion}
 
-PIC placed authority-use events on the causal axis, in
-$O\times R\times L$. \Model keeps that axis and replaces the privilege
-behavior space $O\times R$ with the product behavior space $\mathcal{B}$,
-yielding events in $\mathcal{B}\times L$, while each lineage endpoint carries
-a product security state in $X=\prod_j X_j$. Ordinary continuation requires
-componentwise refinement of that carried state along verified causal edges.
-The resulting Product Continuity theorem is immediate from transitivity, but
-its consequence is broad: security systems with different semantics can be
-preserved together without requiring one to subsume the others.
+PIC placed authority-use events on a causal axis and made authority continuation
+non-expansive. \Model keeps that axis and generalizes the carried state from one
+authority set to a product of heterogeneous security states. The Product
+Continuity theorem is componentwise transitivity: ordinary causal transport
+cannot introduce a behavior forbidden by an origin state in any carried
+coordinate. The projection theorem gives the dual limitation: a decision
+cannot enforce a distinction that its observation erases.
 
-The projection theorem explains the corresponding limitation.  A decision
-which observes only a subset of coordinates factors through that projection and
-cannot enforce a property that depends on information erased by it.  This
-provides a common mathematical lens for earlier results that otherwise appear
-to pit capability authority against information-flow control.
+Read from PIC, RGR provide an independent, language-level treatment of the
+confused deputy. Their
+capability semantics blocks explicit designation but not every implicit attack;
+their EP semantics tracks explicit provenance; and their FPs semantics adds
+program-counter provenance for implicit control flow. Their Theorem~6 proves
+CDA-freedom with endorsement unconditionally for their complete region calculus
+\cite{rajani_garg_rezk2016}. The present paper does not rewrite that theorem as
+PoR or PoC. Instead it lifts the influence represented by FPs to ghost event
+dependencies whose erasure leaves the original FPs execution unchanged.
 
-PIC emerges as the authority specialization of this construction, and its
-relational extension is already a nontrivial product instance.  Together, the
-three papers develop a layered causal theory of authorization and security-state
-continuity, of which \Model is the general product form developed here.  The
-broader research question is therefore no longer only how authority propagates
-without expansion, but how heterogeneous security states can remain causally
-bound and jointly non-expansive across distributed execution.
+This event lift resolves the causal question at the right level. A modeled
+machine execution has one causal order of occurrences. Authority, IFC policy,
+relational admissibility, and other security states are attached to those
+occurrences, while full provenance identifies which earlier occurrences
+influence later data or control. Full-provenance influence is therefore a
+suborder of the same execution order. Asynchronous state transfer through a
+database, queue, timer, callback, shared object, or message does not create a
+new time; it contributes additional causal dependency edges.
+
+Once the modeled execution is closed under protected effects and full
+provenance, causal attribution is reachability. Combining that fact with
+ordinary PIC authority attenuation gives
+\begin{equation}
+  \CausedBy(e,q)\land\Realize(e)=(o,r)
+  \Longrightarrow (o,r)\in C(q).
+\end{equation}
+The lineage-form confused-deputy condition requires the opposite,
+$(o,r)\notin C(q)$, and is therefore unsatisfiable along ordinary
+continuation. Independent authority held
+by the deputy cannot be imported through an ordinary causal continuation;
+intentional endorsement, authority grant, or non-conservative composition is a
+distinguished authorized event and begins a new authority bound.
+
+Accordingly, the final model-level result is
+\begin{equation}
+\boxed{
+\begin{gathered}
+\text{closed event-complete full provenance}\\
+{}+\ \text{COSS/PIC authority continuity}\\
+{}+\ \text{protected-effect admission}\\
+\Longrightarrow\ \text{confused-deputy exclusion along ordinary continuation}.
+\end{gathered}}
+\end{equation}
+``Total'' has the same formal reading as any semantic safety theorem: no
+execution admitted by the model contains the forbidden state. It does not
+claim security for physical influence channels omitted from the model. Within
+the stated event semantics, however, Causal Attribution is no longer an
+independent assumption; it is a derived theorem of the common causal order.
 
 \begin{thebibliography}{99}
 
@@ -1411,6 +1973,49 @@ A.~C. Myers and B.~Liskov,
 ``A Decentralized Model for Information Flow Control,''
 in \emph{Proceedings of the 16th ACM Symposium on Operating Systems Principles (SOSP)},
 pp.~129--142, 1997, doi: 10.1145/268998.266669.
+
+\bibitem{rajani_garg_rezk2016}
+V.~Rajani, D.~Garg, and T.~Rezk,
+``On Access Control, Capabilities, Their Equivalence, and Confused Deputy Attacks,''
+in \emph{2016 IEEE 29th Computer Security Foundations Symposium (CSF)},
+Lisbon, Portugal, 2016, doi: 10.1109/CSF.2016.18.
+
+\bibitem{arden_liu_myers2015}
+O.~Arden, J.~Liu, and A.~C. Myers,
+``Flow-Limited Authorization,''
+in \emph{2015 IEEE 28th Computer Security Foundations Symposium (CSF)}, 2015.
+
+\bibitem{abadi_dcc1999}
+M.~Abadi, A.~Banerjee, N.~Heintze, and J.~G. Riecke,
+``A Core Calculus of Dependency,''
+in \emph{Proceedings of the 26th ACM SIGPLAN-SIGACT Symposium on Principles of
+Programming Languages (POPL)}, 1999.
+
+\bibitem{asbestos2005}
+P.~Efstathopoulos, M.~Krohn, S.~VanDeBogart, C.~Frey, D.~Ziegler, E.~Kohler,
+D.~Mazi\`eres, F.~Kaashoek, and R.~Morris,
+``Labels and Event Processes in the Asbestos Operating System,''
+in \emph{Proceedings of the 20th ACM Symposium on Operating Systems Principles
+(SOSP)}, 2005.
+
+\bibitem{histar2006}
+N.~Zeldovich, S.~Boyd-Wickizer, E.~Kohler, and D.~Mazi\`eres,
+``Making Information Flow Explicit in HiStar,''
+in \emph{Proceedings of the 7th USENIX Symposium on Operating Systems Design and
+Implementation (OSDI)}, 2006.
+
+\bibitem{flume2007}
+M.~Krohn, A.~Yip, M.~Brodsky, N.~Cliffer, M.~F. Kaashoek, E.~Kohler, and
+R.~Morris,
+``Information Flow Control for Standard OS Abstractions,''
+in \emph{Proceedings of the 21st ACM Symposium on Operating Systems Principles
+(SOSP)}, 2007.
+
+\bibitem{lamport1978}
+L.~Lamport,
+``Time, Clocks, and the Ordering of Events in a Distributed System,''
+\emph{Communications of the ACM}, vol.~21, no.~7, pp.~558--565, 1978,
+doi: 10.1145/359545.359563.
 
 \bibitem{hardy1988}
 N.~Hardy,
